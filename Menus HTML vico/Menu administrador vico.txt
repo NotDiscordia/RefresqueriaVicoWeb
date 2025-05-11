@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú Administrador</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .menu-admin {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
+      width: 80%;
+      max-width: 700px;
+    }
+
+    .opcion {
+      background-color: white;
+      border-radius: 12px;
+      padding: 25px 15px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out, background-color 0.3s;
+    }
+
+    .opcion:hover {
+      transform: translateY(-5px);
+      background-color: #e3f2fd;
+    }
+
+    .opcion i {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: #0077c2;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <h1>Administrador</h1>
+
+  <div class="menu-admin">
+    <div class="opcion" onclick="location.href='empleados.html'">
+      <i class="fas fa-users"></i>
+      Empleados
+    </div>
+    <div class="opcion" onclick="location.href='inventario.html'">
+      <i class="fas fa-boxes"></i>
+      Inventario
+    </div>
+    <div class="opcion" onclick="location.href='corte.html'">
+      <i class="fas fa-file-invoice-dollar"></i>
+      Corte de caja
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Sistema Administrativo</footer>
+
+</body>
+</html>

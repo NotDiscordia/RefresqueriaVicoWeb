@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú de Ventas</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+    }
+    header, footer {
+      padding: 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+    }
+    main {
+      display: flex;
+      height: calc(100vh - 100px);
+    }
+    .left-panel {
+      flex: 2;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    .right-panel {
+      flex: 1;
+      background: #fff;
+      padding: 20px;
+      border-left: 1px solid #ddd;
+    }
+
+    .categorias {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .categoria {
+      padding: 15px;
+      border-radius: 5px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      flex: 1;
+      text-align: center;
+    }
+    .rojo { background: #d32f2f; }
+    .verde { background: #388e3c; }
+    .azul { background: #1976d2; }
+
+    .productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 15px;
+    }
+
+    .producto {
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .producto img {
+      width: 100%;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .producto h4 {
+      margin: 8px 0 4px;
+      font-size: 16px;
+    }
+
+    .producto p {
+      margin: 0 0 10px;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .venta h2 {
+      margin-top: 0;
+    }
+
+    .venta p {
+      margin: 5px 0;
+    }
+
+    .pagar-btn {
+      margin-top: 20px;
+      width: 100%;
+      padding: 15px;
+      background: #1976d2;
+      color: white;
+      border: none;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+    }
+
+    footer button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h2>Flip & Fry</h2>
+  </header>
+
+  <main>
+    <div class="left-panel">
+      <div class="categorias">
+        <div class="categoria rojo">Hamburguesas</div>
+        <div class="categoria verde">Complementos</div>
+        <div class="categoria azul">Bebidas</div>
+      </div>
+
+      <div class="productos">
+        <div class="producto">
+          <img src="https://via.placeholder.com/150x100?text=Clásica" alt="Clásica">
+          <h4>La Clásica</h4>
+          <p>$10.00</p>
+        </div>
+        <div class="producto">
+          <img src="https://via.placeholder.com/150x100?text=Queso" alt="Queso">
+          <h4>Hamburguesa con Queso</h4>
+          <p>$11.00</p>
+        </div>
+        <div class="producto">
+          <img src="https://via.placeholder.com/150x100?text=Doble+Tocino" alt="Doble Tocino">
+          <h4>Doble Tocino</h4>
+          <p>$14.00</p>
+        </div>
+        <!-- Agrega más productos aquí -->
+      </div>
+    </div>
+
+    <div class="right-panel">
+      <div class="venta">
+        <h2>Venta nueva</h2>
+        <p>No hay artículos en la cuenta</p>
+        <hr>
+        <p><strong>Subtotal:</strong> $0.00</p>
+        <p><strong>Total:</strong> $0.00</p>
+        <button class="pagar-btn">Pagar</button>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <button>🧾 Menú</button>
+    <button>🔄 Transacciones</button>
+    <button>📦 Pedidos</button>
+    <button>📋 Artículos</button>
+    <button>≡ Más</button>
+  </footer>
+
+</body>
+</html>

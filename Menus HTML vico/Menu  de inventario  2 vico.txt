@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Productos</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      color: #444;
+    }
+
+    .menu-empleados {
+      display: flex;
+      gap: 40px;
+    }
+
+    .opcion {
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px 40px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    .opcion:hover {
+      transform: scale(1.05);
+      background-color: #e0f7fa;
+    }
+
+    .opcion i {
+      font-size: 40px;
+      margin-bottom: 10px;
+      color: #00796b;
+    }
+
+    .opcion span {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      color: #00796b;
+      text-decoration: none;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <a class="volver" href="menu_admin.html">&larr; Volver al menú</a>
+
+  <h1>Productos</h1>
+
+  <div class="menu-empleados">
+    <div class="opcion" onclick="location.href='alta_empleado.html'">
+      <i class="fas fa-user-plus"></i>
+      <span>Altas</span>
+    </div>
+    <div class="opcion" onclick="location.href='consulta_empleados.html'">
+      <i class="fas fa-search"></i>
+      <span>Consultas</span>
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Sistema Administrativo</footer>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login - Refresquería VICO</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #a4dcff, #d4f0ff);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 25px;
+            padding: 40px 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 300px;
+        }
+
+        .logo {
+            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+
+        .logo span {
+            color: #007acc;
+            font-style: italic;
+            font-size: 28px;
+            display: block;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 15px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .btn-login {
+            background: linear-gradient(to top, #ff9900, #ffcc66);
+            border: none;
+            border-radius: 15px;
+            padding: 10px 0;
+            width: 100%;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(to top, #e68a00, #ffbb33);
+        }
+
+        .help-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            background: white;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #007acc;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<div class="help-icon">?</div>
+
+<div class="login-container">
+    <div class="logo">
+        REFRESQUERÍA <span>VICO</span>
+    </div>
+    <input type="text" placeholder="Usuario">
+    <input type="password" placeholder="Contraseña">
+    <button class="btn-login">Iniciar Sesión</button>
+</div>
+
+</body>
+</html>

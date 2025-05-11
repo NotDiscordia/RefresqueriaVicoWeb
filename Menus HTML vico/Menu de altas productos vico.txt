@@ -1,0 +1,129 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Alta de Empleado</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input[type="tel"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      text-decoration: none;
+      color: #00796b;
+    }
+
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <a class="volver" href="empleados.html">&larr; Volver</a>
+
+  <h1>Alta de producto</h1>
+
+  <form id="formEmpleado">
+    <label for="nombre">Nombre del producto:</label>
+    <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
+
+    <label for="apellidos">Descripcion del producto:</label>
+    <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
+
+    <label for="edad">Cantidad del producto:</label>
+    <input type="number" id="edad" name="edad" min="16" required>
+
+
+
+    <div class="error" id="errorMensaje">Evita caracteres especiales como @, #, %, etc.</div>
+
+    <button type="submit">Registrar producto</button>
+  </form>
+
+  <script>
+    const form = document.getElementById('formEmpleado');
+    const errorMensaje = document.getElementById('errorMensaje');
+
+    form.addEventListener('submit', function (e) {
+      const nombre = document.getElementById('nombre').value;
+      const apellidos = document.getElementById('apellidos').value;
+      const numeroEmpleado = document.getElementById('numero').value;
+
+      const regexSinEspeciales = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/;
+
+      if (!regexSinEspeciales.test(nombre) || !regexSinEspeciales.test(apellidos) || !/^[a-zA-Z0-9]+$/.test(numeroEmpleado)) {
+        e.preventDefault();
+        errorMensaje.style.display = 'block';
+      } else {
+        errorMensaje.style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html
