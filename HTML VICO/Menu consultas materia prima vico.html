@@ -4,9 +4,31 @@
   <meta charset="UTF-8">
   <title>Consulta de Empleados</title>
   <style>
+        .titulo {
+  text-align: center;
+  font-weight: bold;
+}
+
+.titulo .arriba {
+  font-size: 20px;
+  color: #ff9933; 
+  text-shadow: 1px 1px 1px black;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+}
+
+.titulo .abajo {
+  font-size: 48px;
+  color: #1a75ff; 
+  font-family: 'Georgia', serif;
+  text-shadow: 
+    1px 1px 0px black,
+    -1px -1px 0px black;
+}
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
+      background-color: #9fc1f3;
       padding: 20px;
     }
 
@@ -17,7 +39,7 @@
 
     .volver {
       text-decoration: none;
-      color: #00796b;
+      color: #ff9c19;
       display: inline-block;
       margin-bottom: 20px;
     }
@@ -72,13 +94,16 @@
 </head>
 <body>
 
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
   <a class="volver" href="empleados.html">&larr; Volver</a>
-  <h1>Consulta de Empleados</h1>
+  <h1>Consulta de Materia prima</h1>
 
   <div class="botones">
     <button onclick="ordenarPor('id')">Ordenar por ID</button>
     <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-    <button onclick="ordenarPor('apellidos')">Ordenar por Apellidos</button>
     <button onclick="eliminarSeleccionado()">Eliminar seleccionado</button>
   </div>
 
@@ -87,10 +112,7 @@
       <tr>
         <th>ID</th>
         <th>Nombre</th>
-        <th>Apellidos</th>
-        <th>Edad</th>
-        <th>Celular</th>
-        <th>Número de Empleado</th>
+        <th>Descripcion</th>
       </tr>
     </thead>
     <tbody>

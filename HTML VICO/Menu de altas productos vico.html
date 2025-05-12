@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,27 +5,27 @@
   <title>Alta de Empleado</title>
   <style>
     .titulo {
-  text-align: center;
-  font-weight: bold;
-}
+      text-align: center;
+      font-weight: bold;
+    }
 
-.titulo .arriba {
-  font-size: 20px;
-  color: #ff9933; /* Naranja oscuro */
-  text-shadow: 1px 1px 1px black;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: Arial, sans-serif;
-}
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933; /* Naranja oscuro */
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
 
-.titulo .abajo {
-  font-size: 48px;
-  color: #1a75ff; /* Azul fuerte */
-  font-family: 'Georgia', serif;
-  text-shadow: 
-    1px 1px 0px black,
-    -1px -1px 0px black;
-}
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff; /* Azul fuerte */
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
 
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -106,11 +105,10 @@
   </style>
 </head>
 <body>
-    <div class="titulo">
-        <div class="arriba">REFRESQUERIA</div>
-        <div class="abajo">VICO</div>
-      </div>
-      
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
 
   <a class="volver" href="empleados.html">&larr; Volver</a>
 
@@ -120,13 +118,14 @@
     <label for="nombre">Nombre del producto:</label>
     <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
 
-    <label for="apellidos">Descripcion del producto:</label>
-    <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
+    <label for="descripcion">Descripción del producto:</label>
+    <input type="text" id="descripcion" name="descripcion" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
 
-    <label for="edad">Cantidad del producto:</label>
-    <input type="number" id="edad" name="edad" min="16" required>
-
-
+    <label for="cantidad">Cantidad del producto:</label>
+    <input type="number" id="cantidad" name="cantidad" min="1" required>
+    
+    <label for="precio">Precio:</label>
+    <input type="number" id="precio" name="precio" step="0.01" min="0" required>
 
     <div class="error" id="errorMensaje">Evita caracteres especiales como @, #, %, etc.</div>
 
@@ -138,13 +137,12 @@
     const errorMensaje = document.getElementById('errorMensaje');
 
     form.addEventListener('submit', function (e) {
-      const nombre = document.getElementById('nombre').value;
-      const apellidos = document.getElementById('apellidos').value;
-      const numeroEmpleado = document.getElementById('numero').value;
+      const nombre = document.getElementById('nombre').value.trim();
+      const descripcion = document.getElementById('descripcion').value.trim();
 
       const regexSinEspeciales = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/;
 
-      if (!regexSinEspeciales.test(nombre) || !regexSinEspeciales.test(apellidos) || !/^[a-zA-Z0-9]+$/.test(numeroEmpleado)) {
+      if (!regexSinEspeciales.test(nombre) || !regexSinEspeciales.test(descripcion)) {
         e.preventDefault();
         errorMensaje.style.display = 'block';
       } else {
@@ -154,4 +152,4 @@
   </script>
 
 </body>
-</html
+</html>
