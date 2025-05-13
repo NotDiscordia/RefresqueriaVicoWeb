@@ -99,8 +99,8 @@
   <h1>Inicio de Sesión</h1>
 
   <div class="login-box">
-    <form action="menu.html" method="get" onsubmit="return validarLogin()">
-      <input type="text" id="numeroEmpleado" name="numeroEmpleado" placeholder="Número de empleado" required>
+    <form onsubmit="return validarLogin()">
+      <input type="password" id="numeroEmpleado" name="numeroEmpleado" placeholder="Contraseña del empleado" required>
       <button type="submit">Ingresar</button>
     </form>
   </div>
@@ -110,11 +110,21 @@
   <script>
     function validarLogin() {
       const numero = document.getElementById('numeroEmpleado').value.trim();
+      const contrasenaValida = "12345";
+
       if (numero === "") {
         alert("Por favor, rellena el campo para iniciar sesión.");
         return false;
       }
-      return true;
+
+      if (numero !== contrasenaValida) {
+        alert("Contraseña incorrecta.");
+        return false;
+      }
+
+      // Redirige si la contraseña es correcta
+      window.location.href = "Menu principal vico.html";
+      return false; // Evita el envío tradicional del formulario
     }
   </script>
 
