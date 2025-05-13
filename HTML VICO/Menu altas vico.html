@@ -11,25 +11,24 @@
       text-align: right;
       font-weight: bold;
       font-family: Arial, sans-serif;
-}
+    }
 
-.titulo .arriba {
-  font-size: 20px;
-  color: #ff9933; /* Naranja oscuro */
-  text-shadow: 1px 1px 1px black;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: Arial, sans-serif;
-}
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
 
-.titulo .abajo {
-  font-size: 48px;
-  color: #1a75ff; /* Azul fuerte */
-  font-family: 'Georgia', serif;
-  text-shadow: 
-    1px 1px 0px black,
-    -1px -1px 0px black;
-}
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
 
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -100,23 +99,32 @@
       color: #00796b;
     }
 
-    .error {
-      color: red;
+    .error, .success {
       font-size: 14px;
       margin-top: 10px;
       display: none;
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .error {
+      background-color: #ffdddd;
+      color: red;
+    }
+
+    .success {
+      background-color: #ddffdd;
+      color: green;
     }
   </style>
 </head>
 <body>
-
 
   <a class="volver" href="empleados.html">&larr; Volver</a>
   <div class="titulo">
     <div class="arriba">REFRESQUERIA</div>
     <div class="abajo">VICO</div>
   </div>
-  
 
   <h1>Alta de Empleado</h1>
 
@@ -128,12 +136,13 @@
     <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
 
     <label for="celular">Número celular:</label>
-    <input type="tel" id="celular" name="celular" pattern="^[0-9]{10}$" required placeholder="10 dígitos">
+    <input type="tel" id="celular" name="celular" pattern="^\d{10}$" required placeholder="10 dígitos">
 
     <label for="numero">Contraseña:</label>
-    <input type="text" id="numero" name="numero" required pattern="^[a-zA-Z0-9]+$">
+    <input type="text" id="numero" name="numero" minlength="4" maxlength="20" pattern="^[a-zA-Z0-9]+$" required placeholder="4 a 20 caracteres">
 
-    <div class="error" id="errorMensaje">Evita caracteres especiales como @, #, %, etc.</div>
+    <div class="error" id="errorMensaje">Por favor revisa los datos ingresados.</div>
+    <div class="success" id="successMensaje">Alta realizada con éxito.</div>
 
     <button type="submit">Registrar empleado</button>
   </form>
@@ -141,22 +150,42 @@
   <script>
     const form = document.getElementById('formEmpleado');
     const errorMensaje = document.getElementById('errorMensaje');
+    const successMensaje = document.getElementById('successMensaje');
 
     form.addEventListener('submit', function (e) {
-      const nombre = document.getElementById('nombre').value;
-      const apellidos = document.getElementById('apellidos').value;
-      const numeroEmpleado = document.getElementById('numero').value;
+      e.preventDefault();
 
-      const regexSinEspeciales = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/;
+      const nombre = document.getElementById('nombre').value.trim();
+      const apellidos = document.getElementById('apellidos').value.trim();
+      const celular = document.getElementById('celular').value.trim();
+      const contrasena = document.getElementById('numero').value.trim();
 
-      if (!regexSinEspeciales.test(nombre) || !regexSinEspeciales.test(apellidos) || !/^[a-zA-Z0-9]+$/.test(numeroEmpleado)) {
-        e.preventDefault();
+      const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+      const soloNumeros = /^\d{10}$/;
+      const soloAlfanumerico = /^[a-zA-Z0-9]{4,20}$/;
+
+      if (!soloLetras.test(nombre) || !soloLetras.test(apellidos) || !soloNumeros.test(celular) || !soloAlfanumerico.test(contrasena)) {
         errorMensaje.style.display = 'block';
-      } else {
+        successMensaje.style.display = 'none';
+        return;
+      }
+
+      const confirmacion = confirm("¿Deseas confirmar el alta del empleado?");
+      if (confirmacion) {
         errorMensaje.style.display = 'none';
+        successMensaje.style.display = 'block';
+
+        setTimeout(() => {
+          form.reset();
+          successMensaje.style.display = 'none';
+        }, 3000);
+      } else {
+        errorMensaje.textContent = "Alta cancelada por el usuario.";
+        errorMensaje.style.display = 'block';
+        successMensaje.style.display = 'none';
       }
     });
   </script>
 
 </body>
-</html
+</html>

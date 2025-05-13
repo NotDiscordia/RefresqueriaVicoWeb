@@ -1,190 +1,207 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Consulta de Empleados</title>
+  <meta charset="UTF-8" />
+  <title>Alta de Producto</title>
   <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #9fc1f3;
-      padding: 20px;
-      position: relative;
-    }
-
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-
-    .volver {
-      text-decoration: none;
-      color: #ff9c19;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-
-    .botones {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
-    .botones button {
-      margin: 0 10px;
-      padding: 10px 15px;
-      background-color: #00796b;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-
-    .botones button:hover {
-      background-color: #004d40;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-
-    th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
-    }
-
-    th {
-      background-color: #00796b;
-      color: white;
-      cursor: pointer;
-    }
-
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-
-    .seleccionado {
-      background-color: #c8e6c9 !important;
-    }
-
-    .encabezado-esquina {
+    .titulo {
       position: absolute;
-      top: 10px;
+      top: 20px;
       right: 20px;
-      text-align: right;
       font-weight: bold;
-      font-family: Arial, sans-serif;
+      text-align: left;
     }
-
-    .encabezado-esquina .arriba {
+    .titulo .arriba {
       font-size: 14px;
       color: #ff9933;
       text-shadow: 1px 1px 1px black;
       letter-spacing: 1px;
       text-transform: uppercase;
+      font-family: Arial, sans-serif;
     }
-
-    .encabezado-esquina .abajo {
-      font-size: 22px;
+    .titulo .abajo {
+      font-size: 24px;
       color: #1a75ff;
       font-family: 'Georgia', serif;
       text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #9fc1f3;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 30px;
+    }
+
+    form {
+      background-color: #eaedf1;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+      color: #555;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    button {
+      margin-top: 25px;
+      width: 100%;
+      padding: 12px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      text-decoration: none;
+      color: #00796b;
+    }
+
+    .mensaje {
+      margin-top: 15px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .mensaje.error {
+      color: red;
+    }
+
+    .mensaje.exito {
+      color: green;
     }
   </style>
 </head>
 <body>
 
-  <!-- Encabezado en la esquina superior derecha -->
-  <div class="encabezado-esquina">
+  <div class="titulo">
     <div class="arriba">REFRESQUERIA</div>
     <div class="abajo">VICO</div>
   </div>
 
   <a class="volver" href="empleados.html">&larr; Volver</a>
-  <h1>Consulta de Materia prima</h1>
 
-  <div class="botones">
-    <button onclick="ordenarPor('id')">Ordenar por ID</button>
-    <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-    <button onclick="eliminarSeleccionado()">Eliminar seleccionado</button>
-  </div>
+  <h1>Alta de producto</h1>
 
-  <table id="tablaEmpleados">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Descripcion</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filas generadas por JS -->
-    </tbody>
-  </table>
+  <form id="formProducto" novalidate>
+    <label for="nombre">Nombre del producto:</label>
+    <input type="text" id="nombre" name="nombre" required />
+
+    <label for="descripcion">Descripción del producto:</label>
+    <input type="text" id="descripcion" name="descripcion" required />
+
+    <label for="cantidad">Cantidad del producto:</label>
+    <input type="number" id="cantidad" name="cantidad" required />
+
+    <label for="precio">Precio:</label>
+    <input type="number" id="precio" name="precio" step="0.01" required />
+
+    <div class="mensaje error" id="errorMensaje"></div>
+    <div class="mensaje exito" id="exitoMensaje">¡Alta exitosa!</div>
+
+    <button type="submit">Registrar producto</button>
+  </form>
 
   <script>
-    let empleados = JSON.parse(localStorage.getItem('empleados')) || [];
+    const form = document.getElementById('formProducto');
+    const errorMensaje = document.getElementById('errorMensaje');
+    const exitoMensaje = document.getElementById('exitoMensaje');
 
-    let idSeleccionado = null;
+    form.addEventListener('submit', function (e) {
+      e.preventDefault(); // Prevenir envío por defecto
 
-    function mostrarEmpleados(lista) {
-      const tbody = document.querySelector("#tablaEmpleados tbody");
-      tbody.innerHTML = "";
+      // Obtener valores
+      const nombre = document.getElementById('nombre').value.trim();
+      const descripcion = document.getElementById('descripcion').value.trim();
+      const cantidad = document.getElementById('cantidad').value.trim();
+      const precio = document.getElementById('precio').value.trim();
 
-      lista.forEach(emp => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${emp.id}</td>
-          <td>${emp.nombre}</td>
-          <td>${emp.apellidos}</td>
-          <td>${emp.edad}</td>
-          <td>${emp.celular}</td>
-          <td>${emp.numero}</td>
-        `;
+      // Expresiones regulares
+      const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+      const soloNumeros = /^[0-9]+$/;
 
-        fila.addEventListener("click", () => {
-          document.querySelectorAll("tr").forEach(f => f.classList.remove("seleccionado"));
-          fila.classList.add("seleccionado");
-          idSeleccionado = emp.id;
-        });
-
-        tbody.appendChild(fila);
-      });
-    }
-
-    function ordenarPor(campo) {
-      empleados.sort((a, b) => {
-        if (campo === "id") return a.id - b.id;
-        return a[campo].localeCompare(b[campo]);
-      });
-      mostrarEmpleados(empleados);
-    }
-
-    function eliminarSeleccionado() {
-      if (idSeleccionado === null) {
-        alert("Selecciona un empleado para eliminar.");
+      // Validaciones
+      if (nombre === '' || descripcion === '' || cantidad === '' || precio === '') {
+        mostrarError('Todos los campos son obligatorios.');
         return;
       }
 
-      const confirmado = confirm("¿Estás seguro de que deseas eliminar al empleado seleccionado?");
-      if (!confirmado) return;
+      if (!soloLetras.test(nombre) || nombre.length > 25) {
+        mostrarError('El nombre debe tener solo letras y un máximo de 25 caracteres.');
+        return;
+      }
 
-      empleados = empleados.filter(emp => emp.id !== idSeleccionado);
+      if (!soloLetras.test(descripcion)) {
+        mostrarError('La descripción solo debe contener letras.');
+        return;
+      }
 
-      empleados.forEach((emp, index) => emp.id = index + 1);
+      const cantidadNum = parseInt(cantidad);
+      if (!soloNumeros.test(cantidad) || cantidadNum < 1 || cantidadNum > 100) {
+        mostrarError('La cantidad debe ser un número entre 1 y 100.');
+        return;
+      }
 
-      localStorage.setItem("empleados", JSON.stringify(empleados));
-      idSeleccionado = null;
-      mostrarEmpleados(empleados);
+      const precioNum = parseFloat(precio);
+      if (isNaN(precioNum) || precioNum < 0) {
+        mostrarError('El precio debe ser un número válido mayor o igual a 0.');
+        return;
+      }
+
+      // Confirmación
+      const confirmar = confirm("¿Estás seguro de que deseas registrar el producto?");
+      if (!confirmar) {
+        return; // Cancelado por el usuario
+      }
+
+      // Todo válido y confirmado
+      errorMensaje.style.display = 'none';
+      exitoMensaje.style.display = 'block';
+      form.reset();
+    });
+
+    function mostrarError(mensaje) {
+      errorMensaje.textContent = mensaje;
+      errorMensaje.style.display = 'block';
+      exitoMensaje.style.display = 'none';
     }
-
-    window.onload = () => {
-      mostrarEmpleados(empleados);
-    };
   </script>
-
 </body>
 </html>

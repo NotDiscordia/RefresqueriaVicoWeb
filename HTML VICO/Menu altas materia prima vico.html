@@ -1,32 +1,29 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Alta de Empleado</title>
+  <title>Alta de Materia Prima</title>
   <style>
     .titulo {
-  text-align: center;
-  font-weight: bold;
-}
+      text-align: center;
+      font-weight: bold;
+    }
 
-.titulo .arriba {
-  font-size: 20px;
-  color: #ff9933; /* Naranja oscuro */
-  text-shadow: 1px 1px 1px black;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: Arial, sans-serif;
-}
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
 
-.titulo .abajo {
-  font-size: 48px;
-  color: #1a75ff; /* Azul fuerte */
-  font-family: 'Georgia', serif;
-  text-shadow: 
-    1px 1px 0px black,
-    -1px -1px 0px black;
-}
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+    }
 
     body {
       font-family: 'Segoe UI', sans-serif;
@@ -62,8 +59,7 @@
     }
 
     input[type="text"],
-    input[type="number"],
-    input[type="tel"] {
+    input[type="number"] {
       width: 100%;
       padding: 10px;
       margin-top: 5px;
@@ -103,53 +99,87 @@
       margin-top: 10px;
       display: none;
     }
+
+    .success {
+      color: green;
+      font-size: 14px;
+      margin-top: 10px;
+      display: none;
+    }
   </style>
 </head>
 <body>
-    <div class="titulo">
-        <div class="arriba">REFRESQUERIA</div>
-        <div class="abajo">VICO</div>
-      </div>
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
 
   <a class="volver" href="empleados.html">&larr; Volver</a>
 
   <h1>Alta de materia prima</h1>
 
-  <form id="formEmpleado">
+  <form id="formMateria">
     <label for="nombre">Nombre de la materia prima:</label>
-    <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
+    <input type="text" id="nombre" name="nombre" maxlength="25" required>
 
+    <label for="cantidad">Cantidad de la materia prima:</label>
+    <input type="number" id="cantidad" name="cantidad" min="1" max="100" required>
 
-
-    <label for="edad">Cantidad del la materia primea:</label>
-    <input type="number" id="edad" name="edad" min="16" required>
-
-
-
-    <div class="error" id="errorMensaje">Evita caracteres especiales como @, #, %, etc.</div>
+    <div class="error" id="errorMensaje">Evita caracteres especiales. Solo se permiten letras y espacios. (Máx. 25 caracteres)</div>
+    <div class="success" id="successMensaje">Alta exitosa.</div>
 
     <button type="submit">Registrar materia prima</button>
   </form>
 
   <script>
-    const form = document.getElementById('formEmpleado');
+    const form = document.getElementById('formMateria');
+    const nombreInput = document.getElementById('nombre');
+    const cantidadInput = document.getElementById('cantidad');
     const errorMensaje = document.getElementById('errorMensaje');
+    const successMensaje = document.getElementById('successMensaje');
+
+    const regexLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/;
+
+    // Evitar ingreso de caracteres especiales en tiempo real
+    nombreInput.addEventListener('input', function () {
+      if (!regexLetras.test(nombreInput.value)) {
+        nombreInput.value = nombreInput.value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+      }
+    });
 
     form.addEventListener('submit', function (e) {
-      const nombre = document.getElementById('nombre').value;
-      const apellidos = document.getElementById('apellidos').value;
-      const numeroEmpleado = document.getElementById('numero').value;
+      e.preventDefault(); // prevenir envío por defecto
 
-      const regexSinEspeciales = /^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ\s]+$/;
+      const nombre = nombreInput.value.trim();
+      const cantidad = parseInt(cantidadInput.value.trim());
 
-      if (!regexSinEspeciales.test(nombre) || !regexSinEspeciales.test(apellidos) || !/^[a-zA-Z0-9]+$/.test(numeroEmpleado)) {
-        e.preventDefault();
+      if (
+        nombre === '' ||
+        nombre.length > 25 ||
+        !regexLetras.test(nombre) ||
+        isNaN(cantidad) ||
+        cantidad < 1 ||
+        cantidad > 100
+      ) {
         errorMensaje.style.display = 'block';
-      } else {
-        errorMensaje.style.display = 'none';
+        successMensaje.style.display = 'none';
+        return;
+      }
+
+      errorMensaje.style.display = 'none';
+
+      const confirmacion = confirm("¿Deseas confirmar el alta de la materia prima?");
+      if (confirmacion) {
+        // Aquí iría la lógica para guardar la materia prima si hay backend
+        successMensaje.style.display = 'block';
+
+        // Limpiar formulario después de un tiempo
+        setTimeout(() => {
+          form.reset();
+          successMensaje.style.display = 'none';
+        }, 3000);
       }
     });
   </script>
-
 </body>
-</html
+</html>
