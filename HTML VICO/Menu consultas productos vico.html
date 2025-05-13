@@ -6,8 +6,9 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
+      background-color: #9fc1f3;
       padding: 20px;
+      position: relative;
     }
 
     h1 {
@@ -17,7 +18,7 @@
 
     .volver {
       text-decoration: none;
-      color: #00796b;
+      color: #ff9c19;
       display: inline-block;
       margin-bottom: 20px;
     }
@@ -68,17 +69,46 @@
     .seleccionado {
       background-color: #c8e6c9 !important;
     }
+
+    .encabezado-esquina {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      text-align: right;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+    }
+
+    .encabezado-esquina .arriba {
+      font-size: 14px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .encabezado-esquina .abajo {
+      font-size: 22px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+    }
   </style>
 </head>
 <body>
 
-  <a class="volver" href="empleados.html">&larr; Volver</a>
-  <h1>Consulta de Empleados</h1>
+  <!-- Encabezado en la esquina superior derecha -->
+  <div class="encabezado-esquina">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
+
+  <a class="volver" href="Menu  de inventario  2 vico.html">&larr; Volver</a>
+  <h1>Consulta de Productos</h1>
 
   <div class="botones">
     <button onclick="ordenarPor('id')">Ordenar por ID</button>
     <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-    <button onclick="ordenarPor('apellidos')">Ordenar por Apellidos</button>
     <button onclick="eliminarSeleccionado()">Eliminar seleccionado</button>
   </div>
 
@@ -87,10 +117,7 @@
       <tr>
         <th>ID</th>
         <th>Nombre</th>
-        <th>Apellidos</th>
-        <th>Edad</th>
-        <th>Celular</th>
-        <th>Número de Empleado</th>
+        <th>Descripcion</th>
       </tr>
     </thead>
     <tbody>
@@ -118,7 +145,6 @@
           <td>${emp.numero}</td>
         `;
 
-        // Selección
         fila.addEventListener("click", () => {
           document.querySelectorAll("tr").forEach(f => f.classList.remove("seleccionado"));
           fila.classList.add("seleccionado");
@@ -148,7 +174,6 @@
 
       empleados = empleados.filter(emp => emp.id !== idSeleccionado);
 
-      // Reasignar IDs para mantener consistencia
       empleados.forEach((emp, index) => emp.id = index + 1);
 
       localStorage.setItem("empleados", JSON.stringify(empleados));
@@ -163,4 +188,3 @@
 
 </body>
 </html>
->

@@ -4,15 +4,67 @@
   <meta charset="UTF-8">
   <title>Menú Administrador</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
+      background-color: #9fc1f3;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
+      position: relative;
+    }
+
+    .titulo {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      text-align: right;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+    }
+
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
+
+    .volver {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      font-size: 14px;
+      color: #1a75ff;
+      text-decoration: none;
+      font-family: Arial, sans-serif;
+    }
+
+    .refresqueria {
+      position: absolute;
+      top: 15px;
+      right: 20px;
+      font-size: 16px;
+      font-weight: bold;
+      color: #1a75ff;
+      font-family: Arial, sans-serif;
     }
 
     h1 {
@@ -60,16 +112,27 @@
 </head>
 <body>
 
+  <a class="volver" href="Menu principal vico.html">&larr; Volver al menú</a>
+
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>      
+
   <h1>Administrador</h1>
 
   <div class="menu-admin">
-    <div class="opcion" onclick="location.href='inventario.html'">
+    <div class="opcion" onclick="location.href='Menu empleados vico.html'">
+      <i class="fas fa-users"></i>
+      Empleados
+    </div>
+    <div class="opcion" onclick="location.href='Menu inventario vico.html'">
       <i class="fas fa-boxes"></i>
-      Productos
+      Inventario
     </div>
     <div class="opcion" onclick="location.href='corte.html'">
       <i class="fas fa-file-invoice-dollar"></i>
-      Materia prima
+      Corte de caja
     </div>
   </div>
 

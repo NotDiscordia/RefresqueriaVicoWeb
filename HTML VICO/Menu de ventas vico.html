@@ -4,29 +4,56 @@
   <meta charset="UTF-8">
   <title>Menú de Ventas</title>
   <style>
+    .titulo {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow:
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f9f9;
+      background-color: #9fc1f3;
     }
+
     header, footer {
       padding: 10px 20px;
-      background: #fff;
+      background: #9fc1f3;
       border-bottom: 1px solid #ddd;
     }
+
     main {
       display: flex;
       height: calc(100vh - 100px);
     }
+
     .left-panel {
       flex: 2;
       padding: 20px;
       overflow-y: auto;
     }
+
     .right-panel {
       flex: 1;
-      background: #fff;
+      background: #9fc1f3;
       padding: 20px;
       border-left: 1px solid #ddd;
     }
@@ -46,6 +73,7 @@
       flex: 1;
       text-align: center;
     }
+
     .rojo { background: #d32f2f; }
     .verde { background: #388e3c; }
     .azul { background: #1976d2; }
@@ -90,16 +118,35 @@
       margin: 5px 0;
     }
 
-    .pagar-btn {
+    .botones-venta {
       margin-top: 20px;
-      width: 100%;
-      padding: 15px;
-      background: #1976d2;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .pagar-btn {
+      padding: 20px;
+      background: #2ee94d;
       color: white;
       border: none;
-      font-size: 16px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 8px;
+    }
+
+    .accion-btn {
+      padding: 10px;
+      background: #e53935;
+      color: white;
+      border: none;
+      font-size: 14px;
       cursor: pointer;
       border-radius: 5px;
+    }
+
+    .cancelar-btn {
+      background: #757575;
     }
 
     footer {
@@ -115,39 +162,52 @@
       cursor: pointer;
       font-size: 14px;
     }
+
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      color: #00796b;
+      text-decoration: none;
+    }
   </style>
 </head>
 <body>
 
+  <a class="volver" href="Menu principal vico.html">&larr; Volver al menú</a>
+
   <header>
-    <h2>Flip & Fry</h2>
+    <div class="titulo">
+      <div class="arriba">REFRESQUERIA</div>
+      <div class="abajo">VICO</div>
+    </div>
   </header>
 
   <main>
     <div class="left-panel">
       <div class="categorias">
-        <div class="categoria rojo">Hamburguesas</div>
-        <div class="categoria verde">Complementos</div>
-        <div class="categoria azul">Bebidas</div>
+        <div class="categoria rojo" onclick="alert('Hielitos')">Hielitos</div>
+        <div class="categoria verde" onclick="alert('Papas Locas')">Papas Locas</div>
+        <div class="categoria azul" onclick="alert('Raspados')">Raspados</div>
       </div>
 
       <div class="productos">
-        <div class="producto">
-          <img src="https://via.placeholder.com/150x100?text=Clásica" alt="Clásica">
-          <h4>La Clásica</h4>
+        <div class="producto" onclick="alert('Oreo añadido')">
+          <img src="https://via.placeholder.com/150x100?text=Clásica" alt="Hielito">
+          <h4>Oreo</h4>
           <p>$10.00</p>
         </div>
-        <div class="producto">
-          <img src="https://via.placeholder.com/150x100?text=Queso" alt="Queso">
-          <h4>Hamburguesa con Queso</h4>
+        <div class="producto" onclick="alert('Coca cola añadida')">
+          <img src="https://via.placeholder.com/150x100?text=Queso" alt="Hielito">
+          <h4>Coca cola</h4>
           <p>$11.00</p>
         </div>
-        <div class="producto">
-          <img src="https://via.placeholder.com/150x100?text=Doble+Tocino" alt="Doble Tocino">
-          <h4>Doble Tocino</h4>
+        <div class="producto" onclick="alert('Tocino añadido')">
+          <img src="https://via.placeholder.com/150x100?text=Doble+Tocino" alt="Hielito">
+          <h4>Tocino</h4>
           <p>$14.00</p>
         </div>
-        <!-- Agrega más productos aquí -->
       </div>
     </div>
 
@@ -158,18 +218,16 @@
         <hr>
         <p><strong>Subtotal:</strong> $0.00</p>
         <p><strong>Total:</strong> $0.00</p>
-        <button class="pagar-btn">Pagar</button>
+        
+        <div class="botones-venta">
+          <button class="pagar-btn" onclick="alert('Pagar')">Pagar</button>
+          <button class="accion-btn" onclick="alert('Eliminar artículo')">Eliminar</button>
+          <button class="accion-btn cancelar-btn" onclick="alert('Cancelar venta')">Cancelar</button>
+        </div>
       </div>
     </div>
   </main>
 
-  <footer>
-    <button>🧾 Menú</button>
-    <button>🔄 Transacciones</button>
-    <button>📦 Pedidos</button>
-    <button>📋 Artículos</button>
-    <button>≡ Más</button>
-  </footer>
 
 </body>
 </html>
