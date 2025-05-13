@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Productos</title>
+  <style>
+    .titulo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933; 
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff; 
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #9fc1f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      color: #444;
+    }
+
+    .menu-productos {
+      display: flex;
+      gap: 40px;
+    }
+
+    .opcion {
+      background-color: white;
+      border-radius: 10px;
+      padding: 30px 40px;
+      text-align: center;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.3s;
+    }
+
+    .opcion:hover {
+      transform: scale(1.05);
+      background-color: #e0f7fa;
+    }
+
+    .opcion i {
+      font-size: 40px;
+      margin-bottom: 10px;
+      color: #00796b;
+    }
+
+    .opcion span {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      color: #00796b;
+      text-decoration: none;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 14px;
+      color: #999;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+  <!-- Título en la esquina superior derecha -->
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
+
+  <a class="volver" href="Menu administrador vico.html">&larr; Volver al menú</a>
+
+  <h1>Materia Prima</h1>
+
+  <div class="menu-productos">
+    <div class="opcion" onclick="location.href='alta_producto.html'">
+      <i class="fas fa-box-open"></i>
+      <span>Altas</span>
+    </div>
+    <div class="opcion" onclick="location.href='consulta_productos.html'">
+      <i class="fas fa-search"></i>
+      <span>Consultas</span>
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Sistema Administrativo</footer>
+
+</body>
+</html>
