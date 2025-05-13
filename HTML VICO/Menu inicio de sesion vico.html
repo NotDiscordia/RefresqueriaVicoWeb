@@ -5,27 +5,31 @@
   <title>Inicio de Sesión</title>
   <style>
     .titulo {
-  text-align: center;
-  font-weight: bold;
-}
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-weight: bold;
+      text-align: left;
+    }
 
-.titulo .arriba {
-  font-size: 20px;
-  color: #ff9933; /* Naranja oscuro */
-  text-shadow: 1px 1px 1px black;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: Arial, sans-serif;
-}
+    .titulo .arriba {
+      font-size: 14px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
 
-.titulo .abajo {
-  font-size: 48px;
-  color: #1a75ff; /* Azul fuerte */
-  font-family: 'Georgia', serif;
-  text-shadow: 
-    1px 1px 0px black,
-    -1px -1px 0px black;
-}
+    .titulo .abajo {
+      font-size: 24px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
+
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -87,10 +91,10 @@
 </head>
 <body>
 
-    <div class="titulo">
-        <div class="arriba">REFRESQUERIA</div>
-        <div class="abajo">VICO</div>
-      </div>
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
 
   <h1>Inicio de Sesión</h1>
 
@@ -107,10 +111,9 @@
     function validarLogin() {
       const numero = document.getElementById('numeroEmpleado').value.trim();
       if (numero === "") {
-        alert("Por favor, ingresa tu número de empleado.");
+        alert("Por favor, rellena el campo para iniciar sesión.");
         return false;
       }
-      // Aquí podrías agregar más validaciones o redirigir según el número
       return true;
     }
   </script>

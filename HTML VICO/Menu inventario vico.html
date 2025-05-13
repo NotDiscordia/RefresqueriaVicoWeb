@@ -4,30 +4,31 @@
   <meta charset="UTF-8">
   <title>Menú Administrador</title>
   <style>
+    .titulo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-weight: bold;
+      text-align: right;
+    }
 
-.titulo {
-  text-align: center;
-  font-weight: bold;
-}
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933; 
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
 
-.titulo .arriba {
-  font-size: 20px;
-  color: #ff9933; /* Naranja oscuro */
-  text-shadow: 1px 1px 1px black;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  font-family: Arial, sans-serif;
-}
-
-.titulo .abajo {
-  font-size: 48px;
-  color: #1a75ff; /* Azul fuerte */
-  font-family: 'Georgia', serif;
-  text-shadow: 
-    1px 1px 0px black,
-    -1px -1px 0px black;
-}
-
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff; 
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
 
     body {
       margin: 0;
@@ -38,6 +39,7 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
+      position: relative;
     }
 
     h1 {
@@ -74,6 +76,15 @@
       color: #0077c2;
     }
 
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      color: #00796b;
+      text-decoration: none;
+    }
+
     footer {
       position: absolute;
       bottom: 20px;
@@ -85,11 +96,12 @@
 </head>
 <body>
 
-    <div class="titulo">
-        <div class="arriba">REFRESQUERIA</div>
-        <div class="abajo">VICO</div>
-      </div>
-      
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
+
+  <a class="volver" href="index.html">&larr; Volver al menú</a>
 
   <h1>Inventario</h1>
 
