@@ -1,8 +1,9 @@
 package ByteBuilders.Entidad;
-
-import javax.persistence.*;
+import jakarta.persistence.*;
+import lombok.Data;
 import java.math.BigDecimal;
 
+@Data // Genera automáticamente getters, setters, toString, etc.
 @Entity
 @Table(name = "productos")
 public class Producto {
@@ -22,45 +23,4 @@ public class Producto {
 
     @Column(name = "vendidos", nullable = false)
     private Integer vendidos;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public BigDecimal getPrecio() {
-        return precio;
-    }
-
-    public void setPrecio(BigDecimal precio) {
-        this.precio = precio;
-    }
-
-    public Integer getStock() {
-        return stock;
-    }
-
-    public void setStock(Integer stock) {
-        this.stock = stock;
-    }
-
-    public Integer getVendidos() {
-        return vendidos;
-    }
-
-    public void setVendidos(Integer vendidos) {
-        this.vendidos = vendidos;
-    }
-
 }

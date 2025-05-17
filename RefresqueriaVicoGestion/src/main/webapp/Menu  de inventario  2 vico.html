@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Menú Administrador</title>
+  <title>Productos</title>
   <style>
     .titulo {
       position: absolute;
@@ -44,36 +44,40 @@
 
     h1 {
       margin-bottom: 40px;
-      color: #333;
+      color: #444;
     }
 
-    .menu-admin {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 30px;
-      width: 80%;
-      max-width: 700px;
+    .menu-empleados {
+      display: flex;
+      gap: 40px;
     }
 
     .opcion {
       background-color: white;
-      border-radius: 12px;
-      padding: 25px 15px;
+      border-radius: 10px;
+      padding: 30px 40px;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
       cursor: pointer;
-      transition: transform 0.2s ease-in-out, background-color 0.3s;
+      transition: transform 0.2s, background-color 0.3s;
     }
 
     .opcion:hover {
-      transform: translateY(-5px);
-      background-color: #e3f2fd;
+      transform: scale(1.05);
+      background-color: #e0f7fa;
     }
 
     .opcion i {
-      font-size: 36px;
+      font-size: 40px;
       margin-bottom: 10px;
-      color: #0077c2;
+      color: #00796b;
+    }
+
+    .opcion span {
+      display: block;
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
     }
 
     .volver {
@@ -89,30 +93,30 @@
       position: absolute;
       bottom: 20px;
       font-size: 14px;
-      color: #aaa;
+      color: #999;
     }
   </style>
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-
+  <!-- Título en esquina superior derecha -->
   <div class="titulo">
     <div class="arriba">REFRESQUERIA</div>
     <div class="abajo">VICO</div>
   </div>
 
-  <a class="volver" href="Menu principal vico.html">&larr; Volver al menú</a>
+  <a class="volver" href="Menu%20principal%20vico.html">&larr; Volver al menú</a>
 
-  <h1>Inventario</h1>
+  <h1>Productos</h1>
 
-  <div class="menu-admin">
-    <div class="opcion" onclick="location.href='Menu de inventario 2 vico.html'">
-      <i class="fas fa-user-cog"></i></a>
-      Productos
+  <div class="menu-empleados">
+    <div class="opcion" onclick="location.href='alta_empleado.html'">
+      <i class="fas fa-user-plus"></i>
+      <span>Altas</span>
     </div>
-    <div class="opcion" onclick="location.href='Menu de inventario materia prima vico.html'">
-      <i class="fas fa-user-cog"></i></a>
-      Materia prima
+    <div class="opcion" onclick="location.href='consulta_empleados.html'">
+      <i class="fas fa-search"></i>
+      <span>Consultas</span>
     </div>
   </div>
 

@@ -2,41 +2,23 @@ package ByteBuilders.Negocio;
 
 import ByteBuilders.Entidad.Usuario;
 import ByteBuilders.Persistencia.UsuarioDAO;
-
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 public class UsuarioService {
-    private UsuarioDAO dao = new UsuarioDAO();
+    private final UsuarioDAO usuarioDAO = new UsuarioDAO();
 
-    public boolean registrarUsuario(Usuario u) throws SQLException {
-        if (u.getEmail() == null || u.getEmail().isEmpty()) return false;
-        if (dao.buscarPorId(u.getId() != null ? u.getId() : -1) != null) return false; // Evitar duplicados
-        dao.insertar(u);
+    public boolean registrarUsuario(Usuario u) {
+        if (usuarioDAO.existePorEmail(u.getEmail())) return false;
+        usuarioDAO.guardarUsuario(u);
         return true;
     }
 
-    public List<Usuario> obtenerUsuarios() throws SQLException {
-        return dao.listar();
+    public Optional<Usuario> obtenerUsuarioPorId(Long id) {  // ✔️ Long
+        return usuarioDAO.buscarPorId(id);
     }
 
-    public Usuario obtenerUsuarioPorId(int id) throws SQLException {
-        return dao.buscarPorId(id);
-    }
-
-    public boolean eliminarUsuario(int id) throws SQLException {
-        if (dao.buscarPorId(id) != null) {
-            dao.eliminar(id);
-            return true;
-        }
-        return false;
-    }
-
-    public boolean actualizarUsuario(Usuario u) throws SQLException {
-        if (dao.buscarPorId(u.getId()) != null) {
-            dao.actualizar(u);
-            return true;
-        }
-        return false;
+    public boolean eliminarUsuario(Long id) {  // ✔️ Long
+        return usuarioDAO.eliminarPorId(id);
     }
 }

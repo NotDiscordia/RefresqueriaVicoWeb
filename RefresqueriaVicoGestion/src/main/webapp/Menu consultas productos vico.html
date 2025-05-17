@@ -11,32 +11,6 @@
       position: relative;
     }
 
-    .titulo-esquina {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      text-align: right;
-      font-weight: bold;
-    }
-
-    .titulo-esquina .arriba {
-      font-size: 20px;
-      color: #ff9933;
-      text-shadow: 1px 1px 1px black;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-family: Arial, sans-serif;
-    }
-
-    .titulo-esquina .abajo {
-      font-size: 48px;
-      color: #1a75ff;
-      font-family: 'Georgia', serif;
-      text-shadow:
-        1px 1px 0px black,
-        -1px -1px 0px black;
-    }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
@@ -95,23 +69,46 @@
     .seleccionado {
       background-color: #c8e6c9 !important;
     }
+
+    .encabezado-esquina {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      text-align: right;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+    }
+
+    .encabezado-esquina .arriba {
+      font-size: 14px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .encabezado-esquina .abajo {
+      font-size: 22px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Título en la esquina superior derecha -->
-  <div class="titulo-esquina">
+  <!-- Encabezado en la esquina superior derecha -->
+  <div class="encabezado-esquina">
     <div class="arriba">REFRESQUERIA</div>
     <div class="abajo">VICO</div>
   </div>
 
-  <a class="volver" href="Menu empleados vico.html">&larr; Volver</a>
-  <h1>Consulta de Empleados</h1>
+  <a class="volver" href="../../../../HTML%20VICO/Menu%20%20de%20inventario%20%202%20vico.html">&larr; Volver</a>
+  <h1>Consulta de Productos</h1>
 
   <div class="botones">
     <button onclick="ordenarPor('id')">Ordenar por ID</button>
     <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-    <button onclick="ordenarPor('apellidos')">Ordenar por Apellidos</button>
     <button onclick="eliminarSeleccionado()">Eliminar seleccionado</button>
   </div>
 
@@ -120,10 +117,7 @@
       <tr>
         <th>ID</th>
         <th>Nombre</th>
-        <th>Apellidos</th>
-        <th>Edad</th>
-        <th>Celular</th>
-        <th>Número de Empleado</th>
+        <th>Descripcion</th>
       </tr>
     </thead>
     <tbody>
@@ -179,6 +173,7 @@
       if (!confirmado) return;
 
       empleados = empleados.filter(emp => emp.id !== idSeleccionado);
+
       empleados.forEach((emp, index) => emp.id = index + 1);
 
       localStorage.setItem("empleados", JSON.stringify(empleados));
