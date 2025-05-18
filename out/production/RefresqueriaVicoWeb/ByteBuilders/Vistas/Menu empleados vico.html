@@ -2,33 +2,34 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Productos</title>
+  <title>Gestion de Empleados</title>
   <style>
     .titulo {
       position: absolute;
-      top: 20px;
+      top: 10px;
       right: 20px;
-      font-weight: bold;
       text-align: right;
-    }
-
-    .titulo .arriba {
-      font-size: 20px;
-      color: #ff9933; 
-      text-shadow: 1px 1px 1px black;
-      letter-spacing: 2px;
-      text-transform: uppercase;
+      font-weight: bold;
       font-family: Arial, sans-serif;
-    }
+}
 
-    .titulo .abajo {
-      font-size: 48px;
-      color: #1a75ff; 
-      font-family: 'Georgia', serif;
-      text-shadow: 
-        1px 1px 0px black,
-        -1px -1px 0px black;
-    }
+.titulo .arriba {
+  font-size: 20px;
+  color: #ff9933; /* Naranja oscuro */
+  text-shadow: 1px 1px 1px black;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-family: Arial, sans-serif;
+}
+
+.titulo .abajo {
+  font-size: 48px;
+  color: #1a75ff; /* Azul fuerte */
+  font-family: 'Georgia', serif;
+  text-shadow: 
+    1px 1px 0px black,
+    -1px -1px 0px black;
+}
 
     body {
       margin: 0;
@@ -39,7 +40,6 @@
       align-items: center;
       justify-content: center;
       height: 100vh;
-      position: relative;
     }
 
     h1 {
@@ -47,7 +47,7 @@
       color: #444;
     }
 
-    .menu-productos {
+    .menu-empleados {
       display: flex;
       gap: 40px;
     }
@@ -99,22 +99,21 @@
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
-  <!-- Título en la esquina superior derecha -->
-  <div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-  </div>
+    <div class="titulo">
+        <div class="arriba">REFRESQUERIA</div>
+        <div class="abajo">VICO</div>
+      </div>      
 
-  <a class="volver" href="Menu%20administrador%20vico.html">&larr; Volver al menú</a>
+  <a class="volver" href="Menu principal vico.html">&larr; Volver al menú</a>
 
-  <h1>Materia Prima</h1>
+  <h1>Gestión de Empleados</h1>
 
-  <div class="menu-productos">
-    <div class="opcion" onclick="location.href='alta_producto.html'">
-      <i class="fas fa-box-open"></i>
+  <div class="menu-empleados">
+    <div class="opcion" onclick="location.href='Menu altas vico.html'">
+      <i class="fas fa-user-plus"></i>
       <span>Altas</span>
     </div>
-    <div class="opcion" onclick="location.href='consulta_productos.html'">
+    <div class="opcion" onclick="location.href='Menu consultas vico.html'">
       <i class="fas fa-search"></i>
       <span>Consultas</span>
     </div>

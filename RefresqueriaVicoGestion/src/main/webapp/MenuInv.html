@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Menú Administrador</title>
+  <style>
+    .titulo {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .titulo .arriba {
+      font-size: 20px;
+      color: #ff9933; 
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-family: Arial, sans-serif;
+    }
+
+    .titulo .abajo {
+      font-size: 48px;
+      color: #1a75ff; 
+      font-family: 'Georgia', serif;
+      text-shadow: 
+        1px 1px 0px black,
+        -1px -1px 0px black;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #9fc1f3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      position: relative;
+    }
+
+    h1 {
+      margin-bottom: 40px;
+      color: #333;
+    }
+
+    .menu-admin {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 30px;
+      width: 80%;
+      max-width: 700px;
+    }
+
+    .opcion {
+      background-color: white;
+      border-radius: 12px;
+      padding: 25px 15px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out, background-color 0.3s;
+    }
+
+    .opcion:hover {
+      transform: translateY(-5px);
+      background-color: #e3f2fd;
+    }
+
+    .opcion i {
+      font-size: 36px;
+      margin-bottom: 10px;
+      color: #0077c2;
+    }
+
+    .volver {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      font-size: 14px;
+      color: #00796b;
+      text-decoration: none;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 20px;
+      font-size: 14px;
+      color: #aaa;
+    }
+  </style>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</head>
+<body>
+
+  <div class="titulo">
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
+  </div>
+
+  <a class="volver" href="../../../../HTML%20VICO/Menu%20principal%20vico.html">&larr; Volver al menú</a>
+
+  <h1>Inventario</h1>
+
+  <div class="menu-admin">
+    <div class="opcion" onclick="location.href='MenInv2.html.html'">
+      <i class="fas fa-user-cog"></i></a>
+      Productos
+    </div>
+    <div class="opcion" onclick="location.href='InvMatPrim.html'">
+      <i class="fas fa-user-cog"></i></a>
+      Materia prima
+    </div>
+  </div>
+
+  <footer>&copy; 2025 Sistema Administrativo</footer>
+
+</body>
+</html>
