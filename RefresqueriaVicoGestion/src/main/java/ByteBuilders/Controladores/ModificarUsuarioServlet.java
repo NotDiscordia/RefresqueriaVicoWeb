@@ -2,8 +2,8 @@ package ByteBuilders.Controladores;
 
 import ByteBuilders.Entidad.Usuario;
 import ByteBuilders.Negocio.UsuarioService;
-import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import javax.servlet.*;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -22,7 +22,7 @@ public class ModificarUsuarioServlet extends HttpServlet {
             Usuario usuario = usuarioOpt.get();
             usuario.setNombreCompleto(nombre);
             usuario.setEmail(email);
-            //servicio.actualizarUsuario(usuario);
+            //servicio.actualizarUsuario(usuario); // Asegúrate de que este método esté implementado
             response.sendRedirect("exito.jsp");
         } else {
             response.sendRedirect("error.jsp?mensaje=Usuario no encontrado");
