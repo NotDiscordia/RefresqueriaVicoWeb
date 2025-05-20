@@ -14,6 +14,10 @@ public class UsuarioService {
         return true;
     }
 
+    public Optional<Usuario> obtenerUsuarioPorEmail(String email) {
+        return usuarioDAO.existePorEmail(email);
+    }
+
     public Optional<Usuario> obtenerUsuarioPorId(Long id) {  // ✔️ Long
         return usuarioDAO.buscarPorId(id);
     }
