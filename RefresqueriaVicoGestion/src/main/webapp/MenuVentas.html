@@ -2,11 +2,12 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Menú de Ventas</title>
+  <title>Ventas</title>
   <style>
     .titulo {
       text-align: center;
       font-weight: bold;
+      padding: 20px 0;
     }
 
     .titulo .arriba {
@@ -22,9 +23,7 @@
       font-size: 48px;
       color: #1a75ff;
       font-family: 'Georgia', serif;
-      text-shadow:
-        1px 1px 0px black,
-        -1px -1px 0px black;
+      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
     }
 
     * { box-sizing: border-box; }
@@ -42,7 +41,7 @@
 
     main {
       display: flex;
-      height: calc(100vh - 100px);
+      height: calc(100vh - 160px);
     }
 
     .left-panel {
@@ -154,6 +153,10 @@
       justify-content: space-around;
       align-items: center;
       border-top: 1px solid #ddd;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      padding: 15px 0;
     }
 
     footer button {
@@ -161,73 +164,152 @@
       border: none;
       cursor: pointer;
       font-size: 14px;
-    }
-
-    .volver {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 14px;
-      color: #00796b;
-      text-decoration: none;
+      color: #333;
     }
   </style>
 </head>
 <body>
+<header>
+  <div class="titulo">
+    <div class="arriba">Punto de</div>
+    <div class="abajo">Ventas</div>
+  </div>
+</header>
 
-  <a class="volver" href="MainMenu.html">&larr; Volver al menú</a>
-
-  <header>
-    <div class="titulo">
-      <div class="arriba">REFRESQUERIA</div>
-      <div class="abajo">VICO</div>
+<main>
+  <div class="left-panel">
+    <div class="categorias">
+      <div class="categoria rojo">Todos</div>
+      <div class="categoria verde">Comida</div>
+      <div class="categoria azul">Bebidas</div>
     </div>
-  </header>
+    <div class="productos"></div>
+  </div>
 
-  <main>
-    <div class="left-panel">
-      <div class="categorias">
-        <div class="categoria rojo" onclick="alert('Hielitos')">Hielitos</div>
-        <div class="categoria verde" onclick="alert('Papas Locas')">Papas Locas</div>
-        <div class="categoria azul" onclick="alert('Raspados')">Raspados</div>
-      </div>
-
-      <div class="productos">
-        <div class="producto" onclick="alert('Oreo añadido')">
-          <img src="https://via.placeholder.com/150x100?text=Clásica" alt="Hielito">
-          <h4>Oreo</h4>
-          <p>$10.00</p>
-        </div>
-        <div class="producto" onclick="alert('Coca cola añadida')">
-          <img src="https://via.placeholder.com/150x100?text=Queso" alt="Hielito">
-          <h4>Coca cola</h4>
-          <p>$11.00</p>
-        </div>
-        <div class="producto" onclick="alert('Tocino añadido')">
-          <img src="https://via.placeholder.com/150x100?text=Doble+Tocino" alt="Hielito">
-          <h4>Tocino</h4>
-          <p>$14.00</p>
-        </div>
+  <div class="right-panel">
+    <div class="venta">
+      <h2>Venta nueva</h2>
+      <p>No hay artículos en la cuenta</p>
+      <hr>
+      <p><strong>Subtotal:</strong> $0.00</p>
+      <p><strong>Total:</strong> $0.00</p>
+      <div class="botones-venta">
+        <button class="pagar-btn" onclick="pagar()">Pagar</button>
+        <button class="accion-btn" onclick="eliminar()">Eliminar</button>
+        <button class="accion-btn cancelar-btn" onclick="cancelar()">Cancelar</button>
       </div>
     </div>
+  </div>
+</main>
 
-    <div class="right-panel">
-      <div class="venta">
-        <h2>Venta nueva</h2>
-        <p>No hay artículos en la cuenta</p>
-        <hr>
-        <p><strong>Subtotal:</strong> $0.00</p>
-        <p><strong>Total:</strong> $0.00</p>
-        
-        <div class="botones-venta">
-          <button class="pagar-btn" onclick="alert('Pagar')">Pagar</button>
-          <button class="accion-btn" onclick="alert('Eliminar artículo')">Eliminar</button>
-          <button class="accion-btn cancelar-btn" onclick="alert('Cancelar venta')">Cancelar</button>
-        </div>
-      </div>
-    </div>
-  </main>
+<footer>
+  <button>Reportes</button>
+  <button>Clientes</button>
+  <button>Configuración</button>
+  <button>Cerrar Sesión</button>
+</footer>
 
+<script>
+  let productos = [];
+  let venta = [];
 
+  async function cargarProductosDesdeAPI() {
+    try {
+      const res = await fetch("http://localhost:8080/vicodb/productos");
+      productos = await res.json();
+      cargarProductos(productos);
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
+  }
+
+  function cargarProductos(productos) {
+    const contenedor = document.querySelector('.productos');
+    contenedor.innerHTML = '';
+    productos.forEach(p => {
+      const div = document.createElement('div');
+      div.className = 'producto';
+      div.innerHTML = `
+          <img src="https://via.placeholder.com/150x100?text=${encodeURIComponent(p.nombre)}" alt="${p.nombre}">
+          <h4>${p.nombre}</h4>
+          <p>$${parseFloat(p.precio).toFixed(2)}</p>
+        `;
+      div.onclick = () => agregarProducto(p);
+      contenedor.appendChild(div);
+    });
+  }
+
+  function agregarProducto(p) {
+    venta.push(p);
+    actualizarVenta();
+  }
+
+  function actualizarVenta() {
+    const ventaDiv = document.querySelector('.venta');
+    if (venta.length === 0) {
+      ventaDiv.innerHTML = `
+          <h2>Venta nueva</h2>
+          <p>No hay artículos en la cuenta</p>
+          <hr>
+          <p><strong>Subtotal:</strong> $0.00</p>
+          <p><strong>Total:</strong> $0.00</p>
+          <div class="botones-venta">
+            <button class="pagar-btn" onclick="pagar()">Pagar</button>
+            <button class="accion-btn" onclick="eliminar()">Eliminar</button>
+            <button class="accion-btn cancelar-btn" onclick="cancelar()">Cancelar</button>
+          </div>
+        `;
+      return;
+    }
+
+    let html = '<h2>Venta nueva</h2>';
+    let total = 0;
+
+    venta.forEach(p => {
+      html += `<p>${p.nombre} - $${parseFloat(p.precio).toFixed(2)}</p>`;
+      total += parseFloat(p.precio);
+    });
+
+    html += `<hr><p><strong>Subtotal:</strong> $${total.toFixed(2)}</p>
+             <p><strong>Total:</strong> $${total.toFixed(2)}</p>
+             <div class="botones-venta">
+               <button class="pagar-btn" onclick="pagar()">Pagar</button>
+               <button class="accion-btn" onclick="eliminar()">Eliminar</button>
+               <button class="accion-btn cancelar-btn" onclick="cancelar()">Cancelar</button>
+             </div>`;
+
+    ventaDiv.innerHTML = html;
+  }
+
+  function eliminar() {
+    if (venta.length === 0) {
+      alert("No hay artículos para eliminar.");
+      return;
+    }
+    venta.pop();
+    actualizarVenta();
+  }
+
+  function cancelar() {
+    if (venta.length === 0) {
+      alert("No hay nada en la lista para cancelar.");
+      return;
+    }
+    venta = [];
+    actualizarVenta();
+  }
+
+  function pagar() {
+    if (venta.length === 0) {
+      alert("No hay productos en la lista.");
+      return;
+    }
+    alert("Venta realizada. Total: $" + venta.reduce((sum, p) => sum + parseFloat(p.precio), 0).toFixed(2));
+    venta = [];
+    actualizarVenta();
+  }
+
+  window.onload = cargarProductosDesdeAPI;
+</script>
 </body>
 </html>
