@@ -199,6 +199,11 @@
 </main>
 
 <script>
+  const venta = [];
+  const listaVenta = document.createElement("ul");
+  listaVenta.style.listStyle = "none";
+  listaVenta.style.padding = 0;
+
   function cargarProductos() {
     fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
             .then(response => {
@@ -211,7 +216,7 @@
               data.forEach(producto => {
                 const div = document.createElement("div");
                 div.className = "producto";
-                div.onclick = () => alert(`${producto.nombre} añadido`);
+                div.onclick = () => agregarProducto(producto);
 
                 const img = document.createElement("img");
                 img.src = producto.imagen || "https://via.placeholder.com/150x100?text=Producto";
@@ -232,7 +237,79 @@
             .catch(error => console.error("Error:", error));
   }
 
-  // Puedes llamar esto automáticamente al cargar la página
+  function agregarProducto(producto) {
+    venta.push(producto);
+    renderizarVenta();
+  }
+
+  function renderizarVenta() {
+    const panel = document.querySelector(".venta");
+    listaVenta.innerHTML = "";
+    let subtotal = 0;
+
+    venta.forEach((p, index) => {
+      subtotal += p.precio;
+      const li = document.createElement("li");
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.dataset.index = index;
+      checkbox.style.marginRight = "10px";
+
+      li.appendChild(checkbox);
+      li.appendChild(document.createTextNode(`${p.nombre} - $${p.precio.toFixed(2)}`));
+      listaVenta.appendChild(li);
+    });
+
+    panel.innerHTML = `
+      <h2>Venta nueva</h2>
+      ${venta.length === 0 ? "<p>No hay artículos en la cuenta</p>" : ""}
+    `;
+    panel.appendChild(listaVenta);
+    panel.innerHTML += `
+      <hr>
+      <p><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
+      <p><strong>Total:</strong> $${subtotal.toFixed(2)}</p>
+      <div class="botones-venta">
+        <button class="pagar-btn" onclick="pagar()">Pagar</button>
+        <button class="accion-btn" onclick="eliminarSeleccionados()">Eliminar</button>
+        <button class="accion-btn cancelar-btn" onclick="cancelarVenta()">Cancelar</button>
+      </div>
+    `;
+  }
+
+  function eliminarSeleccionados() {
+    const seleccionados = Array.from(listaVenta.querySelectorAll("input[type='checkbox']:checked"));
+    if (seleccionados.length === 0) {
+      alert("Selecciona al menos un producto para eliminar.");
+      return;
+    }
+    const indices = seleccionados.map(cb => parseInt(cb.dataset.index));
+    // Filtrar venta eliminando productos por índice
+    for (let i = indices.length - 1; i >= 0; i--) {
+      venta.splice(indices[i], 1);
+    }
+    renderizarVenta();
+  }
+
+  function cancelarVenta() {
+    if (confirm("¿Estás seguro de cancelar la venta?")) {
+      venta.length = 0;
+      renderizarVenta();
+    }
+  }
+
+  function pagar() {
+    if (venta.length === 0) {
+      alert("No hay productos para pagar.");
+      return;
+    }
+    const total = venta.reduce((acc, p) => acc + p.precio, 0);
+    alert(`Pago simulado exitoso. Total pagado: $${total.toFixed(2)}`);
+    venta.length = 0;
+    renderizarVenta();
+  }
+
   window.onload = cargarProductos;
 </script>
 

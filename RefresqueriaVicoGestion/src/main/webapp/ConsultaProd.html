@@ -1,33 +1,30 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Consulta de Empleados</title>
+  <meta charset="UTF-8" />
+  <title>Consulta de Productos</title>
   <style>
+    /* Tu CSS original */
     body {
       font-family: 'Segoe UI', sans-serif;
       background-color: #9fc1f3;
       padding: 20px;
       position: relative;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 30px;
     }
-
     .volver {
       text-decoration: none;
       color: #ff9c19;
       display: inline-block;
       margin-bottom: 20px;
     }
-
     .botones {
       text-align: center;
       margin-bottom: 20px;
     }
-
     .botones button {
       margin: 0 10px;
       padding: 10px 15px;
@@ -37,11 +34,9 @@
       border-radius: 6px;
       cursor: pointer;
     }
-
     .botones button:hover {
       background-color: #004d40;
     }
-
     table {
       width: 100%;
       border-collapse: collapse;
@@ -50,26 +45,22 @@
       overflow: hidden;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
-
     th, td {
       padding: 12px 15px;
       border-bottom: 1px solid #ddd;
+      text-align: left;
     }
-
     th {
       background-color: #00796b;
       color: white;
       cursor: pointer;
     }
-
     tr:hover {
       background-color: #f1f1f1;
     }
-
     .seleccionado {
       background-color: #c8e6c9 !important;
     }
-
     .encabezado-esquina {
       position: absolute;
       top: 10px;
@@ -78,7 +69,6 @@
       font-weight: bold;
       font-family: Arial, sans-serif;
     }
-
     .encabezado-esquina .arriba {
       font-size: 14px;
       color: #ff9933;
@@ -86,7 +76,6 @@
       letter-spacing: 1px;
       text-transform: uppercase;
     }
-
     .encabezado-esquina .abajo {
       font-size: 22px;
       color: #1a75ff;
@@ -97,94 +86,152 @@
 </head>
 <body>
 
-  <!-- Encabezado en la esquina superior derecha -->
-  <div class="encabezado-esquina">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-  </div>
+<div class="encabezado-esquina">
+  <div class="arriba">REFRESQUERIA</div>
+  <div class="abajo">VICO</div>
+</div>
 
-  <a class="volver" href="MenuInv.html">&larr; Volver</a>
-  <h1>Consulta de Productos</h1>
+<a class="volver" href="MenuInv.html">&larr; Volver</a>
+<h1>Consulta de Productos</h1>
 
-  <div class="botones">
-    <button onclick="ordenarPor('id')">Ordenar por ID</button>
-    <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-    <button onclick="eliminarSeleccionado()">Eliminar seleccionado</button>
-  </div>
+<div class="botones">
+  <button onclick="ordenarPor('id')">Ordenar por ID</button>
+  <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
+  <button onclick="ordenarPor('precio')">Ordenar por Precio</button>
+  <button onclick="eliminarSeleccionados()">Eliminar seleccionados</button>
+</div>
 
-  <table id="tablaEmpleados">
-    <thead>
-      <tr>
-        <th>ID</th>
-        <th>Nombre</th>
-        <th>Descripcion</th>
-      </tr>
-    </thead>
-    <tbody>
-      <!-- Filas generadas por JS -->
-    </tbody>
-  </table>
+<table id="tablaProductos">
+  <thead>
+  <tr>
+    <th><input type="checkbox" id="seleccionarTodo" title="Seleccionar todo" /></th>
+    <th>ID</th>
+    <th>Nombre</th>
+    <th>Precio</th>
+  </tr>
+  </thead>
+  <tbody>
+  <!-- filas generadas por JS -->
+  </tbody>
+</table>
 
-  <script>
-    let empleados = JSON.parse(localStorage.getItem('empleados')) || [];
+<script>
+  let productos = [];
 
-    let idSeleccionado = null;
+  // Guarda los ids de productos seleccionados
+  let seleccionados = new Set();
 
-    function mostrarEmpleados(lista) {
-      const tbody = document.querySelector("#tablaEmpleados tbody");
-      tbody.innerHTML = "";
+  async function cargarProductos() {
+    try {
+      const resp = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos');
+      if (!resp.ok) throw new Error('Error al cargar productos');
+      productos = await resp.json();
+      seleccionados.clear();
+      document.getElementById('seleccionarTodo').checked = false;
+      mostrarProductos(productos);
+    } catch (error) {
+      alert('No se pudieron cargar los productos: ' + error.message);
+    }
+  }
 
-      lista.forEach(emp => {
-        const fila = document.createElement("tr");
-        fila.innerHTML = `
-          <td>${emp.id}</td>
-          <td>${emp.nombre}</td>
-          <td>${emp.apellidos}</td>
-          <td>${emp.edad}</td>
-          <td>${emp.celular}</td>
-          <td>${emp.numero}</td>
-        `;
+  function mostrarProductos(lista) {
+    const tbody = document.querySelector("#tablaProductos tbody");
+    tbody.innerHTML = "";
 
-        fila.addEventListener("click", () => {
-          document.querySelectorAll("tr").forEach(f => f.classList.remove("seleccionado"));
-          fila.classList.add("seleccionado");
-          idSeleccionado = emp.id;
-        });
+    lista.forEach(prod => {
+      const fila = document.createElement("tr");
 
-        tbody.appendChild(fila);
+      fila.innerHTML = `
+        <td><input type="checkbox" class="chkProducto" data-id="${prod.id}" /></td>
+        <td>${prod.id}</td>
+        <td>${prod.nombre}</td>
+        <td>$${parseFloat(prod.precio).toFixed(2)}</td>
+      `;
+
+      tbody.appendChild(fila);
+    });
+
+    // Agregar listeners a los checkboxes para actualizar el Set
+    document.querySelectorAll(".chkProducto").forEach(chk => {
+      chk.addEventListener("change", function() {
+        const id = parseInt(this.dataset.id);
+        if (this.checked) {
+          seleccionados.add(id);
+        } else {
+          seleccionados.delete(id);
+        }
+        actualizarSeleccionarTodo();
+      });
+    });
+  }
+
+  // Control "Seleccionar todo"
+  document.getElementById('seleccionarTodo').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.chkProducto');
+    seleccionados.clear();
+    if (this.checked) {
+      checkboxes.forEach(chk => {
+        chk.checked = true;
+        seleccionados.add(parseInt(chk.dataset.id));
+      });
+    } else {
+      checkboxes.forEach(chk => {
+        chk.checked = false;
       });
     }
+  });
 
-    function ordenarPor(campo) {
-      empleados.sort((a, b) => {
-        if (campo === "id") return a.id - b.id;
-        return a[campo].localeCompare(b[campo]);
-      });
-      mostrarEmpleados(empleados);
-    }
+  // Actualiza el checkbox "Seleccionar todo" según selección individual
+  function actualizarSeleccionarTodo() {
+    const total = productos.length;
+    const selCount = seleccionados.size;
+    const chkTodo = document.getElementById('seleccionarTodo');
+    chkTodo.checked = selCount > 0 && selCount === total;
+    chkTodo.indeterminate = selCount > 0 && selCount < total;
+  }
 
-    function eliminarSeleccionado() {
-      if (idSeleccionado === null) {
-        alert("Selecciona un empleado para eliminar.");
-        return;
+  // Ordenar y mostrar
+  function ordenarPor(campo) {
+    productos.sort((a, b) => {
+      if (campo === "id" || campo === "precio") {
+        return a[campo] - b[campo];
       }
+      return a[campo].localeCompare(b[campo]);
+    });
+    mostrarProductos(productos);
+  }
 
-      const confirmado = confirm("¿Estás seguro de que deseas eliminar al empleado seleccionado?");
-      if (!confirmado) return;
-
-      empleados = empleados.filter(emp => emp.id !== idSeleccionado);
-
-      empleados.forEach((emp, index) => emp.id = index + 1);
-
-      localStorage.setItem("empleados", JSON.stringify(empleados));
-      idSeleccionado = null;
-      mostrarEmpleados(empleados);
+  // Eliminar todos los productos seleccionados
+  async function eliminarSeleccionados() {
+    if (seleccionados.size === 0) {
+      alert("Selecciona al menos un producto para eliminar.");
+      return;
     }
 
-    window.onload = () => {
-      mostrarEmpleados(empleados);
-    };
-  </script>
+    if (!confirm(`¿Estás seguro de eliminar ${seleccionados.size} producto(s)?`)) return;
+
+    try {
+      for (const id of seleccionados) {
+        const resp = await fetch(`http://localhost:8081/RefresqueriaVicoGestion/api/productos?id=${id}`, {
+          method: 'DELETE'
+        });
+        if (!resp.ok) throw new Error(`Error eliminando producto ID ${id}`);
+        const resultado = await resp.json();
+        if (!resultado.exito) throw new Error(`No se pudo eliminar producto ID ${id}`);
+      }
+      alert('Productos eliminados correctamente.');
+      seleccionados.clear();
+      document.getElementById('seleccionarTodo').checked = false;
+      await cargarProductos();
+    } catch (error) {
+      alert('Error al eliminar productos: ' + error.message);
+    }
+  }
+
+  window.onload = () => {
+    cargarProductos();
+  };
+</script>
 
 </body>
 </html>
