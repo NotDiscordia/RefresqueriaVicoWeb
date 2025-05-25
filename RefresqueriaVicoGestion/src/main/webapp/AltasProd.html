@@ -124,9 +124,6 @@
     <label for="nombre">Nombre del producto:</label>
     <input type="text" id="nombre" name="nombre" required />
 
-    <label for="descripcion">Descripción del producto:</label>
-    <input type="text" id="descripcion" name="descripcion" required />
-
     <label for="cantidad">Cantidad del producto:</label>
     <input type="number" id="cantidad" name="cantidad" required />
 
@@ -144,32 +141,23 @@
     const errorMensaje = document.getElementById('errorMensaje');
     const exitoMensaje = document.getElementById('exitoMensaje');
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault(); // Prevenir envío por defecto
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
 
-      // Obtener valores
       const nombre = document.getElementById('nombre').value.trim();
-      const descripcion = document.getElementById('descripcion').value.trim();
       const cantidad = document.getElementById('cantidad').value.trim();
       const precio = document.getElementById('precio').value.trim();
 
-      // Expresiones regulares
       const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
       const soloNumeros = /^[0-9]+$/;
 
-      // Validaciones
-      if (nombre === '' || descripcion === '' || cantidad === '' || precio === '') {
+      if (nombre === '' || cantidad === '' || precio === '') {
         mostrarError('Todos los campos son obligatorios.');
         return;
       }
 
       if (!soloLetras.test(nombre) || nombre.length > 25) {
         mostrarError('El nombre debe tener solo letras y un máximo de 25 caracteres.');
-        return;
-      }
-
-      if (!soloLetras.test(descripcion)) {
-        mostrarError('La descripción solo debe contener letras.');
         return;
       }
 
@@ -185,16 +173,36 @@
         return;
       }
 
-      // Confirmación
       const confirmar = confirm("¿Estás seguro de que deseas registrar el producto?");
-      if (!confirmar) {
-        return; // Cancelado por el usuario
-      }
+      if (!confirmar) return;
 
-      // Todo válido y confirmado
-      errorMensaje.style.display = 'none';
-      exitoMensaje.style.display = 'block';
-      form.reset();
+      try {
+        const respuesta = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            nombre: nombre,
+            precio: precioNum,
+            stock: cantidadNum,
+            vendidos: 0
+          })
+        });
+
+        const resultado = await respuesta.json();
+
+        if (resultado.exito) {
+          errorMensaje.style.display = 'none';
+          exitoMensaje.style.display = 'block';
+          form.reset();
+        } else {
+          mostrarError('No se pudo registrar el producto.');
+        }
+      } catch (err) {
+        console.error(err);
+        mostrarError('Ocurrió un error al conectar con el servidor.');
+      }
     });
 
     function mostrarError(mensaje) {
@@ -203,5 +211,6 @@
       exitoMensaje.style.display = 'none';
     }
   </script>
+
 </body>
 </html>
