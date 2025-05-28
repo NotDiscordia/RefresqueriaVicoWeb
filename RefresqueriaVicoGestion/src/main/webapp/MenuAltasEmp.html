@@ -4,7 +4,89 @@
   <meta charset="UTF-8">
   <title>Alta de Empleado</title>
   <style>
-    .titulo {
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #9fc1f3;
+      padding: 20px;
+      position: relative;
+    }
+
+    .volver {
+      text-decoration: none;
+      color: #ff9c19;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+
+    .form-container {
+      max-width: 500px;
+      margin: 0 auto;
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #004d40;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      color: #00796b;
+      font-weight: 500;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+    }
+
+    button:hover {
+      background-color: #004d40;
+    }
+
+    .mensaje {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 4px;
+      text-align: center;
+      display: none;
+    }
+
+    .error {
+      background-color: #fdd;
+      color: #900;
+      border: 1px solid #900;
+    }
+
+    .exito {
+      background-color: #dfd;
+      color: #060;
+      border: 1px solid #060;
+    }
+
+    .encabezado-esquina {
       position: absolute;
       top: 10px;
       right: 20px;
@@ -13,204 +95,130 @@
       font-family: Arial, sans-serif;
     }
 
-    .titulo .arriba {
-      font-size: 20px;
+    .encabezado-esquina .arriba {
+      font-size: 14px;
       color: #ff9933;
       text-shadow: 1px 1px 1px black;
-      letter-spacing: 2px;
+      letter-spacing: 1px;
       text-transform: uppercase;
     }
 
-    .titulo .abajo {
-      font-size: 48px;
+    .encabezado-esquina .abajo {
+      font-size: 22px;
       color: #1a75ff;
       font-family: 'Georgia', serif;
-      text-shadow: 
-        1px 1px 0px black,
-        -1px -1px 0px black;
-    }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #9fc1f3;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 30px;
-    }
-
-    form {
-      background-color: #fff;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #555;
-    }
-
-    input[type="text"],
-    input[type="number"],
-    input[type="tel"],
-    input[type="password"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    .password-container {
-      position: relative;
-    }
-
-    .password-container button {
-      position: absolute;
-      right: 10px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    button[type="submit"] {
-      margin-top: 25px;
-      width: 100%;
-      padding: 12px;
-      background-color: #00796b;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button[type="submit"]:hover {
-      background-color: #004d40;
-    }
-
-    .volver {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 14px;
-      text-decoration: none;
-      color: #00796b;
-    }
-
-    .error, .success {
-      font-size: 14px;
-      margin-top: 10px;
-      display: none;
-      padding: 10px;
-      border-radius: 5px;
-    }
-
-    .error {
-      background-color: #ffdddd;
-      color: red;
-    }
-
-    .success {
-      background-color: #ddffdd;
-      color: green;
+      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
     }
   </style>
 </head>
 <body>
 
-  <a class="volver" href="MenuEmp.html">&larr; Volver</a>
-  <div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-  </div>
+<!-- Encabezado en la esquina superior derecha -->
+<div class="encabezado-esquina">
+  <div class="arriba">REFRESQUERIA</div>
+  <div class="abajo">VICO</div>
+</div>
 
-  <h1>Alta de Empleado</h1>
+<a class="volver" href="MainMenu.html">&larr; Volver</a>
 
-  <form id="formEmpleado">
+<div class="form-container">
+  <h2>Alta de Producto</h2>
+
+  <form id="form-alta-producto">
     <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
+    <input type="text" id="nombre" name="nombre" required placeholder="Ej. Refresco">
 
-    <label for="apellidos">Apellidos:</label>
-    <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$">
+    <label for="precio">Precio:</label>
+    <input type="number" id="precio" name="precio" required step="0.01" min="0" placeholder="Ej. 15.50">
 
-    <label for="celular">Número celular:</label>
-    <input type="tel" id="celular" name="celular" pattern="^\d{10}$" required placeholder="10 dígitos">
+    <label for="stock">Stock:</label>
+    <input type="number" id="stock" name="stock" required min="0" placeholder="Ej. 10">
 
-    <label for="numero">Contraseña:</label>
-    <div class="password-container">
-      <input type="password" id="numero" name="numero" minlength="4" maxlength="20" pattern="^[a-zA-Z0-9]+$" required placeholder="4 a 20 caracteres">
-      <button type="button" onclick="togglePassword()" title="Mostrar u ocultar contraseña">👁️</button>
-    </div>
+    <label for="vendidos">Vendidos:</label>
+    <input type="number" id="vendidos" name="vendidos" required min="0" value="0">
 
-    <div class="error" id="errorMensaje">Por favor revisa los datos ingresados.</div>
-    <div class="success" id="successMensaje">Alta realizada con éxito.</div>
-
-    <button type="submit">Registrar empleado</button>
+    <button type="submit">Guardar Producto</button>
   </form>
 
-  <script>
-    const form = document.getElementById('formEmpleado');
-    const errorMensaje = document.getElementById('errorMensaje');
-    const successMensaje = document.getElementById('successMensaje');
+  <div id="mensaje" class="mensaje"></div>
+</div>
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
+<script>
+  const form = document.getElementById('form-alta-producto');
+  const mensajeDiv = document.getElementById('mensaje');
 
-      const nombre = document.getElementById('nombre').value.trim();
-      const apellidos = document.getElementById('apellidos').value.trim();
-      const celular = document.getElementById('celular').value.trim();
-      const contrasena = document.getElementById('numero').value.trim();
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-      const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-      const soloNumeros = /^\d{10}$/;
-      const soloAlfanumerico = /^[a-zA-Z0-9]{4,20}$/;
+    // Leer valores
+    const nombre = form.nombre.value.trim();
+    const precio = parseFloat(form.precio.value);
+    const stock = parseInt(form.stock.value, 10);
+    const vendidos = parseInt(form.vendidos.value, 10);
 
-      if (!soloLetras.test(nombre) || !soloLetras.test(apellidos) || !soloNumeros.test(celular) || !soloAlfanumerico.test(contrasena)) {
-        errorMensaje.textContent = "Por favor revisa los datos ingresados.";
-        errorMensaje.style.display = 'block';
-        successMensaje.style.display = 'none';
+    // Validar nombre (no caracteres especiales)
+    const regexNombre = /^[a-zA-Z0-9 ]+$/;
+    if (!regexNombre.test(nombre)) {
+      mostrarMensaje('❌ El nombre no debe contener caracteres especiales.', true);
+      return;
+    }
+
+    // Validar campos numéricos mínimos
+    if (isNaN(precio) || precio < 0) {
+      mostrarMensaje('❌ Precio inválido.', true);
+      return;
+    }
+    if (isNaN(stock) || stock < 0) {
+      mostrarMensaje('❌ Stock inválido.', true);
+      return;
+    }
+    if (isNaN(vendidos) || vendidos < 0) {
+      mostrarMensaje('❌ Vendidos inválido.', true);
+      return;
+    }
+
+    // Construir objeto producto
+    const producto = { nombre, precio, stock, vendidos };
+
+    try {
+      const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(producto)
+      });
+
+      if (!response.ok) {
+        const errorJson = await response.json().catch(() => null);
+        const msg = errorJson?.mensaje || `Error ${response.status}`;
+        mostrarMensaje(`❌ Error en la solicitud: ${msg}`, true);
         return;
       }
 
-      const confirmacion = confirm("¿Deseas confirmar el alta del empleado?");
-      if (confirmacion) {
-        errorMensaje.style.display = 'none';
-        successMensaje.style.display = 'block';
+      const result = await response.json();
 
-        setTimeout(() => {
-          form.reset();
-          successMensaje.style.display = 'none';
-        }, 3000);
+      if (result.exito) {
+        mostrarMensaje('✅ Se ha registrado con éxito', false);
+        form.reset();
       } else {
-        errorMensaje.textContent = "Alta cancelada por el usuario.";
-        errorMensaje.style.display = 'block';
-        successMensaje.style.display = 'none';
+        mostrarMensaje('❌ No se pudo guardar el producto. Puede que ya exista.', true);
       }
-    });
 
-    function togglePassword() {
-      const input = document.getElementById('numero');
-      input.type = input.type === 'password' ? 'text' : 'password';
+    } catch (error) {
+      mostrarMensaje('❌ Error al conectar con el servidor.', true);
     }
-  </script>
+  });
+
+  function mostrarMensaje(msg, esError) {
+    mensajeDiv.textContent = msg;
+    mensajeDiv.className = 'mensaje ' + (esError ? 'error' : 'exito');
+    mensajeDiv.style.display = 'block';
+
+    // Ocultar mensaje después de 3 segundos
+    setTimeout(() => {
+      mensajeDiv.style.display = 'none';
+    }, 3000);
+  }
+</script>
 
 </body>
 </html>
