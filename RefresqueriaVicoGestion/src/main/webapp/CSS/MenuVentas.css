@@ -1,0 +1,162 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #9fc1f3;
+}
+
+header, footer {
+    padding: 10px 20px;
+    background: #9fc1f3;
+    border-bottom: 1px solid #ddd;
+}
+
+main {
+    display: flex;
+    height: calc(100vh - 100px);
+}
+
+.left-panel {
+    flex: 2;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+.right-panel {
+    flex: 1;
+    background: #9fc1f3;
+    padding: 20px;
+    border-left: 1px solid #ddd;
+}
+
+.titulo {
+    text-align: center;
+    font-weight: bold;
+}
+
+.titulo .arriba {
+    font-size: 20px;
+    color: #ff9933;
+    text-shadow: 1px 1px 1px black;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+}
+
+.titulo .abajo {
+    font-size: 48px;
+    color: #1a75ff;
+    font-family: 'Georgia', serif;
+    text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+}
+
+.categorias {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.categoria {
+    padding: 15px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: bold;
+    cursor: pointer;
+    flex: 1;
+    text-align: center;
+}
+
+.rojo {
+    background: #d32f2f;
+}
+
+.verde {
+    background: #388e3c;
+}
+
+.azul {
+    background: #1976d2;
+}
+
+.productos {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+}
+
+.producto {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    cursor: pointer;
+    text-align: center;
+}
+
+.producto img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+}
+
+.producto h4 {
+    margin: 8px 0 4px;
+    font-size: 16px;
+}
+
+.producto p {
+    margin: 0 0 10px;
+    color: #777;
+    font-size: 14px;
+}
+
+.venta h2 {
+    margin-top: 0;
+}
+
+.venta p {
+    margin: 5px 0;
+}
+
+.botones-venta {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pagar-btn {
+    padding: 20px;
+    background: #2ee94d;
+    color: white;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 8px;
+}
+
+.accion-btn {
+    padding: 10px;
+    background: #e53935;
+    color: white;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.cancelar-btn {
+    background: #757575;
+}
+
+.volver {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 14px;
+    color: #00796b;
+    text-decoration: none;
+}
