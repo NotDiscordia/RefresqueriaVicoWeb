@@ -113,6 +113,7 @@
   </dependencies>
 
   <build>
+    <finalName>RefresqueriaVicoGestion</finalName>
     <plugins>
       <!-- Compilador Java -->
       <plugin>
