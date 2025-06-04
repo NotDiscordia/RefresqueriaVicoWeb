@@ -1,207 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Alta de Producto</title>
-  <style>
-    .titulo {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      font-weight: bold;
-      text-align: left;
-    }
-    .titulo .arriba {
-      font-size: 14px;
-      color: #ff9933;
-      text-shadow: 1px 1px 1px black;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-family: Arial, sans-serif;
-    }
-    .titulo .abajo {
-      font-size: 24px;
-      color: #1a75ff;
-      font-family: 'Georgia', serif;
-      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
-    }
-
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #9fc1f3;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-
-    h1 {
-      color: #333;
-      margin-bottom: 30px;
-    }
-
-    form {
-      background-color: #eaedf1;
-      padding: 30px 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-    }
-
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-      color: #555;
-    }
-
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px;
-      margin-top: 5px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-    }
-
-    button {
-      margin-top: 25px;
-      width: 100%;
-      padding: 12px;
-      background-color: #00796b;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-    }
-
-    button:hover {
-      background-color: #004d40;
-    }
-
-    .volver {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      font-size: 14px;
-      text-decoration: none;
-      color: #00796b;
-    }
-
-    .mensaje {
-      margin-top: 15px;
-      font-size: 14px;
-      display: none;
-    }
-
-    .mensaje.error {
-      color: red;
-    }
-
-    .mensaje.exito {
-      color: green;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Alta de Producto</title>
+    <link rel="stylesheet" href="CSS/AltaProd.css">
 </head>
 <body>
 
-  <div class="titulo">
+<!-- Encabezado en la esquina superior derecha -->
+<div class="encabezado-esquina">
     <div class="arriba">REFRESQUERIA</div>
     <div class="abajo">VICO</div>
-  </div>
+</div>
 
-  <a class="volver" href="MenuInv.html">&larr; Volver</a>
+<a class="volver" href="MenInv2.html">&larr; Volver</a>
 
-  <h1>Alta de producto</h1>
+<div class="form-container">
+    <h2>Alta de Producto</h2>
 
-  <form id="formProducto" novalidate>
-    <label for="nombre">Nombre del producto:</label>
-    <input type="text" id="nombre" name="nombre" required />
+    <form id="form-alta-producto">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required placeholder="Ej. Refresco">
 
-    <label for="descripcion">Descripción del producto:</label>
-    <input type="text" id="descripcion" name="descripcion" required />
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" name="precio" required step="0.01" min="0" placeholder="Ej. 15.50">
 
-    <label for="cantidad">Cantidad del producto:</label>
-    <input type="number" id="cantidad" name="cantidad" required />
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" name="stock" required min="0" placeholder="Ej. 10">
 
-    <label for="precio">Precio:</label>
-    <input type="number" id="precio" name="precio" step="0.01" required />
+        <label for="vendidos">Vendidos:</label>
+        <input type="number" id="vendidos" name="vendidos" required min="0" value="0">
 
-    <div class="mensaje error" id="errorMensaje"></div>
-    <div class="mensaje exito" id="exitoMensaje">¡Alta exitosa!</div>
+        <button type="submit">Guardar Producto</button>
+    </form>
 
-    <button type="submit">Registrar producto</button>
-  </form>
+    <div id="mensaje" class="mensaje"></div>
+</div>
 
-  <script>
-    const form = document.getElementById('formProducto');
-    const errorMensaje = document.getElementById('errorMensaje');
-    const exitoMensaje = document.getElementById('exitoMensaje');
+<script>
+    const form = document.getElementById('form-alta-producto');
+    const mensajeDiv = document.getElementById('mensaje');
 
-    form.addEventListener('submit', function (e) {
-      e.preventDefault(); // Prevenir envío por defecto
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
 
-      // Obtener valores
-      const nombre = document.getElementById('nombre').value.trim();
-      const descripcion = document.getElementById('descripcion').value.trim();
-      const cantidad = document.getElementById('cantidad').value.trim();
-      const precio = document.getElementById('precio').value.trim();
+        const nombre = form.nombre.value.trim();
+        const precio = parseFloat(form.precio.value);
+        const stock = parseInt(form.stock.value, 10);
+        const vendidos = parseInt(form.vendidos.value, 10);
 
-      // Expresiones regulares
-      const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-      const soloNumeros = /^[0-9]+$/;
+        const regexNombre = /^[a-zA-Z0-9 ]+$/;
+        if (!regexNombre.test(nombre)) {
+            mostrarMensaje('❌ El nombre no debe contener caracteres especiales.', true);
+            return;
+        }
 
-      // Validaciones
-      if (nombre === '' || descripcion === '' || cantidad === '' || precio === '') {
-        mostrarError('Todos los campos son obligatorios.');
-        return;
-      }
+        if (isNaN(precio) || precio < 0) {
+            mostrarMensaje('❌ Precio inválido.', true);
+            return;
+        }
+        if (isNaN(stock) || stock < 0) {
+            mostrarMensaje('❌ Stock inválido.', true);
+            return;
+        }
+        if (isNaN(vendidos) || vendidos < 0) {
+            mostrarMensaje('❌ Vendidos inválido.', true);
+            return;
+        }
 
-      if (!soloLetras.test(nombre) || nombre.length > 25) {
-        mostrarError('El nombre debe tener solo letras y un máximo de 25 caracteres.');
-        return;
-      }
+        const producto = { nombre, precio, stock, vendidos };
 
-      if (!soloLetras.test(descripcion)) {
-        mostrarError('La descripción solo debe contener letras.');
-        return;
-      }
+        try {
+            const response = await fetch('http://localhost:8080/RefresqueriaVicoGestion/api/productos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(producto)
+            });
 
-      const cantidadNum = parseInt(cantidad);
-      if (!soloNumeros.test(cantidad) || cantidadNum < 1 || cantidadNum > 100) {
-        mostrarError('La cantidad debe ser un número entre 1 y 100.');
-        return;
-      }
+            if (!response.ok) {
+                const errorJson = await response.json().catch(() => null);
+                const msg = errorJson?.mensaje || `Error ${response.status}`;
+                mostrarMensaje(`❌ Error en la solicitud: ${msg}`, true);
+                return;
+            }
 
-      const precioNum = parseFloat(precio);
-      if (isNaN(precioNum) || precioNum < 0) {
-        mostrarError('El precio debe ser un número válido mayor o igual a 0.');
-        return;
-      }
+            const result = await response.json();
 
-      // Confirmación
-      const confirmar = confirm("¿Estás seguro de que deseas registrar el producto?");
-      if (!confirmar) {
-        return; // Cancelado por el usuario
-      }
+            if (result.exito) {
+                mostrarMensaje('✅ Se ha registrado con éxito', false);
+                form.reset();
+            } else {
+                mostrarMensaje('❌ No se pudo guardar el producto. Puede que ya exista.', true);
+            }
 
-      // Todo válido y confirmado
-      errorMensaje.style.display = 'none';
-      exitoMensaje.style.display = 'block';
-      form.reset();
+        } catch (error) {
+            mostrarMensaje('❌ Error al conectar con el servidor.', true);
+        }
     });
 
-    function mostrarError(mensaje) {
-      errorMensaje.textContent = mensaje;
-      errorMensaje.style.display = 'block';
-      exitoMensaje.style.display = 'none';
+    function mostrarMensaje(msg, esError) {
+        mensajeDiv.textContent = msg;
+        mensajeDiv.className = 'mensaje ' + (esError ? 'error' : 'exito');
+        mensajeDiv.style.display = 'block';
+
+        setTimeout(() => {
+            mensajeDiv.style.display = 'none';
+        }, 3000);
     }
-  </script>
+</script>
+
 </body>
 </html>
