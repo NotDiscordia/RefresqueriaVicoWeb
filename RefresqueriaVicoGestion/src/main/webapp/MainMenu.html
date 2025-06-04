@@ -3,96 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Menú Principal</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #9fc1f3;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-    }
-
-    .titulo {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      text-align: right;
-      font-weight: bold;
-      font-family: Arial, sans-serif;
-    }
-
-    .titulo .arriba {
-      font-size: 20px;
-      color: #ff9933;
-      text-shadow: 1px 1px 1px black;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-family: Arial, sans-serif;
-    }
-
-    .titulo .abajo {
-      font-size: 48px;
-      color: #1a75ff;
-      font-family: 'Georgia', serif;
-      text-shadow: 
-        1px 1px 0px black,
-        -1px -1px 0px black;
-    }
-
-    .cerrar-sesion {
-      position: absolute;
-      top: 15px;
-      left: 20px;
-      font-size: 14px;
-      color: #1a75ff;
-      text-decoration: none;
-      font-family: Arial, sans-serif;
-    }
-
-    .menu-principal {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 20px;
-      width: 80%;
-      max-width: 800px;
-    }
-
-    .opcion {
-      background-color: #e3e5e6;
-      border-radius: 10px;
-      padding: 30px 10px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: all 0.2s ease-in-out;
-    }
-
-    .opcion:hover {
-      transform: scale(1.05);
-      background-color: #e0f7fa;
-    }
-
-    .opcion i {
-      font-size: 32px;
-      margin-bottom: 10px;
-      display: block;
-    }
-
-    footer {
-      position: absolute;
-      bottom: 20px;
-      font-size: 14px;
-      color: #888;
-    }
-  </style>
+  <link rel="stylesheet" href="CSS/MainMenu.css">
   <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -114,7 +25,7 @@
       <a href="MenuAdmin.html"><i class="fas fa-user-cog"></i></a>
       Administración
     </div>
-    <div class="opcion" onclick="location.href='Login.html.html'">
+    <div class="opcion" onclick="location.href='Login.html'">
       <a href="Login.html"><i class="fas fa-user-cog"></i></a>
 
       Cerrar Sesión

@@ -1,7 +1,6 @@
 package ByteBuilders.Persistencia;
 
 import ByteBuilders.Entidad.Producto;
-import ByteBuilders.ConexionBD;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -10,8 +9,8 @@ import java.util.List;
 public class ProductoDAO {
 
     public void insertar(Producto p) throws SQLException {
-        String sql = "INSERT INTO producto (nombre, precio, stock, vendidos) VALUES (?, ?, ?, ?)";
-        try (Connection con = ConexionBD.getConexion();
+        String sql = "INSERT INTO productos (nombre, precio, stock, vendidos) VALUES (?, ?, ?, ?)";
+        try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, p.getNombre());
             stmt.setBigDecimal(2, p.getPrecio());
@@ -22,8 +21,8 @@ public class ProductoDAO {
     }
 
     public Producto buscarPorId(int id) throws SQLException {
-        String sql = "SELECT * FROM producto WHERE id = ?";
-        try (Connection con = ConexionBD.getConexion();
+        String sql = "SELECT * FROM productos WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -42,8 +41,8 @@ public class ProductoDAO {
 
     public List<Producto> listar() throws SQLException {
         List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM producto";
-        try (Connection con = ConexionBD.getConexion();
+        String sql = "SELECT * FROM productos";
+        try (Connection con = ConexionBD.obtenerConexion();
              Statement stmt = con.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
             while (rs.next()) {
@@ -60,8 +59,8 @@ public class ProductoDAO {
     }
 
     public void eliminar(int id) throws SQLException {
-        String sql = "DELETE FROM producto WHERE id = ?";
-        try (Connection con = ConexionBD.getConexion();
+        String sql = "DELETE FROM productos WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -69,8 +68,8 @@ public class ProductoDAO {
     }
 
     public void actualizar(Producto p) throws SQLException {
-        String sql = "UPDATE producto SET nombre = ?, precio = ?, stock = ?, vendidos = ? WHERE id = ?";
-        try (Connection con = ConexionBD.getConexion();
+        String sql = "UPDATE productos SET nombre = ?, precio = ?, stock = ?, vendidos = ? WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, p.getNombre());
             stmt.setBigDecimal(2, p.getPrecio());
