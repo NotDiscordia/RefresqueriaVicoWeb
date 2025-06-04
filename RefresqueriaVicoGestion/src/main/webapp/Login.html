@@ -15,7 +15,8 @@
 <h1>Inicio de Sesión</h1>
 
 <div class="login-box">
-  <form onsubmit="return validarLogin()">
+  <form action="http://localhost:8080/RefresqueriaVicoGestion/api/usuarios" method="post">
+   <input type="text" id="idUsuario" name="idUsuario" placeholder="ID del empleado" required>
     <div class="input-container">
       <input type="password" id="numeroEmpleado" name="numeroEmpleado" placeholder="Contraseña del empleado" required>
       <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
@@ -24,7 +25,14 @@
   </form>
 </div>
 
-<div class="notification" id="errorNotification"></div>
+<div class="notification" id="errorNotification">
+  <%
+  String error = request.getParameter("error");
+  if (error != null) {
+  out.print("❌ Usuario o contraseña incorrectos.");
+  }
+  %>
+</div>
 
 <footer>&copy; 2025 Sistema de Gestión Vico</footer>
 
@@ -40,34 +48,6 @@
       passwordInput.type = 'password';
       toggleButton.textContent = '👁️';
     }
-  }
-
-  function showError(message) {
-    const notification = document.getElementById('errorNotification');
-    notification.textContent = message;
-    notification.classList.add('show');
-
-    setTimeout(() => {
-      notification.classList.remove('show');
-    }, 3000);
-  }
-
-  function validarLogin() {
-    const numero = document.getElementById('numeroEmpleado').value.trim();
-    const contrasenaValida = "12345";
-
-    if (numero === "") {
-      showError("⚠️ Por favor, ingresa tu contraseña");
-      return false;
-    }
-
-    if (numero !== contrasenaValida) {
-      showError("🔒 Contraseña incorrecta. Intenta nuevamente");
-      return false;
-    }
-
-    window.location.href = "MainMenu.html";
-    return false;
   }
 </script>
 

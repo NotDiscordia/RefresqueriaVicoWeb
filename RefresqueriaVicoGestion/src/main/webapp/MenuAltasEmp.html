@@ -1,111 +1,182 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Alta de Producto</title>
-  <link rel="stylesheet" href="CSS/MenuAltasEmp.css">
+  <meta charset="UTF-8" />
+  <title>Alta de Empleado</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #9fc1f3;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    form {
+      background-color: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      max-width: 400px;
+      width: 100%;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 10px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .mensaje {
+      font-size: 14px;
+      margin-top: 10px;
+      padding: 10px;
+      border-radius: 5px;
+      display: none;
+    }
+
+    .error { background-color: #ffdddd; color: red; }
+    .success { background-color: #ddffdd; color: green; }
+  </style>
 </head>
 <body>
 
-<!-- Encabezado en la esquina superior derecha -->
-<div class="encabezado-esquina">
-  <div class="arriba">REFRESQUERIA</div>
-  <div class="abajo">VICO</div>
-</div>
+<h1>Alta de Empleado</h1>
 
-<a class="volver" href="MainMenu.html">&larr; Volver</a>
+<form id="formEmpleado">
+  <label for="nombre">Nombre:</label>
+  <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
 
-<div class="form-container">
-  <h2>Alta de Producto</h2>
+  <label for="apellidos">Apellidos:</label>
+  <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
 
-  <form id="form-alta-producto">
-    <label for="nombre">Nombre:</label>
-    <input type="text" id="nombre" name="nombre" required placeholder="Ej. Refresco">
+  <label for="celular">Celular:</label>
+  <input type="tel" id="celular" name="celular" required pattern="^\d{10}$" placeholder="10 dígitos" />
 
-    <label for="precio">Precio:</label>
-    <input type="number" id="precio" name="precio" required step="0.01" min="0" placeholder="Ej. 15.50">
+  <label for="email">Correo electrónico (opcional):</label>
+  <input type="email" id="email" name="email" placeholder="Opcional">
 
-    <label for="stock">Stock:</label>
-    <input type="number" id="stock" name="stock" required min="0" placeholder="Ej. 10">
+  <label for="numero">Contraseña:</label>
+  <input type="password" id="numero" name="numero" required minlength="4" maxlength="20" pattern="^[a-zA-Z0-9]+$" />
 
-    <label for="vendidos">Vendidos:</label>
-    <input type="number" id="vendidos" name="vendidos" required min="0" value="0">
+  <label for="tipo">Tipo:</label>
+  <select id="tipo" name="tipo" required>
+    <option value="" disabled selected>Selecciona tipo</option>
+    <option value="empleado">Empleado</option>
+    <option value="administrador">Administrador</option>
+  </select>
 
-    <button type="submit">Guardar Producto</button>
-  </form>
+  <div class="mensaje error" id="errorMensaje"></div>
+  <div class="mensaje success" id="successMensaje"></div>
 
-  <div id="mensaje" class="mensaje"></div>
-</div>
+  <button type="submit">Registrar empleado</button>
+</form>
 
 <script>
-  const form = document.getElementById('form-alta-producto');
-  const mensajeDiv = document.getElementById('mensaje');
+  const form = document.getElementById('formEmpleado');
+  const errorMensaje = document.getElementById('errorMensaje');
+  const successMensaje = document.getElementById('successMensaje');
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
+    mostrarMensaje('', '');
 
-    const nombre = form.nombre.value.trim();
-    const precio = parseFloat(form.precio.value);
-    const stock = parseInt(form.stock.value, 10);
-    const vendidos = parseInt(form.vendidos.value, 10);
+    const nombre = document.getElementById('nombre').value.trim();
+    const apellidos = document.getElementById('apellidos').value.trim();
+    const celular = document.getElementById('celular').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const contrasena = document.getElementById('numero').value.trim();
+    const tipo = document.getElementById('tipo').value;
 
-    const regexNombre = /^[a-zA-Z0-9 ]+$/;
-    if (!regexNombre.test(nombre)) {
-      mostrarMensaje('❌ El nombre no debe contener caracteres especiales.', true);
+    const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const soloNumeros = /^\d{10}$/;
+    const soloAlfanumerico = /^[a-zA-Z0-9]{4,20}$/;
+
+    if (!soloLetras.test(nombre) || !soloLetras.test(apellidos) ||
+            !soloNumeros.test(celular) || !soloAlfanumerico.test(contrasena) ||
+            !email || !tipo) {
+      mostrarMensaje('error', 'Por favor revisa los datos ingresados');
       return;
     }
 
-    if (isNaN(precio) || precio < 0) {
-      mostrarMensaje('❌ Precio inválido.', true);
+    if (!confirm("¿Confirmar el alta del empleado?")) {
+      mostrarMensaje('error', 'Alta cancelada por el usuario');
       return;
     }
-    if (isNaN(stock) || stock < 0) {
-      mostrarMensaje('❌ Stock inválido.', true);
-      return;
-    }
-    if (isNaN(vendidos) || vendidos < 0) {
-      mostrarMensaje('❌ Vendidos inválido.', true);
-      return;
-    }
-
-    const producto = { nombre, precio, stock, vendidos };
 
     try {
-      const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos', {
+      const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/usuarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(producto)
+        body: JSON.stringify({
+          nombre,
+          apellidos,
+          celular,
+          email,
+          numero: contrasena,
+          tipo
+        })
       });
 
-      if (!response.ok) {
-        const errorJson = await response.json().catch(() => null);
-        const msg = errorJson?.mensaje || `Error ${response.status}`;
-        mostrarMensaje(`❌ Error en la solicitud: ${msg}`, true);
-        return;
-      }
+      const textoRespuesta = await response.text();
 
-      const result = await response.json();
-
-      if (result.exito) {
-        mostrarMensaje('✅ Se ha registrado con éxito', false);
-        form.reset();
-      } else {
-        mostrarMensaje('❌ No se pudo guardar el producto. Puede que ya exista.', true);
+      try {
+        const resultado = JSON.parse(textoRespuesta);
+        if (resultado.exito) {
+          mostrarMensaje('success', '¡Empleado registrado con éxito!');
+          form.reset();
+        } else {
+          mostrarMensaje('error', 'Error en el registro: ' + (resultado.error || ''));
+        }
+      } catch (e) {
+        mostrarMensaje('error', textoRespuesta);
       }
 
     } catch (error) {
-      mostrarMensaje('❌ Error al conectar con el servidor.', true);
+      mostrarMensaje('error', 'Error de conexión: ' + error.message);
     }
   });
 
-  function mostrarMensaje(msg, esError) {
-    mensajeDiv.textContent = msg;
-    mensajeDiv.className = 'mensaje ' + (esError ? 'error' : 'exito');
-    mensajeDiv.style.display = 'block';
+  function mostrarMensaje(tipo, mensaje) {
+    errorMensaje.style.display = 'none';
+    successMensaje.style.display = 'none';
 
-    setTimeout(() => {
-      mensajeDiv.style.display = 'none';
-    }, 3000);
+    if (tipo === 'error') {
+      errorMensaje.textContent = mensaje;
+      errorMensaje.style.display = 'block';
+    } else if (tipo === 'success') {
+      successMensaje.textContent = mensaje;
+      successMensaje.style.display = 'block';
+    }
   }
 </script>
 
