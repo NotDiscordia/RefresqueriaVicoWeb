@@ -1,44 +1,186 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Consulta de Empleados</title>
-  <link rel="stylesheet" href="CSS/MenuConsultas.css">
+  <meta charset="UTF-8" />
+  <title>Consulta de Usuarios</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #9fc1f3;
+      padding: 20px;
+      position: relative;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .volver {
+      text-decoration: none;
+      color: #ff9c19;
+      display: inline-block;
+      margin-bottom: 20px;
+    }
+    .botones {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .botones button {
+      margin: 0 10px;
+      padding: 10px 15px;
+      background-color: #00796b;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .botones button:hover {
+      background-color: #004d40;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    th, td {
+      padding: 12px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #00796b;
+      color: white;
+      cursor: pointer;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .encabezado-esquina {
+      position: absolute;
+      top: 10px;
+      right: 20px;
+      text-align: right;
+      font-weight: bold;
+      font-family: Arial, sans-serif;
+    }
+    .encabezado-esquina .arriba {
+      font-size: 14px;
+      color: #ff9933;
+      text-shadow: 1px 1px 1px black;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .encabezado-esquina .abajo {
+      font-size: 22px;
+      color: #1a75ff;
+      font-family: 'Georgia', serif;
+      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+    }
+  </style>
 </head>
 <body>
 
-<!-- Título en la esquina superior derecha -->
-<div class="titulo-esquina">
+<div class="encabezado-esquina">
   <div class="arriba">REFRESQUERIA</div>
   <div class="abajo">VICO</div>
 </div>
 
-<a class="volver" href="MenuEmp.html">&larr; Volver</a>
+<a class="volver" href="MenuInv.html">&larr; Volver</a>
 <h1>Consulta de Empleados</h1>
 
 <div class="botones">
   <button onclick="ordenarPor('id')">Ordenar por ID</button>
   <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-  <button onclick="ordenarPor('apellidos')">Ordenar por Apellidos</button>
-  <button onclick="eliminarSeleccionado()">Eliminar seleccionado</button>
+  <button onclick="ordenarPor('tipo')">Ordenar por Tipo</button>
+  <button onclick="eliminarSeleccionados()">Eliminar seleccionados</button>
 </div>
 
-<table id="tablaEmpleados">
+<table id="tablaUsuarios">
   <thead>
   <tr>
+    <th></th>
     <th>ID</th>
     <th>Nombre</th>
-    <th>Apellidos</th>
-    <th>Edad</th>
+    <th>Tipo</th>
     <th>Celular</th>
-    <th>Número de Empleado</th>
   </tr>
   </thead>
   <tbody>
-  <!-- Filas generadas por JS -->
+  <!-- filas generadas por JS -->
   </tbody>
 </table>
 
-<script src="consulta-empleados.js"></script>
+<script>
+  let usuarios = [];
+
+  async function cargarUsuarios() {
+    try {
+      const resp = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/usuarios');
+      if (!resp.ok) throw new Error('Error al cargar usuarios');
+      usuarios = await resp.json();
+      mostrarUsuarios(usuarios);
+    } catch (error) {
+      alert('No se pudieron cargar los empleados: ' + error.message);
+    }
+  }
+
+  function mostrarUsuarios(lista) {
+    const tbody = document.querySelector("#tablaUsuarios tbody");
+    tbody.innerHTML = "";
+
+    lista.forEach(u => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td><input type="checkbox" class="chk-usuario" value="${u.id}"></td>
+        <td>${u.id}</td>
+        <td>${u.nombre}</td>
+        <td>${u.tipo}</td>
+        <td>${u.celular}</td>
+      `;
+      tbody.appendChild(fila);
+    });
+  }
+
+  function ordenarPor(campo) {
+    usuarios.sort((a, b) => {
+      if (campo === "id") return a[campo] - b[campo];
+      return a[campo].localeCompare(b[campo]);
+    });
+    mostrarUsuarios(usuarios);
+  }
+
+  async function eliminarSeleccionados() {
+    const checkboxes = document.querySelectorAll('.chk-usuario:checked');
+    const ids = Array.from(checkboxes).map(chk => chk.value);
+
+    if (ids.length === 0) {
+      alert("Selecciona al menos un usuario para eliminar.");
+      return;
+    }
+
+    if (!confirm(`¿Deseas eliminar ${ids.length} usuario(s)?`)) return;
+
+    try {
+      for (let id of ids) {
+        const resp = await fetch(`http://localhost:8081/RefresqueriaVicoGestion/api/usuarios/${id}`, {
+          method: 'DELETE'
+        });
+        if (!resp.ok) throw new Error(`Error eliminando ID ${id}`);
+      }
+
+      alert("Usuarios eliminados correctamente.");
+      cargarUsuarios();
+    } catch (error) {
+      alert("Error al eliminar usuarios: " + error.message);
+    }
+  }
+
+  window.onload = () => {
+    cargarUsuarios();
+  };
+</script>
+
 </body>
 </html>

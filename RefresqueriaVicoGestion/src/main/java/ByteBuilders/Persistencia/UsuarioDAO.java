@@ -1,99 +1,124 @@
 package ByteBuilders.Persistencia;
 
 import ByteBuilders.Entidad.Usuario;
-import jakarta.persistence.*;
+import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class UsuarioDAO {
-    private static final EntityManagerFactory emf =
-            Persistence.createEntityManagerFactory("RefresqueriaVicoPU");
 
-    public void guardarUsuario(Usuario usuario) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(usuario);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
+    public void insertar(Usuario u) throws SQLException {
+        String sql = "INSERT INTO usuarios (nombre, apellidos, celular, numero, tipo) VALUES (?, ?, ?, ?, ?)";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setString(1, u.getNombre());
+            stmt.setString(2, u.getApellidos());
+            stmt.setString(3, u.getCelular());
+            stmt.setString(4, u.getNumero());
+            stmt.setString(5, u.getTipo());
+            stmt.executeUpdate();
+        }
+    }
+
+    public Usuario buscarPorId(int id) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setApellidos(rs.getString("apellidos"));
+                usuario.setCelular(rs.getString("celular"));
+                usuario.setNumero(rs.getString("numero"));
+                usuario.setTipo(rs.getString("tipo"));
+                return usuario;
             }
-            throw new RuntimeException("Error al guardar usuario", e);
-        } finally {
-            em.close();
         }
+        return null;
     }
 
-    public boolean existePorEmail(String email) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Long> query = em.createQuery(
-                    "SELECT COUNT(u) FROM Usuario u WHERE u.email = :email", Long.class
-            );
-            query.setParameter("email", email);
-            return query.getSingleResult() > 0;
-        } finally {
-            em.close();
-        }
-    }
+    public List<Usuario> listar() throws SQLException {
+        List<Usuario> lista = new ArrayList<>();
+        String sql = "SELECT * FROM usuarios";
 
-    public List<Usuario> obtenerTodos() {
-        EntityManager em = emf.createEntityManager();
-        try {
-            TypedQuery<Usuario> query = em.createQuery(
-                    "SELECT u FROM Usuario u", Usuario.class
-            );
-            return query.getResultList();
-        } finally {
-            em.close();
-        }
-    }
+        try (Connection con = ConexionBD.obtenerConexion();
+             Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
 
-    public Optional<Usuario> buscarPorId(Long id) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            Usuario usuario = em.find(Usuario.class, id);
-            return Optional.ofNullable(usuario);
-        } finally {
-            em.close();
-        }
-    }
-
-    public boolean eliminarPorId(Long id) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            Usuario usuario = em.find(Usuario.class, id);
-            if (usuario != null) {
-                em.remove(usuario);
-                em.getTransaction().commit();
-                return true;
+            while (rs.next()) {
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setApellidos(rs.getString("apellidos"));
+                usuario.setCelular(rs.getString("celular"));
+                usuario.setNumero(rs.getString("numero"));
+                usuario.setTipo(rs.getString("tipo"));
+                lista.add(usuario);
             }
-            return false;
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RuntimeException("Error al eliminar usuario", e);
-        } finally {
-            em.close();
+        }
+        return lista;
+    }
+
+    public void eliminar(int id) throws SQLException {
+        String sql = "DELETE FROM usuarios WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            stmt.executeUpdate();
         }
     }
 
-    public void actualizarUsuario(Usuario usuario) {
-        EntityManager em = emf.createEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(usuario);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            if (em.getTransaction().isActive()) {
-                em.getTransaction().rollback();
-            }
-            throw new RuntimeException("Error al actualizar usuario", e);
-        } finally {
-            em.close();
+    public void actualizar(Usuario u) throws SQLException {
+        String sql = """
+            UPDATE usuarios 
+            SET nombre = ?, 
+                apellidos = ?, 
+                celular = ?, 
+                numero = ?, 
+                tipo = ? 
+            WHERE id = ?
+            """;
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setString(1, u.getNombre());
+            stmt.setString(2, u.getApellidos());
+            stmt.setString(3, u.getCelular());
+            stmt.setString(4, u.getNumero());
+            stmt.setString(5, u.getTipo());
+            stmt.setInt(6, u.getId());
+            stmt.executeUpdate();
         }
+    }
+
+    // Método adicional equivalente a buscarPorNombre del ProductoDAO
+    public Usuario buscarPorNombre(String nombre) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE nombre = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setString(1, nombre);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNombre(rs.getString("nombre"));
+                usuario.setApellidos(rs.getString("apellidos"));
+                usuario.setCelular(rs.getString("celular"));
+                usuario.setNumero(rs.getString("numero"));
+                usuario.setTipo(rs.getString("tipo"));
+                return usuario;
+            }
+        }
+        return null;
     }
 }
