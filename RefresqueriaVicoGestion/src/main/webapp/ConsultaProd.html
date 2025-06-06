@@ -29,6 +29,9 @@
     <th>ID</th>
     <th>Nombre</th>
     <th>Precio</th>
+    <th>Stock</th>
+    <th>Vendidos</th> <!-- Nueva columna -->
+    <th>Acciones</th>
   </tr>
   </thead>
   <tbody>
@@ -36,19 +39,39 @@
   </tbody>
 </table>
 
-<script>
-  let productos = [];
+<!-- FORMULARIO PARA ALTA Y MODIFICACIÓN -->
+<div style="margin-top: 20px; background-color: #d0f0c0; padding: 10px;">
+  <h3 style="margin: 0 0 10px 0;">Alta / Modificación de Producto</h3>
+  <form id="formProducto">
+    <input type="hidden" id="idProd" />
+    <input type="text" id="nombreProd" placeholder="Nombre" required />
+    <input type="number" step="0.01" id="precioProd" placeholder="Precio" required />
+    <input type="number" id="stockProd" placeholder="Stock" min="0" required />
+    <input type="number" id="vendidosProd" placeholder="Vendidos" min="0" required /> <!-- Campo nuevos -->
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="limpiarFormularioProducto()">Cancelar</button>
+  </form>
+</div>
 
-  // Guarda los ids de productos seleccionados
+<script>
+  const API_PRODUCTOS = 'http://localhost:8081/RefresqueriaVicoGestion/api/productos';
+  let productos = [];
   let seleccionados = new Set();
+
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarProductos();
+    document.getElementById("formProducto").addEventListener("submit", guardarProducto);
+    document.getElementById('seleccionarTodo').addEventListener('change', seleccionarTodos);
+  });
 
   async function cargarProductos() {
     try {
-      const resp = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos');
+      const resp = await fetch(API_PRODUCTOS);
       if (!resp.ok) throw new Error('Error al cargar productos');
       productos = await resp.json();
       seleccionados.clear();
       document.getElementById('seleccionarTodo').checked = false;
+      document.getElementById('seleccionarTodo').indeterminate = false;
       mostrarProductos(productos);
     } catch (error) {
       alert('No se pudieron cargar los productos: ' + error.message);
@@ -60,34 +83,32 @@
     tbody.innerHTML = "";
 
     lista.forEach(prod => {
-      const fila = document.createElement("tr");
-
-      fila.innerHTML = `
-        <td><input type="checkbox" class="chkProducto" data-id="${prod.id}" /></td>
-        <td>${prod.id}</td>
-        <td>${prod.nombre}</td>
-        <td>$${parseFloat(prod.precio).toFixed(2)}</td>
+      tbody.innerHTML += `
+        <tr>
+          <td><input type="checkbox" class="chkProducto" data-id="${prod.id}" ${seleccionados.has(prod.id) ? 'checked' : ''} /></td>
+          <td>${prod.id}</td>
+          <td>${prod.nombre}</td>
+          <td>$${parseFloat(prod.precio).toFixed(2)}</td>
+          <td>${prod.stock != null ? prod.stock : 0}</td>
+          <td>${prod.vendidos != null ? prod.vendidos : 0}</td> <!-- Mostrar vendidos -->
+          <td>
+            <button onclick='editarProducto(${JSON.stringify(prod)})'>Modificar</button>
+            <button onclick='eliminarProducto(${prod.id})'>Eliminar</button>
+          </td>
+        </tr>
       `;
-
-      tbody.appendChild(fila);
     });
 
-    // Agregar listeners a los checkboxes para actualizar el Set
     document.querySelectorAll(".chkProducto").forEach(chk => {
       chk.addEventListener("change", function() {
         const id = parseInt(this.dataset.id);
-        if (this.checked) {
-          seleccionados.add(id);
-        } else {
-          seleccionados.delete(id);
-        }
+        this.checked ? seleccionados.add(id) : seleccionados.delete(id);
         actualizarSeleccionarTodo();
       });
     });
   }
 
-  // Control "Seleccionar todo"
-  document.getElementById('seleccionarTodo').addEventListener('change', function() {
+  function seleccionarTodos() {
     const checkboxes = document.querySelectorAll('.chkProducto');
     seleccionados.clear();
     if (this.checked) {
@@ -96,62 +117,109 @@
         seleccionados.add(parseInt(chk.dataset.id));
       });
     } else {
-      checkboxes.forEach(chk => {
-        chk.checked = false;
-      });
+      checkboxes.forEach(chk => chk.checked = false);
     }
-  });
+    actualizarSeleccionarTodo();
+  }
 
-  // Actualiza el checkbox "Seleccionar todo" según selección individual
   function actualizarSeleccionarTodo() {
     const total = productos.length;
     const selCount = seleccionados.size;
     const chkTodo = document.getElementById('seleccionarTodo');
-    chkTodo.checked = selCount > 0 && selCount === total;
+    chkTodo.checked = selCount === total && total > 0;
     chkTodo.indeterminate = selCount > 0 && selCount < total;
   }
 
-  // Ordenar y mostrar
   function ordenarPor(campo) {
-    productos.sort((a, b) => {
-      if (campo === "id" || campo === "precio") {
+    const copia = [...productos];
+    copia.sort((a, b) => {
+      if (campo === "id" || campo === "precio" || campo === "stock" || campo === "vendidos")
         return a[campo] - b[campo];
-      }
       return a[campo].localeCompare(b[campo]);
     });
-    mostrarProductos(productos);
+    mostrarProductos(copia);
   }
 
-  // Eliminar todos los productos seleccionados
   async function eliminarSeleccionados() {
     if (seleccionados.size === 0) {
       alert("Selecciona al menos un producto para eliminar.");
       return;
     }
 
-    if (!confirm(`¿Estás seguro de eliminar ${seleccionados.size} producto(s)?`)) return;
+    if (!confirm(`¿Eliminar ${seleccionados.size} producto(s)?`)) return;
 
     try {
       for (const id of seleccionados) {
-        const resp = await fetch(`http://localhost:8081/RefresqueriaVicoGestion/api/productos?id=${id}`, {
-          method: 'DELETE'
-        });
+        const resp = await fetch(`${API_PRODUCTOS}?id=${id}`, { method: 'DELETE' });
         if (!resp.ok) throw new Error(`Error eliminando producto ID ${id}`);
         const resultado = await resp.json();
         if (!resultado.exito) throw new Error(`No se pudo eliminar producto ID ${id}`);
       }
-      alert('Productos eliminados correctamente.');
-      seleccionados.clear();
-      document.getElementById('seleccionarTodo').checked = false;
-      await cargarProductos();
+      alert('Productos eliminados.');
+      cargarProductos();
     } catch (error) {
-      alert('Error al eliminar productos: ' + error.message);
+      alert("Error: " + error.message);
     }
   }
 
-  window.onload = () => {
-    cargarProductos();
-  };
+  async function eliminarProducto(id) {
+    if (!confirm("¿Seguro que deseas eliminar este producto?")) return;
+
+    try {
+      const resp = await fetch(`${API_PRODUCTOS}?id=${id}`, { method: 'DELETE' });
+      if (!resp.ok) throw new Error("Error al eliminar");
+      const resultado = await resp.json();
+      if (!resultado.exito) throw new Error("No se pudo eliminar");
+      cargarProductos();
+    } catch (e) {
+      alert("Error: " + e.message);
+    }
+  }
+
+  function editarProducto(prod) {
+    document.getElementById("idProd").value = prod.id;
+    document.getElementById("nombreProd").value = prod.nombre;
+    document.getElementById("precioProd").value = prod.precio;
+    document.getElementById("stockProd").value = prod.stock != null ? prod.stock : 0;
+    document.getElementById("vendidosProd").value = prod.vendidos != null ? prod.vendidos : 0;
+  }
+
+  function limpiarFormularioProducto() {
+    document.getElementById("formProducto").reset();
+    document.getElementById("idProd").value = "";
+  }
+
+  async function guardarProducto(e) {
+    e.preventDefault();
+
+    const producto = {
+      id: document.getElementById("idProd").value || null,
+      nombre: document.getElementById("nombreProd").value,
+      precio: parseFloat(document.getElementById("precioProd").value),
+      stock: parseInt(document.getElementById("stockProd").value) || 0,
+      vendidos: parseInt(document.getElementById("vendidosProd").value) || 0
+    };
+
+    const metodo = producto.id ? "PUT" : "POST";
+
+    try {
+      const resp = await fetch(API_PRODUCTOS, {
+        method: metodo,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(producto)
+      });
+
+      if (resp.ok) {
+        limpiarFormularioProducto();
+        cargarProductos();
+      } else {
+        const error = await resp.text();
+        alert("Error: " + error);
+      }
+    } catch (err) {
+      alert("Error al guardar: " + err.message);
+    }
+  }
 </script>
 
 </body>
