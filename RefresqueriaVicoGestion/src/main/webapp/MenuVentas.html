@@ -1,9 +1,29 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Menú de Ventas</title>
-  <link rel="stylesheet" href="CSS/MenuVentas.css">
+  <link rel="stylesheet" href="CSS/MenuVentas.css" />
+  <style>
+    .producto {
+      cursor: pointer;
+      border: 1px solid #ccc;
+      margin: 5px;
+      padding: 5px;
+      width: 150px;
+      text-align: center;
+    }
+    .producto img {
+      max-width: 100%;
+    }
+    .botones-venta button {
+      margin: 5px;
+    }
+    #listaVenta ul {
+      list-style: none;
+      padding: 0;
+    }
+  </style>
 </head>
 <body>
 
@@ -25,33 +45,63 @@
     </div>
 
     <div class="productos" id="lista-productos">
-      <!-- Los productos se cargarán aquí dinámicamente -->
+      <!-- Productos cargados dinámicamente -->
     </div>
   </div>
 
   <div class="right-panel">
     <div class="venta">
       <h2>Venta nueva</h2>
-      <p>No hay artículos en la cuenta</p>
-      <hr>
-      <p><strong>Subtotal:</strong> $0.00</p>
-      <p><strong>Total:</strong> $0.00</p>
+      <div id="listaVenta">
+        <p>No hay artículos en la cuenta</p>
+      </div>
+      <hr />
+      <p><strong>Subtotal:</strong> $<span id="subtotal">0.00</span> MXN</p>
+
+      <div style="margin: 10px 0;">
+        <label for="pagoUSD">Pago en dólares (USD): </label>
+        <input
+                type="number"
+                id="pagoUSD"
+                min="0"
+                step="0.01"
+                placeholder="Cantidad en USD"
+                value="0"
+                oninput="actualizarTotales()"
+        />
+        <small style="display: block;">Tipo de cambio: 1 USD = $<span id="tipoCambio">18.5</span> MXN</small>
+      </div>
+
+      <div style="margin: 10px 0;">
+        <label for="pagoPesos">Pago en pesos (MXN): </label>
+        <input
+                type="number"
+                id="pagoPesos"
+                min="0"
+                step="0.01"
+                placeholder="Cantidad en MXN"
+                value="0"
+                oninput="actualizarTotales()"
+        />
+      </div>
+
+      <p><strong>Total pagado en pesos equivalentes:</strong> $<span id="totalPagado">0.00</span> MXN</p>
+      <p><strong>Faltante para completar:</strong> $<span id="faltante">0.00</span> MXN</p>
 
       <div class="botones-venta">
-        <button class="pagar-btn" onclick="alert('Pagar')">Pagar</button>
-        <button class="accion-btn" onclick="alert('Eliminar artículo')">Eliminar</button>
-        <button class="accion-btn cancelar-btn" onclick="alert('Cancelar venta')">Cancelar</button>
+        <button class="pagar-btn" onclick="pagar()">Pagar</button>
+        <button class="accion-btn" onclick="eliminarSeleccionados()">Eliminar</button>
+        <button class="accion-btn cancelar-btn" onclick="cancelarVenta()">Cancelar</button>
       </div>
     </div>
   </div>
 </main>
 
 <script>
-  // Código JavaScript sin cambios
+  const tipoCambio = 20.0; // Tipo de cambio USD a MXN
+  document.getElementById("tipoCambio").textContent = tipoCambio.toFixed(2);
+
   const venta = [];
-  const listaVenta = document.createElement("ul");
-  listaVenta.style.listStyle = "none";
-  listaVenta.style.padding = 0;
 
   function cargarProductos() {
     fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
@@ -65,7 +115,9 @@
               data.forEach(producto => {
                 const div = document.createElement("div");
                 div.className = "producto";
-                div.onclick = () => agregarProducto(producto);
+                div.onclick = () => {
+                  agregarProducto(producto);
+                };
 
                 const img = document.createElement("img");
                 img.src = producto.imagen || "https://via.placeholder.com/150x100?text=Producto";
@@ -88,16 +140,18 @@
 
   function agregarProducto(producto) {
     venta.push(producto);
-    renderizarVenta();
+    renderizarListaVenta();
+    actualizarTotales();
   }
 
-  function renderizarVenta() {
-    const panel = document.querySelector(".venta");
-    listaVenta.innerHTML = "";
-    let subtotal = 0;
-
+  function renderizarListaVenta() {
+    const listaVenta = document.getElementById("listaVenta");
+    if (venta.length === 0) {
+      listaVenta.innerHTML = "<p>No hay artículos en la cuenta</p>";
+      return;
+    }
+    const ul = document.createElement("ul");
     venta.forEach((p, index) => {
-      subtotal += p.precio;
       const li = document.createElement("li");
 
       const checkbox = document.createElement("input");
@@ -106,44 +160,49 @@
       checkbox.style.marginRight = "10px";
 
       li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(`${p.nombre} - $${p.precio.toFixed(2)}`));
-      listaVenta.appendChild(li);
+      li.appendChild(document.createTextNode(`${p.nombre} - $${p.precio.toFixed(2)} MXN`));
+      ul.appendChild(li);
     });
+    listaVenta.innerHTML = "";
+    listaVenta.appendChild(ul);
+  }
 
-    panel.innerHTML = `
-      <h2>Venta nueva</h2>
-      ${venta.length === 0 ? "<p>No hay artículos en la cuenta</p>" : ""}
-    `;
-    panel.appendChild(listaVenta);
-    panel.innerHTML += `
-      <hr>
-      <p><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
-      <p><strong>Total:</strong> $${subtotal.toFixed(2)}</p>
-      <div class="botones-venta">
-        <button class="pagar-btn" onclick="pagar()">Pagar</button>
-        <button class="accion-btn" onclick="eliminarSeleccionados()">Eliminar</button>
-        <button class="accion-btn cancelar-btn" onclick="cancelarVenta()">Cancelar</button>
-      </div>
-    `;
+  function actualizarTotales() {
+    const subtotal = venta.reduce((acc, p) => acc + p.precio, 0);
+    document.getElementById("subtotal").textContent = subtotal.toFixed(2);
+
+    const pagoUSD = parseFloat(document.getElementById("pagoUSD").value) || 0;
+    const pagoPesos = parseFloat(document.getElementById("pagoPesos").value) || 0;
+    const totalPagado = pagoUSD * tipoCambio + pagoPesos;
+    const faltante = subtotal - totalPagado;
+
+    document.getElementById("totalPagado").textContent = totalPagado.toFixed(2);
+    document.getElementById("faltante").textContent = (faltante > 0 ? faltante : 0).toFixed(2);
   }
 
   function eliminarSeleccionados() {
-    const seleccionados = Array.from(listaVenta.querySelectorAll("input[type='checkbox']:checked"));
-    if (seleccionados.length === 0) {
+    const checkboxes = document.querySelectorAll("#listaVenta input[type='checkbox']:checked");
+    if (checkboxes.length === 0) {
       alert("Selecciona al menos un producto para eliminar.");
       return;
     }
-    const indices = seleccionados.map(cb => parseInt(cb.dataset.index));
-    for (let i = indices.length - 1; i >= 0; i--) {
-      venta.splice(indices[i], 1);
+    // Obtener índices y eliminar de atrás para no afectar índices
+    const indices = Array.from(checkboxes).map(cb => parseInt(cb.dataset.index)).sort((a, b) => b - a);
+    for (const i of indices) {
+      venta.splice(i, 1);
     }
-    renderizarVenta();
+    renderizarListaVenta();
+    actualizarTotales();
   }
 
   function cancelarVenta() {
     if (confirm("¿Estás seguro de cancelar la venta?")) {
       venta.length = 0;
-      renderizarVenta();
+      renderizarListaVenta();
+      actualizarTotales();
+      // Reset pagos
+      document.getElementById("pagoUSD").value = 0;
+      document.getElementById("pagoPesos").value = 0;
     }
   }
 
@@ -152,13 +211,48 @@
       alert("No hay productos para pagar.");
       return;
     }
-    const total = venta.reduce((acc, p) => acc + p.precio, 0);
-    alert(`Pago simulado exitoso. Total pagado: $${total.toFixed(2)}`);
+
+    const subtotal = venta.reduce((acc, p) => acc + p.precio, 0);
+
+    const pagoUSD = parseFloat(document.getElementById("pagoUSD").value) || 0;
+    const pagoPesos = parseFloat(document.getElementById("pagoPesos").value) || 0;
+
+    const pagadoEnPesos = pagoUSD * tipoCambio + pagoPesos;
+    const faltante = subtotal - pagadoEnPesos;
+
+    if (pagadoEnPesos < subtotal) {
+      alert(
+              `Pago insuficiente.\nPagaste $${pagoUSD.toFixed(2)} USD = $${(pagoUSD * tipoCambio).toFixed(
+                      2
+              )} MXN\nmás $${pagoPesos.toFixed(2)} MXN\nAún faltan $${faltante.toFixed(2)} MXN para completar el pago.`
+      );
+      return;
+    }
+
+    const cambio = pagadoEnPesos - subtotal;
+
+    alert(
+            `Pago completo recibido.\n` +
+            `Pagaste $${pagoUSD.toFixed(2)} USD = $${(pagoUSD * tipoCambio).toFixed(2)} MXN\n` +
+            `más $${pagoPesos.toFixed(2)} MXN\n` +
+            `Tu cambio es $${cambio.toFixed(2)} MXN\n` +
+            `¡Gracias por tu compra!`
+    );
+
+    // Limpiar venta sin preguntar ni mensaje
     venta.length = 0;
-    renderizarVenta();
+    renderizarListaVenta();
+    actualizarTotales();
+
+    // Reset pagos
+    document.getElementById("pagoUSD").value = 0;
+    document.getElementById("pagoPesos").value = 0;
   }
 
-  window.onload = cargarProductos;
+
+  window.onload = () => {
+    cargarProductos();
+  };
 </script>
 
 </body>
