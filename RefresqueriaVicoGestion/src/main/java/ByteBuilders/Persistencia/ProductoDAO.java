@@ -15,7 +15,7 @@ public class ProductoDAO {
             stmt.setString(1, p.getNombre());
             stmt.setBigDecimal(2, p.getPrecio());
             stmt.setInt(3, p.getStock());
-            stmt.setInt(4, p.getVendidos());
+            stmt.setInt(4, p.getVendidos() != null ? p.getVendidos() : 0);
             stmt.executeUpdate();
         }
     }

@@ -28,9 +28,6 @@
         <label for="stock">Stock:</label>
         <input type="number" id="stock" name="stock" required min="0" placeholder="Ej. 10">
 
-        <label for="vendidos">Vendidos:</label>
-        <input type="number" id="vendidos" name="vendidos" required min="0" value="0">
-
         <button type="submit">Guardar Producto</button>
     </form>
 
@@ -47,7 +44,6 @@
         const nombre = form.nombre.value.trim();
         const precio = parseFloat(form.precio.value);
         const stock = parseInt(form.stock.value, 10);
-        const vendidos = parseInt(form.vendidos.value, 10);
 
         const regexNombre = /^[a-zA-Z0-9 ]+$/;
         if (!regexNombre.test(nombre)) {
@@ -63,12 +59,8 @@
             mostrarMensaje('❌ Stock inválido.', true);
             return;
         }
-        if (isNaN(vendidos) || vendidos < 0) {
-            mostrarMensaje('❌ Vendidos inválido.', true);
-            return;
-        }
 
-        const producto = { nombre, precio, stock, vendidos };
+        const producto = { nombre, precio, stock };
 
         try {
             const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos', {
