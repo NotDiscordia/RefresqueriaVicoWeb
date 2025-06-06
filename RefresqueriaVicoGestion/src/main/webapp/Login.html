@@ -1,54 +1,80 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Inicio de Sesión</title>
-  <link rel="stylesheet" href="CSS/Login.css">
+    <meta charset="UTF-8">
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="CSS/Login.css">
 </head>
 <body>
 
 <div class="titulo">
-  <div class="arriba">REFRESQUERIA</div>
-  <div class="abajo">VICO</div>
+    <div class="arriba">REFRESQUERIA</div>
+    <div class="abajo">VICO</div>
 </div>
 
 <h1>Inicio de Sesión</h1>
 
 <div class="login-box">
-  <form action="http://localhost:8080/RefresqueriaVicoGestion/api/usuarios" method="post">
-   <input type="text" id="idUsuario" name="idUsuario" placeholder="ID del empleado" required>
+    <input type="text" id="celular" placeholder="Celular del empleado" required>
     <div class="input-container">
-      <input type="password" id="numeroEmpleado" name="numeroEmpleado" placeholder="Contraseña del empleado" required>
-      <span class="toggle-password" onclick="togglePasswordVisibility()">👁️</span>
+        <input type="password" id="contrasena" placeholder="Contraseña del empleado" required>
     </div>
-    <button type="submit">Ingresar</button>
-  </form>
+    <button onclick="login()">Ingresar</button>
 </div>
 
-<div class="notification" id="errorNotification">
-  <%
-  String error = request.getParameter("error");
-  if (error != null) {
-  out.print("❌ Usuario o contraseña incorrectos.");
-  }
-  %>
-</div>
+<!-- Toast personalizado -->
+<div id="toast" class="toast"></div>
 
 <footer>&copy; 2025 Sistema de Gestión Vico</footer>
 
 <script>
-  function togglePasswordVisibility() {
-    const passwordInput = document.getElementById('numeroEmpleado');
-    const toggleButton = document.querySelector('.toggle-password');
+    function showToast(message, type = "error") {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.className = "toast show " + type;
 
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      toggleButton.textContent = '🙈';
-    } else {
-      passwordInput.type = 'password';
-      toggleButton.textContent = '👁️';
+        setTimeout(() => {
+            toast.className = toast.className.replace("show", "");
+        }, 3000);
     }
-  }
+
+    function login() {
+        const celular = document.getElementById("celular").value.trim();
+        const contrasena = document.getElementById("contrasena").value.trim();
+
+        if (celular === "") {
+            showToast("⚠️ Por favor, ingresa el número de celular.", "warning");
+            return;
+        }
+
+        if (contrasena === "") {
+            showToast("⚠️ Por favor, ingresa la contraseña.", "warning");
+            return;
+        }
+
+        const data = { celular, contrasena };
+
+        fetch("http://localhost:8081/RefresqueriaVicoGestion/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Credenciales incorrectas");
+                return response.json();
+            })
+            .then(usuario => {
+                console.log("Login exitoso", usuario);
+                showToast("✅ Bienvenido " + usuario.nombre, "success");
+                setTimeout(() => window.location.href = "MainMenu.html", 1500);
+            })
+            .catch(error => {
+                console.error("Error:", error.message);
+                showToast("❌ Usuario o contraseña incorrectos.", "error");
+            });
+    }
 </script>
 
 </body>
