@@ -21,7 +21,7 @@ body {
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-h2 {
+h1, h2 {
     text-align: center;
     color: #004d40;
     margin-bottom: 25px;
@@ -34,16 +34,24 @@ label {
     font-weight: 500;
 }
 
+/* Estilos para todos los inputs y selects en el formulario */
 input[type="text"],
-input[type="number"] {
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+select {
     width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
     border-radius: 4px;
     box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
 }
 
+/* Botón igual para ambos formularios */
 button {
     width: 100%;
     padding: 12px;
@@ -74,7 +82,7 @@ button:hover {
     border: 1px solid #900;
 }
 
-.exito {
+.exito, .success {
     background-color: #dfd;
     color: #060;
     border: 1px solid #060;

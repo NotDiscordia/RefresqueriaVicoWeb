@@ -5,72 +5,41 @@ public class Usuario {
     private String nombre;
     private String apellidos;
     private String celular;
-    private String numero; // Contraseña
-    private String tipo;   // "empleado", "admin", etc.
+    private String contrasena; // Sin "ñ"
+    private String rol;
+    private String email;
 
-    public Usuario() {
-    }
+    public Usuario() {}
 
-    public Usuario(int id, String nombre, String apellidos, String celular, String numero, String tipo, String email) {
+    public Usuario(int id, String nombre, String apellidos, String celular, String contrasena, String rol, String email) {
         this.id = id;
         this.nombre = nombre;
         this.apellidos = apellidos;
         this.celular = celular;
-        this.numero = numero;
-        this.tipo = tipo;
+        this.contrasena = contrasena;
+        this.rol = rol;
+        this.email = email;
     }
 
-    // Getters y Setters
+    // Getters y setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public int getId() {
-        return id;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public void setId(int id) {
-        this.id = id;
-    }
+    public String getApellidos() { return apellidos; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
-    public String getNombre() {
-        return nombre;
-    }
+    public String getCelular() { return celular; }
+    public void setCelular(String celular) { this.celular = celular; }
 
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
+    public String getContrasena() { return contrasena; }
+    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
-    public String getApellidos() {
-        return apellidos;
-    }
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
-
-    public String getCelular() {
-        return celular;
-    }
-
-    public void setCelular(String celular) {
-        this.celular = celular;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public void setEmail(String email) {
-
-    }
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

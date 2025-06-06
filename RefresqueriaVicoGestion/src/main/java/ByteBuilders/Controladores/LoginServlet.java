@@ -23,18 +23,21 @@ public class LoginServlet extends HttpServlet {
         try (BufferedReader reader = request.getReader()) {
             Usuario usuarioLogin = gson.fromJson(reader, Usuario.class);
 
-            int id = usuarioLogin.getId();
-            String numeroIngresado = usuarioLogin.getNumero();
+            String celular = usuarioLogin.getCelular();
+            String contrasenaIngresada = usuarioLogin.getContrasena();
 
-            Usuario usuarioBD = usuarioService.obtenerUsuarioPorId(id);
+            if (celular == null || celular.isEmpty() || contrasenaIngresada == null || contrasenaIngresada.isEmpty()) {
+                manejarError(response, HttpServletResponse.SC_BAD_REQUEST, "Celular y contraseña son obligatorios");
+                return;
+            }
 
-            if (usuarioBD != null && usuarioBD.getNumero().equals(numeroIngresado)) {
-                // Login exitoso
+            Usuario usuarioBD = usuarioService.obtenerUsuarioPorCelular(celular);
+
+            if (usuarioBD != null && usuarioBD.getContrasena().equals(contrasenaIngresada)) {
                 String json = gson.toJson(usuarioBD);
                 enviarJSON(response, json);
             } else {
-                // Login fallido
-                manejarError(response, HttpServletResponse.SC_UNAUTHORIZED, "ID o número incorrecto");
+                manejarError(response, HttpServletResponse.SC_UNAUTHORIZED, "Celular o contraseña incorrectos");
             }
 
         } catch (Exception e) {

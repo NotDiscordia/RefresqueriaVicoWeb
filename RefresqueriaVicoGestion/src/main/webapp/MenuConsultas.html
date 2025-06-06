@@ -3,89 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <title>Consulta de Usuarios</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #9fc1f3;
-      padding: 20px;
-      position: relative;
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    .volver {
-      text-decoration: none;
-      color: #ff9c19;
-      display: inline-block;
-      margin-bottom: 20px;
-    }
-    .botones {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .botones button {
-      margin: 0 10px;
-      padding: 10px 15px;
-      background-color: #00796b;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    .botones button:hover {
-      background-color: #004d40;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    th, td {
-      padding: 12px 15px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-    th {
-      background-color: #00796b;
-      color: white;
-      cursor: pointer;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    .encabezado-esquina {
-      position: absolute;
-      top: 10px;
-      right: 20px;
-      text-align: right;
-      font-weight: bold;
-      font-family: Arial, sans-serif;
-    }
-    .encabezado-esquina .arriba {
-      font-size: 14px;
-      color: #ff9933;
-      text-shadow: 1px 1px 1px black;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-    .encabezado-esquina .abajo {
-      font-size: 22px;
-      color: #1a75ff;
-      font-family: 'Georgia', serif;
-      text-shadow: 1px 1px 0px black, -1px -1px 0px black;
-    }
-  </style>
+  <link rel="stylesheet" href="CSS/MenuConsultas.css">
 </head>
 <body>
-
-<div class="encabezado-esquina">
-  <div class="arriba">REFRESQUERIA</div>
-  <div class="abajo">VICO</div>
-</div>
 
 <a class="volver" href="MenuInv.html">&larr; Volver</a>
 <h1>Consulta de Empleados</h1>
@@ -93,7 +13,7 @@
 <div class="botones">
   <button onclick="ordenarPor('id')">Ordenar por ID</button>
   <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-  <button onclick="ordenarPor('tipo')">Ordenar por Tipo</button>
+  <button onclick="ordenarPor('rol')">Ordenar por Rol</button>
   <button onclick="eliminarSeleccionados()">Eliminar seleccionados</button>
 </div>
 
@@ -103,7 +23,8 @@
     <th></th>
     <th>ID</th>
     <th>Nombre</th>
-    <th>Tipo</th>
+    <th>Apellidos</th>
+    <th>Rol</th>
     <th>Celular</th>
   </tr>
   </thead>
@@ -136,7 +57,8 @@
         <td><input type="checkbox" class="chk-usuario" value="${u.id}"></td>
         <td>${u.id}</td>
         <td>${u.nombre}</td>
-        <td>${u.tipo}</td>
+        <td>${u.apellidos}</td>
+        <td>${u.rol}</td>
         <td>${u.celular}</td>
       `;
       tbody.appendChild(fila);
@@ -177,10 +99,12 @@
     }
   }
 
+  // ESTA LÍNEA AL FINAL DEL SCRIPT
   window.onload = () => {
     cargarUsuarios();
   };
 </script>
+
 
 </body>
 </html>
