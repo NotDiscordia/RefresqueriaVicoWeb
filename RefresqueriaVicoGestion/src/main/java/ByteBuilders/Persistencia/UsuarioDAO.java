@@ -8,15 +8,15 @@ import java.util.List;
 public class UsuarioDAO {
 
     public void insertar(Usuario u) throws SQLException {
-        String sql = "INSERT INTO usuarios (nombre, apellidos, celular, numero, tipo) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO usuarios (nombre, apellidos, celular, contrasena, rol) VALUES (?, ?, ?, ?, ?)";
         try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
             stmt.setString(1, u.getNombre());
             stmt.setString(2, u.getApellidos());
             stmt.setString(3, u.getCelular());
-            stmt.setString(4, u.getNumero());
-            stmt.setString(5, u.getTipo());
+            stmt.setString(4, u.getContrasena());
+            stmt.setString(5, u.getRol());
             stmt.executeUpdate();
         }
     }
@@ -35,8 +35,8 @@ public class UsuarioDAO {
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setApellidos(rs.getString("apellidos"));
                 usuario.setCelular(rs.getString("celular"));
-                usuario.setNumero(rs.getString("numero"));
-                usuario.setTipo(rs.getString("tipo"));
+                usuario.setContrasena(rs.getString("contrasena"));
+                usuario.setRol(rs.getString("rol"));
                 return usuario;
             }
         }
@@ -57,8 +57,8 @@ public class UsuarioDAO {
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setApellidos(rs.getString("apellidos"));
                 usuario.setCelular(rs.getString("celular"));
-                usuario.setNumero(rs.getString("numero"));
-                usuario.setTipo(rs.getString("tipo"));
+                usuario.setContrasena(rs.getString("contrasena"));
+                usuario.setRol(rs.getString("rol"));
                 lista.add(usuario);
             }
         }
@@ -81,8 +81,8 @@ public class UsuarioDAO {
             SET nombre = ?, 
                 apellidos = ?, 
                 celular = ?, 
-                numero = ?, 
-                tipo = ? 
+                contrasena = ?, 
+                rol = ? 
             WHERE id = ?
             """;
 
@@ -92,14 +92,13 @@ public class UsuarioDAO {
             stmt.setString(1, u.getNombre());
             stmt.setString(2, u.getApellidos());
             stmt.setString(3, u.getCelular());
-            stmt.setString(4, u.getNumero());
-            stmt.setString(5, u.getTipo());
+            stmt.setString(4, u.getContrasena());
+            stmt.setString(5, u.getRol());
             stmt.setInt(6, u.getId());
             stmt.executeUpdate();
         }
     }
 
-    // Método adicional equivalente a buscarPorNombre del ProductoDAO
     public Usuario buscarPorNombre(String nombre) throws SQLException {
         String sql = "SELECT * FROM usuarios WHERE nombre = ?";
         try (Connection con = ConexionBD.obtenerConexion();
@@ -114,9 +113,30 @@ public class UsuarioDAO {
                 usuario.setNombre(rs.getString("nombre"));
                 usuario.setApellidos(rs.getString("apellidos"));
                 usuario.setCelular(rs.getString("celular"));
-                usuario.setNumero(rs.getString("numero"));
-                usuario.setTipo(rs.getString("tipo"));
+                usuario.setContrasena(rs.getString("contrasena"));
+                usuario.setRol(rs.getString("rol"));
                 return usuario;
+            }
+        }
+        return null;
+    }
+
+    public Usuario buscarPorCelular(String celular) throws SQLException {
+        String sql = "SELECT * FROM usuarios WHERE celular = ?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, celular);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Usuario usuario = new Usuario();
+                    usuario.setId(rs.getInt("id"));
+                    usuario.setNombre(rs.getString("nombre"));
+                    usuario.setApellidos(rs.getString("apellidos"));
+                    usuario.setCelular(rs.getString("celular"));
+                    usuario.setContrasena(rs.getString("contrasena"));
+                    usuario.setRol(rs.getString("rol"));
+                    return usuario;
+                }
             }
         }
         return null;

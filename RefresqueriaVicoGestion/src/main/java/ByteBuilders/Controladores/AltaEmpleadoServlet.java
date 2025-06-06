@@ -34,10 +34,23 @@ public class AltaEmpleadoServlet extends HttpServlet {
         configurarCORS(response);
         try (BufferedReader reader = request.getReader()) {
             Usuario usuario = gson.fromJson(reader, Usuario.class);
-            usuario.setTipo("empleado");
 
-            if (usuarioService.existeNombre(usuario.getNombre())) {
-                manejarError(response, 400, "El nombre ya está registrado");
+            // Si el email es una cadena vacía, lo convertimos en null
+            if (usuario.getEmail() != null && usuario.getEmail().trim().isEmpty()) {
+                usuario.setEmail(null);
+            }
+
+            // Validaciones básicas
+            if (usuario.getNombre() == null || usuario.getApellidos() == null ||
+                    usuario.getCelular() == null || usuario.getContrasena() == null ||
+                    usuario.getRol() == null) {
+                manejarError(response, 400, "Faltan campos obligatorios");
+                return;
+            }
+
+            // Validación: No permitir duplicado por celular
+            if (usuarioService.obtenerUsuarioPorCelular(usuario.getCelular()) != null) {
+                manejarError(response, 400, "Ya existe un usuario con ese celular");
                 return;
             }
 
@@ -55,6 +68,12 @@ public class AltaEmpleadoServlet extends HttpServlet {
         configurarCORS(response);
         try (BufferedReader reader = request.getReader()) {
             Usuario usuario = gson.fromJson(reader, Usuario.class);
+
+            // Si el campo email está vacío o solo espacios, lo convertimos a null
+            if (usuario.getEmail() != null && usuario.getEmail().trim().isEmpty()) {
+                usuario.setEmail(null);
+            }
+
             boolean exito = usuarioService.actualizarUsuario(usuario);
             enviarJSON(response, "{\"exito\": " + exito + "}");
         } catch (Exception e) {

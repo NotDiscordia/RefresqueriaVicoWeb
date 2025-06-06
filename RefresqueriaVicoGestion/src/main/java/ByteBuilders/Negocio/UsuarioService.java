@@ -25,6 +25,10 @@ public class UsuarioService {
         return dao.listar();
     }
 
+    public Usuario obtenerUsuarioPorCelular(String celular) throws SQLException {
+        return dao.buscarPorCelular(celular);
+    }
+
     // Método para buscar usuario por ID
     public Usuario obtenerUsuarioPorId(int id) throws SQLException {
         return dao.buscarPorId(id);
