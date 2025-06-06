@@ -10,101 +10,144 @@
 <a class="volver" href="MenuInv.html">&larr; Volver</a>
 <h1>Consulta de Empleados</h1>
 
+<!-- BOTONES DE ORDEN Y ELIMINACIÓN -->
 <div class="botones">
   <button onclick="ordenarPor('id')">Ordenar por ID</button>
   <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
   <button onclick="ordenarPor('rol')">Ordenar por Rol</button>
-  <button onclick="eliminarSeleccionados()">Eliminar seleccionados</button>
 </div>
 
+<!-- TABLA DE USUARIOS -->
 <table id="tablaUsuarios">
   <thead>
   <tr>
-    <th></th>
     <th>ID</th>
     <th>Nombre</th>
     <th>Apellidos</th>
     <th>Rol</th>
     <th>Celular</th>
+    <th>Acciones</th>
   </tr>
   </thead>
-  <tbody>
-  <!-- filas generadas por JS -->
-  </tbody>
+  <tbody></tbody>
 </table>
 
+<!-- FORMULARIO PARA ALTA Y MODIFICACIÓN (AHORA ABAJO) -->
+<div style="margin-top: 20px; background-color: #add8e6; padding: 10px;">
+  <h3 style="margin: 0 0 10px 0;">Modificaciones</h3>
+  <form id="formEmpleado">
+    <input type="hidden" id="id" />
+    <input type="text" id="nombre" placeholder="Nombre" required />
+    <input type="text" id="apellidos" placeholder="Apellidos" required />
+    <input type="text" id="celular" placeholder="Celular" required />
+    <input type="password" id="contrasena" placeholder="Contraseña" required />
+    <input type="text" id="rol" placeholder="Rol" required />
+    <input type="email" id="email" placeholder="Email" />
+    <button type="submit">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()">Cancelar</button>
+  </form>
+</div>
+
+
+<!-- SCRIPT -->
 <script>
-  let usuarios = [];
+  const API_URL = "http://localhost:8081/RefresqueriaVicoGestion/api/usuarios";
+  let usuariosGlobal = [];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarUsuarios();
+    document.getElementById("formEmpleado").addEventListener("submit", guardarUsuario);
+  });
 
   async function cargarUsuarios() {
-    try {
-      const resp = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/usuarios');
-      if (!resp.ok) throw new Error('Error al cargar usuarios');
-      usuarios = await resp.json();
-      mostrarUsuarios(usuarios);
-    } catch (error) {
-      alert('No se pudieron cargar los empleados: ' + error.message);
+    const res = await fetch(API_URL);
+    usuariosGlobal = await res.json();
+    renderizarTabla(usuariosGlobal);
+  }
+
+  function renderizarTabla(usuarios) {
+    const tbody = document.querySelector("#tablaUsuarios tbody");
+    tbody.innerHTML = "";
+    usuarios.forEach(u => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${u.id}</td>
+          <td>${u.nombre}</td>
+          <td>${u.apellidos}</td>
+          <td>${u.rol}</td>
+          <td>${u.celular}</td>
+          <td>
+            <button onclick='editar(${JSON.stringify(u)})'>Modificar</button>
+            <button onclick='eliminar(${u.id})'>Eliminar</button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  async function guardarUsuario(e) {
+    e.preventDefault();
+    const usuario = {
+      id: document.getElementById("id").value || null,
+      nombre: document.getElementById("nombre").value,
+      apellidos: document.getElementById("apellidos").value,
+      celular: document.getElementById("celular").value,
+      contrasena: document.getElementById("contrasena").value,
+      rol: document.getElementById("rol").value,
+      email: document.getElementById("email").value
+    };
+
+    const metodo = usuario.id ? "PUT" : "POST";
+
+    const res = await fetch(API_URL, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(usuario)
+    });
+
+    if (res.ok) {
+      limpiarFormulario();
+      cargarUsuarios();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
     }
   }
 
-  function mostrarUsuarios(lista) {
-    const tbody = document.querySelector("#tablaUsuarios tbody");
-    tbody.innerHTML = "";
+  function editar(usuario) {
+    document.getElementById("id").value = usuario.id;
+    document.getElementById("nombre").value = usuario.nombre;
+    document.getElementById("apellidos").value = usuario.apellidos;
+    document.getElementById("celular").value = usuario.celular;
+    document.getElementById("contrasena").value = usuario.contrasena;
+    document.getElementById("rol").value = usuario.rol;
+    document.getElementById("email").value = usuario.email || "";
+  }
 
-    lista.forEach(u => {
-      const fila = document.createElement("tr");
-      fila.innerHTML = `
-        <td><input type="checkbox" class="chk-usuario" value="${u.id}"></td>
-        <td>${u.id}</td>
-        <td>${u.nombre}</td>
-        <td>${u.apellidos}</td>
-        <td>${u.rol}</td>
-        <td>${u.celular}</td>
-      `;
-      tbody.appendChild(fila);
-    });
+  async function eliminar(id) {
+    if (!confirm("¿Seguro que deseas eliminar este empleado?")) return;
+    const res = await fetch(API_URL + "?id=" + id, { method: "DELETE" });
+    if (res.ok) {
+      cargarUsuarios();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
+    }
+  }
+
+  function limpiarFormulario() {
+    document.getElementById("formEmpleado").reset();
+    document.getElementById("id").value = "";
   }
 
   function ordenarPor(campo) {
-    usuarios.sort((a, b) => {
-      if (campo === "id") return a[campo] - b[campo];
-      return a[campo].localeCompare(b[campo]);
+    const ordenados = [...usuariosGlobal].sort((a, b) => {
+      if (a[campo] < b[campo]) return -1;
+      if (a[campo] > b[campo]) return 1;
+      return 0;
     });
-    mostrarUsuarios(usuarios);
+    renderizarTabla(ordenados);
   }
-
-  async function eliminarSeleccionados() {
-    const checkboxes = document.querySelectorAll('.chk-usuario:checked');
-    const ids = Array.from(checkboxes).map(chk => chk.value);
-
-    if (ids.length === 0) {
-      alert("Selecciona al menos un usuario para eliminar.");
-      return;
-    }
-
-    if (!confirm(`¿Deseas eliminar ${ids.length} usuario(s)?`)) return;
-
-    try {
-      for (let id of ids) {
-        const resp = await fetch(`http://localhost:8081/RefresqueriaVicoGestion/api/usuarios/${id}`, {
-          method: 'DELETE'
-        });
-        if (!resp.ok) throw new Error(`Error eliminando ID ${id}`);
-      }
-
-      alert("Usuarios eliminados correctamente.");
-      cargarUsuarios();
-    } catch (error) {
-      alert("Error al eliminar usuarios: " + error.message);
-    }
-  }
-
-  // ESTA LÍNEA AL FINAL DEL SCRIPT
-  window.onload = () => {
-    cargarUsuarios();
-  };
 </script>
-
 
 </body>
 </html>
