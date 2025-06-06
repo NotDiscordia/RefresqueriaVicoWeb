@@ -62,13 +62,24 @@ public class ProductoServlet extends HttpServlet {
 
         try {
             Producto actualizado = gson.fromJson(request.getReader(), Producto.class);
+
+            if (actualizado == null || actualizado.getId() == null) {
+                response.sendError(400, "Producto o ID no proporcionado");
+                return;
+            }
+
             boolean exito = service.actualizarProducto(actualizado);
-            response.getWriter().write("{\"exito\": " + exito + "}");
+            if (exito) {
+                response.getWriter().write("{\"exito\": true}");
+            } else {
+                response.sendError(404, "Producto no encontrado para actualizar");
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(500, "Error al actualizar producto");
+            e.printStackTrace();  // Esto imprimirá toda la traza de error en consola
+            response.sendError(500, "Error al actualizar producto: " + e.getMessage());
         }
     }
+
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response)
