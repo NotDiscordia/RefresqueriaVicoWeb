@@ -2,33 +2,141 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Alta de Producto</title>
-    <link rel="stylesheet" href="CSS/AltaProd.css">
+    <title>Registro de Productos</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to bottom right, #71c5ef, #c0eaff);
+        }
+
+        .encabezado-esquina {
+            position: absolute;
+            top: 15px;
+            right: 25px;
+        }
+
+        .encabezado-esquina img {
+            height: 40px;
+        }
+
+        .volver {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            background-color: #a8a8a8;
+            color: white;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .volver:hover {
+            background-color: #888;
+        }
+
+        .form-container {
+            width: 300px;
+            background-color: rgba(255, 255, 255, 0.85);
+            padding: 30px 25px;
+            border-radius: 10px;
+            margin: 100px auto;
+            box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+        }
+
+        .form-container h2 {
+            text-align: center;
+            color: #0073d8;
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #444;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        button[type="submit"] {
+            width: 100%;
+            background: linear-gradient(to right, #00aaff, #0073d8);
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(to right, #008dd0, #005db0);
+        }
+
+        .mensaje {
+            text-align: center;
+            padding: 10px;
+            margin-top: 10px;
+            display: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .mensaje.exito {
+            background-color: #c7f5d9;
+            color: #1b6e36;
+        }
+
+        .mensaje.error {
+            background-color: #ffd2d2;
+            color: #a30000;
+        }
+    </style>
 </head>
 <body>
 
-<!-- Encabezado en la esquina superior derecha -->
+<!-- Imagen logo en la esquina superior derecha -->
 <div class="encabezado-esquina">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
+    <img src="Refresqueriavico.png" alt="Refresquería Vico">
 </div>
 
-<a class="volver" href="MenInv2.html">&larr; Volver</a>
+<a class="volver" href="MenInv2.html">ATRÁS</a>
 
 <div class="form-container">
-    <h2>Alta de Producto</h2>
+    <h2>Registro de Productos</h2>
 
     <form id="form-alta-producto">
-        <label for="nombre">Nombre:</label>
+        <label for="nombre">Nombre</label>
         <input type="text" id="nombre" name="nombre" required placeholder="Ej. Refresco">
 
-        <label for="precio">Precio:</label>
+        <label for="precio">Precio</label>
         <input type="number" id="precio" name="precio" required step="0.01" min="0" placeholder="Ej. 15.50">
 
-        <label for="stock">Stock:</label>
+        <label for="costo">Costo</label>
+        <input type="number" id="costo" name="costo" required step="0.01" min="0" placeholder="Ej. 10.00">
+
+        <label for="stock">Stock</label>
         <input type="number" id="stock" name="stock" required min="0" placeholder="Ej. 10">
 
-        <button type="submit">Guardar Producto</button>
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria" required>
+            <option value="">Selecciona una categoría</option>
+            <option value="bebida">Bebida</option>
+            <option value="comida">Comida</option>
+        </select>
+
+        <button type="submit">Registrar</button>
     </form>
 
     <div id="mensaje" class="mensaje"></div>
@@ -43,7 +151,9 @@
 
         const nombre = form.nombre.value.trim();
         const precio = parseFloat(form.precio.value);
+        const costo = parseFloat(form.costo.value);
         const stock = parseInt(form.stock.value, 10);
+        const categoria = form.categoria.value;
 
         const regexNombre = /^[a-zA-Z0-9 ]+$/;
         if (!regexNombre.test(nombre)) {
@@ -55,12 +165,23 @@
             mostrarMensaje('❌ Precio inválido.', true);
             return;
         }
+
+        if (isNaN(costo) || costo < 0) {
+            mostrarMensaje('❌ Costo inválido.', true);
+            return;
+        }
+
         if (isNaN(stock) || stock < 0) {
             mostrarMensaje('❌ Stock inválido.', true);
             return;
         }
 
-        const producto = { nombre, precio, stock };
+        if (!categoria) {
+            mostrarMensaje('❌ Debes seleccionar una categoría.', true);
+            return;
+        }
+
+        const producto = { nombre, precio, costo, stock, categoria };
 
         try {
             const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos', {
@@ -103,3 +224,4 @@
 
 </body>
 </html>
+

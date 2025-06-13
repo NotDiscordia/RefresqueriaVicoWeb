@@ -3,29 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <title>Inicio de Sesión</title>
-    <link rel="stylesheet" href="CSS/Login.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #54c0f9, #9bd3f8);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: linear-gradient(to bottom, #a3c7db, #c7e5f4);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            width: 350px;
+        }
+
+        .login-container h1 {
+            margin-bottom: 30px;
+            color: orange;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 1px 1px white;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 90%;
+            padding: 12px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            text-align: center;
+            outline: none;
+        }
+
+        button {
+            width: 60%;
+            padding: 12px;
+            margin-top: 20px;
+            border: none;
+            border-radius: 8px;
+            background: #1da1f2;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: #0d8ddb;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .toast.success { background-color: #28a745; }
+        .toast.error { background-color: #dc3545; }
+        .toast.warning { background-color: #ffc107; color: #000; }
+    </style>
 </head>
 <body>
 
-<div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-</div>
-
-<h1>Inicio de Sesión</h1>
-
-<div class="login-box">
-    <input type="text" id="celular" placeholder="Celular del empleado" required>
-    <div class="input-container">
-        <input type="password" id="contrasena" placeholder="Contraseña del empleado" required>
-    </div>
-    <button onclick="login()">Ingresar</button>
+<div class="login-container">
+    <h1>REFRESQUERIA VICO - GESTIÓN</h1>
+    <input type="text" id="celular" placeholder="Número de Teléfono" required>
+    <input type="password" id="contrasena" placeholder="Contraseña" required>
+    <button onclick="login()">INICIAR SESIÓN</button>
 </div>
 
 <!-- Toast personalizado -->
 <div id="toast" class="toast"></div>
-
-<footer>&copy; 2025 Sistema de Gestión Vico</footer>
 
 <script>
     function showToast(message, type = "error") {
@@ -66,12 +135,10 @@
                 return response.json();
             })
             .then(usuario => {
-                console.log("Login exitoso", usuario);
                 showToast("✅ Bienvenido " + usuario.nombre, "success");
                 setTimeout(() => window.location.href = "MainMenu.html", 1500);
             })
             .catch(error => {
-                console.error("Error:", error.message);
                 showToast("❌ Usuario o contraseña incorrectos.", "error");
             });
     }
