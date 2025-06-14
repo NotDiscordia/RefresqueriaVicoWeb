@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Corte de Caja</title>
+    <link rel="stylesheet" href="CSS/Corte.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .field input[readonly] {
+            background-color: #f0f0f0;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+<!-- Barra superior -->
+<header class="topbar">
+    <button class="btn-back" onclick="window.history.back()">ATRÁS</button>
+    <nav class="tabs">
+        <button class="tab">VENTAS</button>
+        <button class="tab">PRODUCTOS</button>
+        <button class="tab">EMPLEADOS</button>
+    </nav>
+    <div class="logo">REFRISERÍA VICO</div>
+</header>
+
+<!-- Contenedor principal -->
+<main class="corte-container">
+    <h1>Corte de Caja</h1>
+    <form class="corte-form" onsubmit="event.preventDefault()">
+        <div class="column">
+            <div class="field">
+                <label for="efis-pesos">Efectivo Físico (Pesos):</label>
+                <input id="efis-pesos" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+                <label for="eteo-pesos">Efectivo Teórico:</label>
+                <input id="eteo-pesos" type="number" step="0.01" min="0" readonly>
+            </div>
+            <div class="field">
+                <label for="res-pesos">Resultado Arqueo:</label>
+                <input id="res-pesos" type="text" readonly>
+            </div>
+        </div>
+        <div class="column">
+            <div class="field">
+                <label for="efis-usd">Efectivo Físico (USD):</label>
+                <input id="efis-usd" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+                <label for="eteo-usd">Efectivo Teórico (MXN):</label>
+                <input id="eteo-usd" type="number" step="0.01" min="0" readonly>
+            </div>
+            <div class="field">
+                <label for="res-usd">Resultado Arqueo:</label>
+                <input id="res-usd" type="text" readonly>
+            </div>
+        </div>
+        <div class="actions">
+            <button type="button" class="btn-action" onclick="compararCortes()">🔍 Comparar</button>
+            <button type="button" class="btn-action save" onclick="guardarCorte()">✏️ Guardar</button>
+        </div>
+    </form>
+</main>
+
+<script>
+    // Obtener total teórico al cargar la página
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/ventas/total-dia');
+            if (!response.ok) throw new Error('Error al obtener total');
+
+            const data = await response.json();
+            document.getElementById('eteo-pesos').value = data.total;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cargar total teórico: ' + error.message);
+        }
+    });
+
+    async function compararCortes() {
+        // Obtener valores
+        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
+        const teoricoPesos = parseFloat(document.getElementById('eteo-pesos').value) || 0;
+        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
+
+        // Comparar pesos
+        const resultadoPesos = await compararCorte(fisicoPesos, teoricoPesos);
+        document.getElementById('res-pesos').value = resultadoPesos;
+
+        // Convertir USD a MXN (tasa 1:20)
+        const fisicoUSDEnMXN = fisicoUSD * 20;
+        document.getElementById('eteo-usd').value = fisicoUSDEnMXN;
+
+        // Comparar USD convertido con teórico
+        const resultadoUSD = await compararCorte(fisicoUSDEnMXN, teoricoPesos);
+        document.getElementById('res-usd').value = resultadoUSD;
+    }
+
+    async function compararCorte(efectivoFisico, efectivoTeorico) {
+        try {
+            const response = await fetch('/api/cortes-caja', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `efectivoFisico=${efectivoFisico}&efectivoTeorico=${efectivoTeorico}`
+            });
+
+            if (!response.ok) throw new Error('Error en comparación');
+
+            const data = await response.json();
+            return data.resultado;
+        } catch (error) {
+            console.error('Error:', error);
+            return 'ERROR';
+        }
+    }
+
+    async function guardarCorte() {
+        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
+        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
+        const usuarioId = 1; // Obtener de sesión
+
+        try {
+            // Guardar corte en pesos
+            if (fisicoPesos > 0) {
+                await fetch('/api/cortes-caja', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `totalEfectivo=${fisicoPesos}&usuarioId=${usuarioId}&moneda=MXN`
+                });
+            }
+
+            // Guardar corte en dólares
+            if (fisicoUSD > 0) {
+                await fetch('/api/cortes-caja', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `totalEfectivo=${fisicoUSD}&usuarioId=${usuarioId}&moneda=USD`
+                });
+            }
+
+            alert('Corte(s) guardado(s) con éxito');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al guardar: ' + error.message);
+        }
+    }
+</script>
+</body>
+</html>

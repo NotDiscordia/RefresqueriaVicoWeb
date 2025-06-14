@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Inicio de Sesión</title>
+    <link rel="stylesheet" href="CSS/Login.css">
+</head>
+<body>
+
+
+<div class="login-container">
+    <img class="logo" src="Images/VicoLogo.svg" alt="Refresqueria Vico Logo">
+    <h1>REFRESQUERIA VICO GESTIÓN</h1>
+    <input type="text" id="celular" placeholder="Número de Teléfono" required>
+    <input type="password" id="contrasena" placeholder="Contraseña" required>
+    <button onclick="login()">INICIAR SESIÓN</button>
+</div>
+
+<!-- Toast personalizado -->
+<div id="toast" class="toast"></div>
+
+<script>
+    function showToast(message, type = "error") {
+        const toast = document.getElementById("toast");
+        toast.innerText = message;
+        toast.className = "toast show " + type;
+
+        setTimeout(() => {
+            toast.className = toast.className.replace("show", "");
+        }, 3000);
+    }
+
+    function login() {
+        const celular = document.getElementById("celular").value.trim();
+        const contrasena = document.getElementById("contrasena").value.trim();
+
+        if (celular === "") {
+            showToast("⚠️ Por favor, ingresa el número de celular.", "warning");
+            return;
+        }
+
+        if (contrasena === "") {
+            showToast("⚠️ Por favor, ingresa la contraseña.", "warning");
+            return;
+        }
+
+        const data = { celular, contrasena };
+
+        fetch("http://localhost:8081/RefresqueriaVicoGestion/api/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+            .then(response => {
+                if (!response.ok) throw new Error("Credenciales incorrectas");
+                return response.json();
+            })
+            .then(usuario => {
+                showToast("✅ Bienvenido " + usuario.nombre, "success");
+                setTimeout(() => window.location.href = "MainMenu.html", 1500);
+            })
+            .catch(error => {
+                showToast("❌ Usuario o contraseña incorrectos.", "error");
+            });
+    }
+</script>
+
+</body>
+</html>

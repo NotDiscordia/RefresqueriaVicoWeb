@@ -1,0 +1,85 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #9fc1f3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    position: relative;
+}
+
+.titulo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.titulo .arriba {
+    font-size: 20px;
+    color: #ff9933;
+    text-shadow: 1px 1px 1px black;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-family: Arial, sans-serif;
+}
+
+.titulo .abajo {
+    font-size: 48px;
+    color: #1a75ff;
+    font-family: 'Georgia', serif;
+    text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+}
+
+h1 {
+    margin-bottom: 40px;
+    color: #333;
+}
+
+.menu-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 30px;
+    width: 80%;
+    max-width: 700px;
+}
+
+.opcion {
+    background-color: white;
+    border-radius: 12px;
+    padding: 25px 15px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: transform 0.2s ease-in-out, background-color 0.3s;
+}
+
+.opcion:hover {
+    transform: translateY(-5px);
+    background-color: #e3f2fd;
+}
+
+.opcion i {
+    font-size: 36px;
+    margin-bottom: 10px;
+    color: #0077c2;
+}
+
+.volver {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 14px;
+    color: #00796b;
+    text-decoration: none;
+}
+
+footer {
+    position: absolute;
+    bottom: 20px;
+    font-size: 14px;
+    color: #aaa;
+}
