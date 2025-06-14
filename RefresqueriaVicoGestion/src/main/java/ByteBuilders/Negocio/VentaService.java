@@ -2,6 +2,7 @@ package ByteBuilders.Negocio;
 
 import ByteBuilders.Entidad.CortesCaja;
 import ByteBuilders.Entidad.Venta;
+import ByteBuilders.Entidad.Moneda;
 import ByteBuilders.Persistencia.VentaDAO;
 
 import java.math.BigDecimal;
@@ -13,26 +14,45 @@ public class VentaService {
     private final VentaDAO dao = new VentaDAO();
     private final UsuarioService usuarioService = new UsuarioService();
 
-    public CortesCaja realizarCorteCaja(BigDecimal totalEfectivo, int usuarioId) throws SQLException {
-        // 1. Calcular total de ventas del día
+    public CortesCaja realizarCorteCaja(BigDecimal totalEfectivo, int usuarioId, Moneda moneda) throws SQLException {
         BigDecimal totalVentas = calcularTotalVentasDelDia();
 
-        // 2. Crear registro de corte
         CortesCaja corte = new CortesCaja();
         corte.setFecha(LocalDate.now());
         corte.setTotalVentas(totalVentas);
         corte.setTotalEfectivo(totalEfectivo);
         corte.setUsuario(usuarioService.obtenerUsuarioPorId(usuarioId));
+        corte.setMoneda(moneda);
 
-        // 3. Guardar en BD
         return dao.guardarCorteCaja(corte);
     }
 
-    private BigDecimal calcularTotalVentasDelDia() {
+    public BigDecimal calcularTotalVentasDelDia() {
         LocalDate hoy = LocalDate.now();
         return dao.obtenerVentasDelDia(hoy).stream()
                 .map(Venta::getTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public String compararCorte(BigDecimal efectivoFisico, BigDecimal efectivoTeorico) {
+        int comparacion = efectivoFisico.compareTo(efectivoTeorico);
+
+        if (comparacion == 0) {
+            return "OK";
+        } else if (comparacion < 0) {
+            return "FALTANTE";
+        } else {
+            return "SOBRANTE";
+        }
+    }
+
+    private BigDecimal convertirAPesos(BigDecimal dolares) {
+        // Supongamos que 1 USD = 20 MXN (puedes hacerlo configurable)
+        return dolares.multiply(new BigDecimal("20"));
+    }
+
+    public List<CortesCaja> obtenerCortesHistoricos() {
+        return dao.obtenerTodosCortesCaja();
     }
 
     public List<CortesCaja> obtenerCortesCaja() {
@@ -58,4 +78,7 @@ public class VentaService {
     public void actualizarVenta(Venta venta) {
         dao.actualizar(venta);
     }
+
 }
+
+

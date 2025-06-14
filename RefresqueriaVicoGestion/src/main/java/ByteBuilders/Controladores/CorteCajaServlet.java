@@ -2,7 +2,9 @@ package ByteBuilders.Controladores;
 
 import ByteBuilders.Entidad.CortesCaja;
 import ByteBuilders.Negocio.VentaService;
+import ByteBuilders.Entidad.Moneda;
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -10,9 +12,9 @@ import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.List;
 
-@WebServlet("/api/cortes-caja")
+@WebServlet("/api/cortes-caja/*")
 public class CorteCajaServlet extends HttpServlet {
     private final VentaService ventaService = new VentaService();
     private final Gson gson = new Gson();
@@ -20,9 +22,16 @@ public class CorteCajaServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         configurarCORS(response);
+        String pathInfo = request.getPathInfo();
+
         try {
-            var cortes = ventaService.obtenerCortesCaja();
-            enviarJSON(response, gson.toJson(cortes));
+            if (pathInfo == null || pathInfo.equals("/")) {
+                var cortes = ventaService.obtenerCortesCaja();
+                enviarJSON(response, gson.toJson(cortes));
+            } else if (pathInfo.equals("/historial")) {
+                List<CortesCaja> cortes = ventaService.obtenerCortesHistoricos();
+                enviarJSON(response, gson.toJson(cortes));
+            }
         } catch (Exception e) {
             manejarError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Error al obtener cortes de caja: " + e.getMessage());
@@ -35,27 +44,37 @@ public class CorteCajaServlet extends HttpServlet {
         try {
             BigDecimal totalEfectivo = new BigDecimal(request.getParameter("totalEfectivo"));
             int usuarioId = Integer.parseInt(request.getParameter("usuarioId"));
+            Moneda moneda = Moneda.valueOf(request.getParameter("moneda").toUpperCase());
 
-            var corte = ventaService.realizarCorteCaja(totalEfectivo, usuarioId);
+            var corte = ventaService.realizarCorteCaja(totalEfectivo, usuarioId, moneda);
             enviarJSON(response, gson.toJson(corte));
-        } catch (NumberFormatException e) {
-            manejarError(response, HttpServletResponse.SC_BAD_REQUEST,
-                    "Formato de número inválido: " + e.getMessage());
         } catch (Exception e) {
-            manejarError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error al realizar corte de caja: " + e.getMessage());
+            manejarError(response, 500, "Error al realizar corte: " + e.getMessage());
+        }
+    }
+
+    @Override
+    protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        configurarCORS(response);
+        try {
+            BigDecimal efectivoFisico = new BigDecimal(request.getParameter("efectivoFisico"));
+            BigDecimal efectivoTeorico = new BigDecimal(request.getParameter("efectivoTeorico"));
+
+            String resultado = ventaService.compararCorte(efectivoFisico, efectivoTeorico);
+            enviarJSON(response, "{\"resultado\": \"" + resultado + "\"}");
+        } catch (Exception e) {
+            manejarError(response, 500, "Error al comparar corte: " + e.getMessage());
         }
     }
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         configurarCORS(resp);
-        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
         resp.setStatus(HttpServletResponse.SC_OK);
     }
 
-    // Métodos auxiliares
     private void configurarCORS(HttpServletResponse response) {
         response.setHeader("Access-Control-Allow-Origin", "*");
         response.setContentType("application/json");
