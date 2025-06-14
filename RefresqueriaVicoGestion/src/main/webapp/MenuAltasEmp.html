@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alta de Empleado</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #71c5ef, #c0eaff);
+    }
+
+    .encabezado-esquina {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+    }
+
+    .encabezado-esquina img {
+      height: 40px;
+    }
+
+    .volver {
+      position: absolute;
+      top: 15px;
+      left: 20px;
+      background-color: #a8a8a8;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border-radius: 10px;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .volver:hover {
+      background-color: #888;
+    }
+
+    .form-container {
+      width: 320px;
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px 25px;
+      border-radius: 10px;
+      margin: 100px auto;
+      box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+    }
+
+    .form-container h2 {
+      text-align: center;
+      color: #0073d8;
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background: linear-gradient(to right, #00aaff, #0073d8);
+      color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button[type="submit"]:hover {
+      background: linear-gradient(to right, #008dd0, #005db0);
+    }
+
+    .mensaje {
+      text-align: center;
+      padding: 10px;
+      margin-top: 10px;
+      display: none;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .mensaje.exito {
+      background-color: #c7f5d9;
+      color: #1b6e36;
+    }
+
+    .mensaje.error {
+      background-color: #ffd2d2;
+      color: #a30000;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Imagen logo en la esquina superior derecha -->
+<div class="encabezado-esquina">
+  <img src="Refresqueriavico.png" alt="Refresquería Vico">
+</div>
+
+<a class="volver" href="MenuUsuarios.html">ATRÁS</a>
+
+<div class="form-container">
+  <h2>Alta de Empleado</h2>
+
+  <form id="formEmpleado">
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
+
+    <label for="apellidos">Apellidos</label>
+    <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
+
+    <label for="celular">Celular</label>
+    <input type="tel" id="celular" name="celular" required pattern="^\d{10}$" placeholder="10 dígitos" />
+
+    <label for="email">Correo electrónico (opcional)</label>
+    <input type="email" id="email" name="email" placeholder="Opcional">
+
+    <label for="contrasena">Contraseña</label>
+    <input type="password" id="contrasena" name="contrasena" required minlength="4" maxlength="20" pattern="^[a-zA-Z0-9]+$" />
+
+    <label for="rol">Rol</label>
+    <select id="rol" name="rol" required>
+      <option value="" disabled selected>Selecciona rol</option>
+      <option value="empleado">Empleado</option>
+      <option value="administrador">Administrador</option>
+    </select>
+
+    <button type="submit">Registrar empleado</button>
+
+    <div id="errorMensaje" class="mensaje error"></div>
+    <div id="successMensaje" class="mensaje exito"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('formEmpleado');
+  const errorMensaje = document.getElementById('errorMensaje');
+  const successMensaje = document.getElementById('successMensaje');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    mostrarMensaje('', '');
+
+    const nombre = document.getElementById('nombre').value.trim();
+    const apellidos = document.getElementById('apellidos').value.trim();
+    const celular = document.getElementById('celular').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const contrasena = document.getElementById('contrasena').value.trim();
+    const rol = document.getElementById('rol').value;
+
+    const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const soloNumeros = /^\d{10}$/;
+    const soloAlfanumerico = /^[a-zA-Z0-9]{4,20}$/;
+
+    if (!soloLetras.test(nombre) || !soloLetras.test(apellidos) ||
+            !soloNumeros.test(celular) || !soloAlfanumerico.test(contrasena) || !rol) {
+      mostrarMensaje('error', 'Por favor revisa los datos ingresados');
+      return;
+    }
+
+    if (!confirm("¿Confirmar el alta del empleado?")) {
+      mostrarMensaje('error', 'Alta cancelada por el usuario');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, apellidos, celular, email, contrasena, rol })
+      });
+
+      const textoRespuesta = await response.text();
+
+      try {
+        const resultado = JSON.parse(textoRespuesta);
+        if (resultado.exito) {
+          mostrarMensaje('success', '✅ ¡Empleado registrado con éxito!');
+          form.reset();
+        } else {
+          mostrarMensaje('error', '❌ Error en el registro: ' + (resultado.error || ''));
+        }
+      } catch (e) {
+        mostrarMensaje('error', textoRespuesta);
+      }
+
+    } catch (error) {
+      mostrarMensaje('error', '❌ Error de conexión: ' + error.message);
+    }
+  });
+
+  function mostrarMensaje(tipo, mensaje) {
+    errorMensaje.style.display = 'none';
+    successMensaje.style.display = 'none';
+
+    if (tipo === 'error') {
+      errorMensaje.textContent = mensaje;
+      errorMensaje.style.display = 'block';
+    } else if (tipo === 'success') {
+      successMensaje.textContent = mensaje;
+      successMensaje.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>

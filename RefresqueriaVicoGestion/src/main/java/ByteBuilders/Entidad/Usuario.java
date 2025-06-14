@@ -1,89 +1,45 @@
 package ByteBuilders.Entidad;
 
-import javax.persistence.*;
-import java.time.Instant;
-
-@Entity
-@Table(name = "usuarios")
 public class Usuario {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
-
-    @Column(name = "nombre", nullable = false, length = 100)
+    private int id;
     private String nombre;
-
-    @Column(name = "email", nullable = false, length = 100)
+    private String apellidos;
+    private String celular;
+    private String contrasena; // Sin "ñ"
+    private String rol;
     private String email;
 
-    @Column(name = "`contraseña`", nullable = false)
-    private String contraseña;
+    public Usuario() {}
 
-    @Lob
-    @Column(name = "rol", nullable = false)
-    private String rol;
-
-    @Column(name = "fecha_registro")
-    private Instant fechaRegistro;
-
-    @Column(name = "numero_celular", length = 20)
-    private String numeroCelular;
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
+    public Usuario(int id, String nombre, String apellidos, String celular, String contrasena, String rol, String email) {
         this.id = id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
+        this.apellidos = apellidos;
+        this.celular = celular;
+        this.contrasena = contrasena;
+        this.rol = rol;
         this.email = email;
     }
 
-    public String getContraseña() {
-        return contraseña;
-    }
+    // Getters y setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
-    }
+    public String getNombre() { return nombre; }
+    public void setNombre(String nombre) { this.nombre = nombre; }
 
-    public String getRol() {
-        return rol;
-    }
+    public String getApellidos() { return apellidos; }
+    public void setApellidos(String apellidos) { this.apellidos = apellidos; }
 
-    public void setRol(String rol) {
-        this.rol = rol;
-    }
+    public String getCelular() { return celular; }
+    public void setCelular(String celular) { this.celular = celular; }
 
-    public Instant getFechaRegistro() {
-        return fechaRegistro;
-    }
+    public String getContrasena() { return contrasena; }
+    public void setContrasena(String contrasena) { this.contrasena = contrasena; }
 
-    public void setFechaRegistro(Instant fechaRegistro) {
-        this.fechaRegistro = fechaRegistro;
-    }
+    public String getRol() { return rol; }
+    public void setRol(String rol) { this.rol = rol; }
 
-    public String getNumeroCelular() {
-        return numeroCelular;
-    }
-
-    public void setNumeroCelular(String numeroCelular) {
-        this.numeroCelular = numeroCelular;
-    }
-
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 }

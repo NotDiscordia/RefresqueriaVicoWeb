@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Consulta de Empleados</title>
+  <link rel="stylesheet" href="CSS/MenuConsultas.css" />
+</head>
+<body>
+<header>
+  <div class="header-section">
+    <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
+  </div>
+
+  <div class="logo-wrapper">
+    <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
+  </div>
+
+  <div class="header-section" style="display: flex; justify-content: flex-end;">
+    <div class="menu-central">
+      <a href="MenuVentas.html">VENTAS</a>
+      <a href="ConsultaProd.html">PRODUCTOS</a>
+      <a href="MenuConsultas.html">EMPLEADOS</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h2>Consulta de Empleados</h2>
+
+  <div class="top-controls">
+    <div>
+      <label for="buscar">Buscar: </label>
+      <input type="text" id="buscar" placeholder="Nombre o ID..." />
+    </div>
+    <div>
+      <label for="ordenar">Ordenar por: </label>
+      <select id="ordenar">
+        <option value="id">ID</option>
+        <option value="nombre">Nombre</option>
+        <option value="rol">Rol</option>
+      </select>
+      <button class="registrar" onclick="document.getElementById('formEmpleado').scrollIntoView()">Registrar Nuevo Empleado</button>
+    </div>
+  </div>
+
+  <table id="tablaUsuarios">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Apellidos</th>
+      <th>Rol</th>
+      <th>Celular</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- FORMULARIO -->
+<div class="container" style="margin-top: 20px;">
+  <h3>Formulario de Empleado</h3>
+  <form id="formEmpleado">
+    <input type="hidden" id="id" />
+    <input type="text" id="nombre" placeholder="Nombre" required />
+    <input type="text" id="apellidos" placeholder="Apellidos" required />
+    <input type="text" id="celular" placeholder="Celular" required />
+    <input type="password" id="contrasena" placeholder="Contraseña" required />
+    <input type="text" id="rol" placeholder="Rol" required />
+    <input type="email" id="email" placeholder="Email" />
+    <br><br>
+    <button type="submit" class="registrar">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()" class="registrar" style="background-color: gray;">Cancelar</button>
+  </form>
+</div>
+
+<script>
+  const API_URL = "http://localhost:8081/RefresqueriaVicoGestion/api/usuarios";
+  let usuariosGlobal = [];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarUsuarios();
+    document.getElementById("formEmpleado").addEventListener("submit", guardarUsuario);
+    document.getElementById("ordenar").addEventListener("change", e => ordenarPor(e.target.value));
+    document.getElementById("buscar").addEventListener("input", filtrar);
+  });
+
+  async function cargarUsuarios() {
+    const res = await fetch(API_URL);
+    usuariosGlobal = await res.json();
+    renderizarTabla(usuariosGlobal);
+  }
+
+  function renderizarTabla(usuarios) {
+    const tbody = document.querySelector("#tablaUsuarios tbody");
+    tbody.innerHTML = "";
+    usuarios.forEach(u => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${u.id}</td>
+          <td>${u.nombre}</td>
+          <td>${u.apellidos}</td>
+          <td>${u.rol}</td>
+          <td>${u.celular}</td>
+          <td>
+            <button class="icon icon-editar" title="Modificar" onclick='editar(${JSON.stringify(u)})'></button>
+            <button class="icon icon-eliminar" title="Eliminar" onclick='eliminar(${u.id})'></button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  async function guardarUsuario(e) {
+    e.preventDefault();
+    const usuario = {
+      id: document.getElementById("id").value || null,
+      nombre: document.getElementById("nombre").value,
+      apellidos: document.getElementById("apellidos").value,
+      celular: document.getElementById("celular").value,
+      contrasena: document.getElementById("contrasena").value,
+      rol: document.getElementById("rol").value,
+      email: document.getElementById("email").value
+    };
+
+    const metodo = usuario.id ? "PUT" : "POST";
+    const res = await fetch(API_URL, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(usuario)
+    });
+
+    if (res.ok) {
+      limpiarFormulario();
+      cargarUsuarios();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
+    }
+  }
+
+  function editar(usuario) {
+    document.getElementById("id").value = usuario.id;
+    document.getElementById("nombre").value = usuario.nombre;
+    document.getElementById("apellidos").value = usuario.apellidos;
+    document.getElementById("celular").value = usuario.celular;
+    document.getElementById("contrasena").value = usuario.contrasena;
+    document.getElementById("rol").value = usuario.rol;
+    document.getElementById("email").value = usuario.email || "";
+  }
+
+  async function eliminar(id) {
+    if (!confirm("¿Seguro que deseas eliminar este empleado?")) return;
+    const res = await fetch(API_URL + "?id=" + id, { method: "DELETE" });
+    if (res.ok) {
+      cargarUsuarios();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
+    }
+  }
+
+  function limpiarFormulario() {
+    document.getElementById("formEmpleado").reset();
+    document.getElementById("id").value = "";
+  }
+
+  function ordenarPor(campo) {
+    const ordenados = [...usuariosGlobal].sort((a, b) => a[campo].localeCompare(b[campo]));
+    renderizarTabla(ordenados);
+  }
+
+  function filtrar() {
+    const valor = document.getElementById("buscar").value.toLowerCase();
+    const filtrados = usuariosGlobal.filter(u => u.nombre.toLowerCase().includes(valor) || u.id.toString().includes(valor));
+    renderizarTabla(filtrados);
+  }
+</script>
+
+</body>
+</html>

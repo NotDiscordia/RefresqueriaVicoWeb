@@ -1,0 +1,113 @@
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background-color: #9fc1f3;
+    padding: 20px;
+    position: relative;
+}
+
+.volver {
+    text-decoration: none;
+    color: #ff9c19;
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+.form-container {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+h1, h2 {
+    text-align: center;
+    color: #004d40;
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    color: #00796b;
+    font-weight: 500;
+}
+
+/* Estilos para todos los inputs y selects en el formulario */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="tel"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+}
+
+/* Botón igual para ambos formularios */
+button {
+    width: 100%;
+    padding: 12px;
+    background-color: #00796b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #004d40;
+}
+
+.mensaje {
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 4px;
+    text-align: center;
+    display: none;
+}
+
+.error {
+    background-color: #fdd;
+    color: #900;
+    border: 1px solid #900;
+}
+
+.exito, .success {
+    background-color: #dfd;
+    color: #060;
+    border: 1px solid #060;
+}
+
+.encabezado-esquina {
+    position: absolute;
+    top: 10px;
+    right: 20px;
+    text-align: right;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+.encabezado-esquina .arriba {
+    font-size: 14px;
+    color: #ff9933;
+    text-shadow: 1px 1px 1px black;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.encabezado-esquina .abajo {
+    font-size: 22px;
+    color: #1a75ff;
+    font-family: 'Georgia', serif;
+    text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+}
