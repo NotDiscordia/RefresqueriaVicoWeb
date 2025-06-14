@@ -3,176 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <title>Consulta de Productos</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #6bb0f0, #ffffff);
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #0073d8;
-      padding: 10px 20px;
-      position: relative;
-    }
-
-    .btn-atras {
-      background-color: #004e9a;
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .btn-atras:hover {
-      background-color: #003e7a;
-    }
-
-    .menu-central {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-    }
-
-    .menu-central a {
-      background-color: #004e9a;
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .menu-central a:hover {
-      background-color: #003e7a;
-    }
-
-    .logo-centro {
-      height: 50px;
-    }
-
-    .container {
-      margin: 20px;
-      background-color: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-    }
-
-    h2 {
-      color: #004e9a;
-      margin-top: 0;
-    }
-
-    .top-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #f18658;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      color: white;
-    }
-
-    input[type="text"],
-    select {
-      padding: 5px 10px;
-      border-radius: 5px;
-      border: none;
-    }
-
-    button.registrar {
-      background-color: #0073d8;
-      color: white;
-      padding: 7px 15px;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button.registrar:hover {
-      background-color: #005bb5;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    thead {
-      background-color: #e0e0e0;
-      color: #333;
-    }
-
-    td, th {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      text-align: center;
-    }
-
-    button.icon {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button.icon:hover {
-      transform: scale(1.2);
-    }
-
-    .icon-editar::before {
-      content: "✏️";
-    }
-
-    .icon-eliminar::before {
-      content: "🗑️";
-    }
-
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      width: 100%;
-    }
-
-    .logo-wrapper {
-      display: flex;
-      justify-content: center;
-      flex-grow: 1;
-    }
-
-    .header-section {
-      flex: 1;
-    }
-  </style>
+  <link rel="stylesheet" href="CSS/ConsultaProductos.css" />
 </head>
 <body>
 
 <header>
   <div class="header-section">
-    <a class="btn-atras" href="MenuInv.html">← ATRÁS</a>
+    <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
   </div>
 
   <div class="logo-wrapper">
-    <img src="Refresqueriavico.png" alt="Refresquería Vico" class="logo-centro" />
+    <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
   </div>
 
   <div class="header-section" style="display: flex; justify-content: flex-end;">
     <div class="menu-central">
-      <a href="Ventas.html">VENTAS</a>
-      <a href="ConsultaProductos.html">PRODUCTOS</a>
-      <a href="Empleados.html">EMPLEADOS</a>
+      <a href="MenuVentas.html">VENTAS</a>
+      <a href="ConsultaProd.html">PRODUCTOS</a>
+      <a href="MenuConsultas.html">EMPLEADOS</a>
     </div>
   </div>
 </header>
@@ -188,15 +36,15 @@
     <div>
       <label for="ordenar">Ordenar por: </label>
       <select id="ordenar">
-        <option>Recientes</option>
-        <option>Nombre</option>
-        <option>Precio</option>
+        <option value="id">Recientes</option>
+        <option value="nombre">Nombre</option>
+        <option value="precio">Precio</option>
       </select>
-      <button class="registrar">Registrar Nuevo Producto</button>
+      <button class="registrar" onclick="document.getElementById('formProducto').scrollIntoView()">Registrar Nuevo Producto</button>
     </div>
   </div>
 
-  <table>
+  <table id="tablaProductos">
     <thead>
     <tr>
       <th>ID</th>
@@ -209,26 +57,140 @@
       <th>Acciones</th>
     </tr>
     </thead>
-    <tbody>
-    <tr>
-      <td>1</td>
-      <td>Ejemplo</td>
-      <td>$10.00</td>
-      <td>$5.00</td>
-      <td>20</td>
-      <td>Bebida</td>
-      <td>5</td>
-      <td>
-        <button class="icon icon-editar" title="Modificar"></button>
-        <button class="icon icon-eliminar" title="Eliminar"></button>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="8" style="color: gray;">No hay más productos disponibles.</td>
-    </tr>
-    </tbody>
+    <tbody></tbody>
   </table>
 </div>
+
+<!-- FORMULARIO OPCIONAL -->
+<div class="container" style="margin-top: 20px;">
+  <h3>Formulario de Producto</h3>
+  <form id="formProducto">
+    <input type="hidden" id="id" />
+    <input type="text" id="nombre" placeholder="Nombre" required />
+    <input type="number" id="precio" placeholder="Precio" required />
+    <input type="number" id="costo" placeholder="Costo" />
+    <input type="number" id="stock" placeholder="Stock" required />
+    <input type="text" id="categoria" placeholder="Categoría" />
+    <input type="number" id="vendidos" placeholder="Vendidos" required />
+    <br><br>
+    <button type="submit" class="registrar">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()" class="registrar" style="background-color: gray;">Cancelar</button>
+  </form>
+</div>
+
+<script>
+  const API_URL = "http://localhost:8081/RefresqueriaVicoGestion/api/productos";
+  let productosGlobal = [];
+
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarProductos();
+    document.getElementById("formProducto").addEventListener("submit", guardarProducto);
+    document.getElementById("ordenar").addEventListener("change", e => ordenarPor(e.target.value));
+    document.getElementById("buscar").addEventListener("input", filtrar);
+  });
+
+  async function cargarProductos() {
+    const res = await fetch(API_URL);
+    productosGlobal = await res.json();
+    renderizarTabla(productosGlobal);
+  }
+
+  function renderizarTabla(productos) {
+    const tbody = document.querySelector("#tablaProductos tbody");
+    tbody.innerHTML = "";
+    if (productos.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="color: gray;">No hay productos disponibles.</td></tr>`;
+      return;
+    }
+    productos.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.nombre}</td>
+          <td>$${p.precio}</td>
+          <td>${p.costo ? "$" + p.costo : "-"}</td>
+          <td>${p.stock}</td>
+          <td>${p.categoria || "-"}</td>
+          <td>${p.vendidos}</td>
+          <td>
+            <button class="icon icon-editar" title="Modificar" onclick='editar(${JSON.stringify(p)})'></button>
+            <button class="icon icon-eliminar" title="Eliminar" onclick='eliminar(${p.id})'></button>
+          </td>
+        </tr>`;
+    });
+  }
+
+  async function guardarProducto(e) {
+    e.preventDefault();
+    const producto = {
+      id: document.getElementById("id").value || null,
+      nombre: document.getElementById("nombre").value,
+      precio: parseFloat(document.getElementById("precio").value),
+      costo: parseFloat(document.getElementById("costo").value) || 0,
+      stock: parseInt(document.getElementById("stock").value),
+      categoria: document.getElementById("categoria").value,
+      vendidos: parseInt(document.getElementById("vendidos").value)
+    };
+
+    const metodo = producto.id ? "PUT" : "POST";
+    const res = await fetch(API_URL, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(producto)
+    });
+
+    if (res.ok) {
+      limpiarFormulario();
+      cargarProductos();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
+    }
+  }
+
+  function editar(p) {
+    document.getElementById("id").value = p.id;
+    document.getElementById("nombre").value = p.nombre;
+    document.getElementById("precio").value = p.precio;
+    document.getElementById("costo").value = p.costo || 0;
+    document.getElementById("stock").value = p.stock;
+    document.getElementById("categoria").value = p.categoria || "";
+    document.getElementById("vendidos").value = p.vendidos;
+  }
+
+  async function eliminar(id) {
+    if (!confirm("¿Seguro que deseas eliminar este producto?")) return;
+    const res = await fetch(`${API_URL}?id=${id}`, { method: "DELETE" });
+    if (res.ok) {
+      cargarProductos();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
+    }
+  }
+
+  function limpiarFormulario() {
+    document.getElementById("formProducto").reset();
+    document.getElementById("id").value = "";
+  }
+
+  function ordenarPor(campo) {
+    const ordenados = [...productosGlobal].sort((a, b) => {
+      if (campo === "precio") return a.precio - b.precio;
+      if (campo === "id") return b.id - a.id;
+      return a[campo].localeCompare(b[campo]);
+    });
+    renderizarTabla(ordenados);
+  }
+
+  function filtrar() {
+    const valor = document.getElementById("buscar").value.toLowerCase();
+    const filtrados = productosGlobal.filter(p =>
+            p.nombre.toLowerCase().includes(valor) || p.id.toString().includes(valor)
+    );
+    renderizarTabla(filtrados);
+  }
+</script>
 
 </body>
 </html>

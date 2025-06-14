@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 
 <Context docBase="C:\Users\usuario\Documents\GitHub\RefresqueriaVicoWeb\RefresqueriaVicoGestion\target\RefresqueriaVicoGestion.war">
+
   <Resources cacheMaxSize="10240">
     <PreResources base="C:/Users/valez/Documents/NetBeansProjects/desarrollo/RefresqueriaVicoWeb/RefresqueriaVicoGestion/target/classes" className="org.apache.catalina.webresources.DirResourceSet" webAppMount="/WEB-INF/classes"/>
     <PostResources base="C:/Users/valez/.m2/repository/jakarta/persistence/jakarta.persistence-api/3.1.0/jakarta.persistence-api-3.1.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jakarta.persistence-api-3.1.0.jar"/>
