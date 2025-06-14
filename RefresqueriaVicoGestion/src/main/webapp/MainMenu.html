@@ -4,35 +4,21 @@
   <meta charset="UTF-8">
   <title>Menú Principal</title>
   <link rel="stylesheet" href="CSS/MainMenu.css">
-  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </head>
 <body>
 
+<button class="cerrar-sesion" onclick="location.href='Login.html'">Cerrar Sesión</button>
 
-  <div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
+<div class="menu-container">
+  <div class="menu-opciones">
+    <div class="opcion" onclick="location.href='MenuVentas.html'">Terminal de Venta</div>
+    <div class="opcion" onclick="location.href='ConsultaProd.html'">Productos</div>
+    <div class="opcion" onclick="location.href='MenuConsultas.html'">Empleados</div>
   </div>
+  <img class="logo" src="Images/VicoLogo.svg" alt="Refresqueria Vico Logo">
+</div>
 
-  <div class="menu-principal">
-    <div class="opcion" onclick="location.href='MenuVentas.html'">
-      <a href="MenuVentas.html"><i class="fas fa-user-cog"></i></a>
-
-      Ventas
-    </div>
-   
-    <div class="opcion" onclick="location.href='MenuAdmin.html'">
-      <a href="MenuAdmin.html"><i class="fas fa-user-cog"></i></a>
-      Administración
-    </div>
-    <div class="opcion" onclick="location.href='Login.html'">
-      <a href="Login.html"><i class="fas fa-user-cog"></i></a>
-
-      Cerrar Sesión
-    </div>
-  </div>
-
-  <footer>&copy; 2025 Sistema de Ventas</footer>
+<footer>&copy; 2025 Sistema de Gestión Vico</footer>
 
 </body>
 </html>

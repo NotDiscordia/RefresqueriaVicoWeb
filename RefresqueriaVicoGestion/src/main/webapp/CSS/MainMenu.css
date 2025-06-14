@@ -1,88 +1,64 @@
-* {
-    box-sizing: border-box;
-}
-
 body {
     margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #9fc1f3;
-    display: flex;
-    flex-direction: column;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #54c0f9, #9bd3f8);
     height: 100vh;
-    align-items: center;
+    display: flex;
     justify-content: center;
+    align-items: center;
     position: relative;
-}
-
-.titulo {
-    position: absolute;
-    top: 10px;
-    right: 20px;
-    text-align: right;
-    font-weight: bold;
-    font-family: Arial, sans-serif;
-}
-
-.titulo .arriba {
-    font-size: 20px;
-    color: #ff9933;
-    text-shadow: 1px 1px 1px black;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    font-family: Arial, sans-serif;
-}
-
-.titulo .abajo {
-    font-size: 48px;
-    color: #1a75ff;
-    font-family: 'Georgia', serif;
-    text-shadow:
-            1px 1px 0px black,
-            -1px -1px 0px black;
 }
 
 .cerrar-sesion {
     position: absolute;
     top: 15px;
-    left: 20px;
-    font-size: 14px;
-    color: #1a75ff;
-    text-decoration: none;
-    font-family: Arial, sans-serif;
+    left: 15px;
+    padding: 8px 14px;
+    background-color: #eee;
+    border: none;
+    border-radius: 12px;
+    font-weight: bold;
+    cursor: pointer;
 }
 
-.menu-principal {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 20px;
-    width: 80%;
-    max-width: 800px;
+.menu-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+}
+
+.menu-opciones {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
 }
 
 .opcion {
-    background-color: #e3e5e6;
-    border-radius: 10px;
-    padding: 30px 10px;
+    background-color: #f1f1f1;
+    padding: 20px 40px;
+    border-radius: 20px;
+    font-size: 18px;
+    font-weight: bold;
     text-align: center;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .opcion:hover {
+    background-color: #e0e0e0;
     transform: scale(1.05);
-    background-color: #e0f7fa;
 }
 
-.opcion i {
-    font-size: 32px;
-    margin-bottom: 10px;
-    display: block;
+.logo {
+    max-width: 250px;
 }
 
 footer {
     position: absolute;
-    bottom: 20px;
-    font-size: 14px;
-    color: #888;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    color: #333;
 }

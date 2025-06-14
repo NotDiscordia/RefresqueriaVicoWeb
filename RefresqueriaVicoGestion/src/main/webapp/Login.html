@@ -7,25 +7,17 @@
 </head>
 <body>
 
-<div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-</div>
 
-<h1>Inicio de Sesión</h1>
-
-<div class="login-box">
-    <input type="text" id="celular" placeholder="Celular del empleado" required>
-    <div class="input-container">
-        <input type="password" id="contrasena" placeholder="Contraseña del empleado" required>
-    </div>
-    <button onclick="login()">Ingresar</button>
+<div class="login-container">
+    <img class="logo" src="Images/VicoLogo.svg" alt="Refresqueria Vico Logo">
+    <h1>REFRESQUERIA VICO GESTIÓN</h1>
+    <input type="text" id="celular" placeholder="Número de Teléfono" required>
+    <input type="password" id="contrasena" placeholder="Contraseña" required>
+    <button onclick="login()">INICIAR SESIÓN</button>
 </div>
 
 <!-- Toast personalizado -->
 <div id="toast" class="toast"></div>
-
-<footer>&copy; 2025 Sistema de Gestión Vico</footer>
 
 <script>
     function showToast(message, type = "error") {
@@ -66,12 +58,10 @@
                 return response.json();
             })
             .then(usuario => {
-                console.log("Login exitoso", usuario);
                 showToast("✅ Bienvenido " + usuario.nombre, "success");
                 setTimeout(() => window.location.href = "MainMenu.html", 1500);
             })
             .catch(error => {
-                console.error("Error:", error.message);
                 showToast("❌ Usuario o contraseña incorrectos.", "error");
             });
     }
