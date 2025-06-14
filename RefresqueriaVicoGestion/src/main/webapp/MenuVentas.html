@@ -4,189 +4,19 @@
   <meta charset="UTF-8" />
   <title>Ventas - Refresquería Vico</title>
   <link rel="stylesheet" href="CSS/MenuVentas.css" />
-  <style>
-    * {
-      box-sizing: border-box;
-      font-family: sans-serif;
-    }
-
-    body {
-      margin: 0;
-      background: linear-gradient(to bottom, #88cfe4, #b6e1f0);
-    }
-
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #005ca9;
-      padding: 10px 20px;
-    }
-
-    .logo-btn {
-      background-color: #ccc;
-      border: none;
-      padding: 10px 15px;
-      font-weight: bold;
-      font-size: 16px;
-      color: #000;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    .nav-buttons {
-      display: flex;
-      gap: 20px;
-    }
-
-    .nav-buttons button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 10px;
-      font-weight: bold;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .logo-img {
-      height: 50px;
-    }
-
-    main {
-      display: flex;
-      height: calc(100vh - 80px);
-    }
-
-    .left-panel {
-      width: 50%;
-      padding: 15px;
-    }
-
-    .top-search {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .top-search input {
-      padding: 5px;
-      font-size: 16px;
-      flex: 1;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
-
-    .top-search button {
-      background-color: orange;
-      border: none;
-      padding: 8px 15px;
-      margin-left: 10px;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .productos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .producto {
-      background-color: white;
-      padding: 10px;
-      border-radius: 10px;
-      width: 120px;
-      text-align: center;
-      cursor: pointer;
-      box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .producto:hover {
-      background-color: #f0f0f0;
-    }
-
-    .producto img {
-      max-width: 100%;
-      height: 60px;
-      object-fit: cover;
-    }
-
-    .right-panel {
-      width: 50%;
-      background-color: #fff;
-      padding: 15px;
-      border-top-left-radius: 15px;
-    }
-
-    .venta-item {
-      display: flex;
-      align-items: center;
-      margin-bottom: 10px;
-    }
-
-    .contador {
-      background-color: #ccc;
-      padding: 5px 10px;
-      border-radius: 5px;
-      margin-right: 10px;
-      font-weight: bold;
-    }
-
-    .venta-nombre {
-      flex: 1;
-    }
-
-    .venta-total {
-      font-size: 18px;
-      font-weight: bold;
-      text-align: right;
-      margin-top: 10px;
-    }
-
-    .botones-venta {
-      display: flex;
-      justify-content: space-between;
-      margin-top: 15px;
-    }
-
-    .botones-venta button {
-      padding: 10px;
-      border: none;
-      border-radius: 10px;
-      font-weight: bold;
-      cursor: pointer;
-      width: 30%;
-    }
-
-    .cancelar-btn {
-      background-color: #f66;
-      color: white;
-    }
-
-    .pagar-btn {
-      background-color: #4caf50;
-      color: white;
-    }
-
-    .accion-btn {
-      background-color: #ddd;
-    }
-
-  </style>
 </head>
 <body>
 
 <header>
   <button class="logo-btn" onclick="window.location.href='MainMenu.html'">ATRÁS</button>
-  <div class="nav-buttons">
-    <button>VENTAS</button>
-    <button>PRODUCTOS</button>
-    <button>EMPLEADOS</button>
+  <div class="header-section" style="display: flex; justify-content: flex-end;">
+    <div class="menu-central">
+      <a href="MenuVentas.html">VENTAS</a>
+      <a href="ConsultaProd.html">PRODUCTOS</a>
+      <a href="MenuConsultas.html">EMPLEADOS</a>
+    </div>
   </div>
-  <img src="Refresqueriavico.png" alt="Refresquería Vico" class="logo-img">
+  <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-img">
 </header>
 
 <main>
@@ -210,8 +40,8 @@
       Total: $<span id="subtotal">0.00</span>
     </div>
     <div class="botones-venta">
+      <button class="accion-btn" onclick="window.location.href='Corte.html'">Corte de Caja</button>
       <button class="accion-btn" onclick="cancelarVenta()">Cancelar</button>
-      <button class="accion-btn" onclick="eliminarSeleccionados()">Corte de Caja</button>
       <button class="pagar-btn" onclick="pagar()">Realizar Venta</button>
     </div>
   </div>

@@ -3,159 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <title>Consulta de Empleados</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to bottom, #6bb0f0, #ffffff);
-      margin: 0;
-      padding: 0;
-    }
-
-    header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: #0073d8;
-      padding: 10px 20px;
-    }
-
-    .btn-atras {
-      background-color: #004e9a;
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .btn-atras:hover {
-      background-color: #003e7a;
-    }
-
-    .menu-central {
-      display: flex;
-      align-items: center;
-      gap: 40px;
-    }
-
-    .menu-central a {
-      background-color: #004e9a;
-      color: white;
-      text-decoration: none;
-      padding: 10px 20px;
-      border-radius: 5px;
-      font-weight: bold;
-      transition: background-color 0.3s;
-    }
-
-    .menu-central a:hover {
-      background-color: #003e7a;
-    }
-
-    .logo-centro {
-      height: 50px;
-    }
-
-    .container {
-      margin: 20px;
-      background-color: white;
-      border-radius: 10px;
-      padding: 20px;
-      box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
-    }
-
-    h2 {
-      color: #004e9a;
-      margin-top: 0;
-    }
-
-    .top-controls {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background-color: #f18658;
-      padding: 10px;
-      border-radius: 5px;
-      margin-bottom: 10px;
-      color: white;
-    }
-
-    input[type="text"],
-    input[type="email"],
-    input[type="password"],
-    select {
-      padding: 5px 10px;
-      border-radius: 5px;
-      border: none;
-    }
-
-    button.registrar {
-      background-color: #0073d8;
-      color: white;
-      padding: 7px 15px;
-      border: none;
-      border-radius: 5px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button.registrar:hover {
-      background-color: #005bb5;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 14px;
-    }
-
-    thead {
-      background-color: #e0e0e0;
-      color: #333;
-    }
-
-    td, th {
-      padding: 10px;
-      border-bottom: 1px solid #ccc;
-      text-align: center;
-    }
-
-    button.icon {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-    }
-
-    button.icon:hover {
-      transform: scale(1.2);
-    }
-
-    .icon-editar::before {
-      content: "\270F\FE0F";
-    }
-
-    .icon-eliminar::before {
-      content: "\1F5D1";
-    }
-  </style>
+  <link rel="stylesheet" href="CSS/MenuConsultas.css" />
 </head>
 <body>
 <header>
   <div class="header-section">
-    <a class="btn-atras" href="MenuInv.html">← ATRÁS</a>
+    <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
   </div>
 
   <div class="logo-wrapper">
-    <img src="Refresqueriavico.png" alt="Refresquería Vico" class="logo-centro" />
+    <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
   </div>
 
   <div class="header-section" style="display: flex; justify-content: flex-end;">
     <div class="menu-central">
-      <a href="Ventas.html">VENTAS</a>
-      <a href="ConsultaProductos.html">PRODUCTOS</a>
-      <a href="Empleados.html">EMPLEADOS</a>
+      <a href="MenuVentas.html">VENTAS</a>
+      <a href="ConsultaProd.html">PRODUCTOS</a>
+      <a href="MenuConsultas.html">EMPLEADOS</a>
     </div>
   </div>
 </header>
@@ -175,7 +39,7 @@
         <option value="nombre">Nombre</option>
         <option value="rol">Rol</option>
       </select>
-      <button class="registrar" onclick="document.getElementById('formEmpleado').scrollIntoView()">Registrar Nuevo</button>
+      <button class="registrar" onclick="document.getElementById('formEmpleado').scrollIntoView()">Registrar Nuevo Empleado</button>
     </div>
   </div>
 
