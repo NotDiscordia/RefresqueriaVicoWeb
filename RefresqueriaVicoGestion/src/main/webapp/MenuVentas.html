@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <title>Ventas - Refresquería Vico</title>
-  <link rel="stylesheet" href="CSS/MenuVentas.css" />
+    <meta charset="UTF-8" />
+    <title>Ventas - Refresquería Vico</title>
+    <link rel="stylesheet" href="CSS/MenuVentas.css" />
 </head>
 <body>
 
@@ -26,138 +26,138 @@
 </header>
 
 <main>
-  <div class="left-panel">
-    <div class="top-search">
-      <input type="text" placeholder="Buscar..." />
-      <button>Categoría</button>
+    <div class="left-panel">
+        <div class="top-search">
+            <input type="text" placeholder="Buscar..." />
+            <button>Categoría</button>
+        </div>
+        <div class="productos" id="lista-productos">
+            <!-- Productos cargados dinámicamente -->
+        </div>
     </div>
-    <div class="productos" id="lista-productos">
-      <!-- Productos cargados dinámicamente -->
-    </div>
-  </div>
 
-  <div class="right-panel">
-    <h2>Venta nueva</h2>
-    <div id="listaVenta">
-      <p>No hay artículos en la cuenta</p>
+    <div class="right-panel">
+        <h2>Venta nueva</h2>
+        <div id="listaVenta">
+            <p>No hay artículos en la cuenta</p>
+        </div>
+        <hr />
+        <div class="venta-total">
+            Total: $<span id="subtotal">0.00</span>
+        </div>
+        <div class="botones-venta">
+            <button class="accion-btn" onclick="window.location.href='Corte.html'">Corte de Caja</button>
+            <button class="accion-btn" onclick="cancelarVenta()">Cancelar</button>
+            <button class="pagar-btn" onclick="pagar()">Realizar Venta</button>
+        </div>
     </div>
-    <hr />
-    <div class="venta-total">
-      Total: $<span id="subtotal">0.00</span>
-    </div>
-    <div class="botones-venta">
-      <button class="accion-btn" onclick="window.location.href='Corte.html'">Corte de Caja</button>
-      <button class="accion-btn" onclick="cancelarVenta()">Cancelar</button>
-      <button class="pagar-btn" onclick="pagar()">Realizar Venta</button>
-    </div>
-  </div>
 </main>
 
 <script>
-  const venta = [];
+    const venta = [];
 
-  function cargarProductos() {
-    fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
+    function cargarProductos() {
+        fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
             .then(response => response.json())
             .then(data => {
-              const lista = document.getElementById("lista-productos");
-              lista.innerHTML = "";
-              data.forEach(producto => {
-                const div = document.createElement("div");
-                div.className = "producto";
-                div.onclick = () => agregarProducto(producto);
+                const lista = document.getElementById("lista-productos");
+                lista.innerHTML = "";
+                data.forEach(producto => {
+                    const div = document.createElement("div");
+                    div.className = "producto";
+                    div.onclick = () => agregarProducto(producto);
 
-                const img = document.createElement("img");
-                img.src = producto.imagen || "https://via.placeholder.com/100x60?text=Producto";
-                img.alt = producto.nombre;
+                    const img = document.createElement("img");
+                    img.src = producto.imagen || "https://via.placeholder.com/100x60?text=Producto";
+                    img.alt = producto.nombre;
 
-                const nombre = document.createElement("div");
-                nombre.textContent = producto.nombre;
+                    const nombre = document.createElement("div");
+                    nombre.textContent = producto.nombre;
 
-                const precio = document.createElement("div");
-                precio.textContent = `$${producto.precio.toFixed(2)}`;
+                    const precio = document.createElement("div");
+                    precio.textContent = `$${producto.precio.toFixed(2)}`;
 
-                div.appendChild(img);
-                div.appendChild(nombre);
-                div.appendChild(precio);
-                lista.appendChild(div);
-              });
+                    div.appendChild(img);
+                    div.appendChild(nombre);
+                    div.appendChild(precio);
+                    lista.appendChild(div);
+                });
             });
-  }
-
-  function agregarProducto(producto) {
-    const existente = venta.find(p => p.id === producto.id);
-    if (existente) {
-      existente.cantidad += 1;
-    } else {
-      venta.push({ ...producto, cantidad: 1 });
-    }
-    renderizarVenta();
-  }
-
-  function renderizarVenta() {
-    const contenedor = document.getElementById("listaVenta");
-    contenedor.innerHTML = "";
-    if (venta.length === 0) {
-      contenedor.innerHTML = "<p>No hay artículos en la cuenta</p>";
-      document.getElementById("subtotal").textContent = "0.00";
-      return;
     }
 
-    let total = 0;
-    venta.forEach((item, index) => {
-      total += item.precio * item.cantidad;
-
-      const div = document.createElement("div");
-      div.className = "venta-item";
-
-      const cantidad = document.createElement("div");
-      cantidad.className = "contador";
-      cantidad.textContent = item.cantidad;
-
-      const nombre = document.createElement("div");
-      nombre.className = "venta-nombre";
-      nombre.textContent = `${item.nombre} $${item.precio.toFixed(2)}`;
-
-      const eliminar = document.createElement("button");
-      eliminar.textContent = "X";
-      eliminar.onclick = () => {
-        venta.splice(index, 1);
+    function agregarProducto(producto) {
+        const existente = venta.find(p => p.id === producto.id);
+        if (existente) {
+            existente.cantidad += 1;
+        } else {
+            venta.push({ ...producto, cantidad: 1 });
+        }
         renderizarVenta();
-      };
-
-      div.appendChild(cantidad);
-      div.appendChild(nombre);
-      div.appendChild(eliminar);
-      contenedor.appendChild(div);
-    });
-
-    document.getElementById("subtotal").textContent = total.toFixed(2);
-  }
-
-  function cancelarVenta() {
-    if (confirm("¿Cancelar la venta?")) {
-      venta.length = 0;
-      renderizarVenta();
     }
-  }
 
-  function eliminarSeleccionados() {
-    // Simula corte de caja
-    alert("Función de corte de caja aún no implementada.");
-  }
+    function renderizarVenta() {
+        const contenedor = document.getElementById("listaVenta");
+        contenedor.innerHTML = "";
+        if (venta.length === 0) {
+            contenedor.innerHTML = "<p>No hay artículos en la cuenta</p>";
+            document.getElementById("subtotal").textContent = "0.00";
+            return;
+        }
 
-  function pagar() {
-    if (venta.length === 0) {
-      alert("No hay productos en la venta.");
-      return;
+        let total = 0;
+        venta.forEach((item, index) => {
+            total += item.precio * item.cantidad;
+
+            const div = document.createElement("div");
+            div.className = "venta-item";
+
+            const cantidad = document.createElement("div");
+            cantidad.className = "contador";
+            cantidad.textContent = item.cantidad;
+
+            const nombre = document.createElement("div");
+            nombre.className = "venta-nombre";
+            nombre.textContent = `${item.nombre} $${item.precio.toFixed(2)}`;
+
+            const eliminar = document.createElement("button");
+            eliminar.textContent = "X";
+            eliminar.onclick = () => {
+                venta.splice(index, 1);
+                renderizarVenta();
+            };
+
+            div.appendChild(cantidad);
+            div.appendChild(nombre);
+            div.appendChild(eliminar);
+            contenedor.appendChild(div);
+        });
+
+        document.getElementById("subtotal").textContent = total.toFixed(2);
     }
-    alert("Venta realizada exitosamente.");
-    venta.length = 0;
-    renderizarVenta();
-  }
 
-  window.onload = cargarProductos;
+    function cancelarVenta() {
+        if (confirm("¿Cancelar la venta?")) {
+            venta.length = 0;
+            renderizarVenta();
+        }
+    }
+
+    function eliminarSeleccionados() {
+        // Simula corte de caja
+        alert("Función de corte de caja aún no implementada.");
+    }
+
+    function pagar() {
+        if (venta.length === 0) {
+            alert("No hay productos en la venta.");
+            return;
+        }
+        alert("Venta realizada exitosamente.");
+        venta.length = 0;
+        renderizarVenta();
+    }
+
+    window.onload = cargarProductos;
 </script>
 
 </body>

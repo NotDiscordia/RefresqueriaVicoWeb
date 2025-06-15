@@ -6,164 +6,138 @@
     <link rel="stylesheet" href="CSS/Corte.css">
 </head>
 <body>
+<!-- Barra superior -->
+<header class="topbar">
+    <button class="btn-back" onclick="window.history.back()">ATRÁS</button>
+    <nav class="tabs">
+        <button class="tab">VENTAS</button>
+        <button class="tab">PRODUCTOS</button>
+        <button class="tab">EMPLEADOS</button>
+    </nav>
+    <div class="logo">REFRISERÍA VICO</div>
+</header>
 
-<a class="volver" href="MenuVentas.html">&larr; Volver al menú</a>
-
-<div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-</div>
-
-<h1>Corte de Caja</h1>
-
-<div class="corte-container">
-    <div class="form-corte">
-        <h2>Realizar Corte</h2>
-        <div>
-            <label for="pesos">Efectivo en Pesos (MXN):</label>
-            <input type="number" id="pesos" step="0.01" min="0" placeholder="0.00">
+<!-- Contenedor principal -->
+<main class="corte-container">
+    <h1>Corte de Caja</h1>
+    <form class="corte-form" onsubmit="event.preventDefault()">
+        <div class="column">
+            <div class="field">
+                <label for="efis-pesos">Efectivo Físico (Pesos):</label>
+                <input id="efis-pesos" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+                <label for="eteo-pesos">Efectivo Teórico:</label>
+                <input id="eteo-pesos" type="number" step="0.01" min="0" readonly>
+            </div>
+            <div class="field">
+                <label for="res-pesos">Resultado Arqueo:</label>
+                <input id="res-pesos" type="text" readonly>
+            </div>
         </div>
-        <div style="margin-top: 15px;">
-            <label for="dolares">Efectivo en Dólares (USD):</label>
-            <input type="number" id="dolares" step="0.01" min="0" placeholder="0.00">
+        <div class="column">
+            <div class="field">
+                <label for="efis-usd">Efectivo Físico (USD):</label>
+                <input id="efis-usd" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+                <label for="eteo-usd">Efectivo Teórico (MXN):</label>
+                <input id="eteo-usd" type="number" step="0.01" min="0" readonly>
+            </div>
+            <div class="field">
+                <label for="res-usd">Resultado Arqueo:</label>
+                <input id="res-usd" type="text" readonly>
+            </div>
         </div>
-        <div style="margin-top: 15px;">
-            <label>Tipo de Cambio:</label>
-            <span id="tipoCambio">20.00</span> MXN
+        <div class="actions">
+            <button type="button" class="btn-action" onclick="compararCortes()">🔍 Comparar</button>
+            <button type="button" class="btn-action save" onclick="guardarCorte()">✏️ Guardar</button>
         </div>
-
-        <div style="margin-top: 20px; display: flex; gap: 10px;">
-            <button onclick="calcularDiferencia()" style="flex: 1;">Buscar Diferencia</button>
-            <button onclick="guardarCorte()" style="flex: 1; background-color: #28a745;">Guardar Corte</button>
-        </div>
-
-        <div id="resultadoCorte" class="resultado-corte" style="display: none;">
-            <h3>Resultado del Corte</h3>
-            <p>Total Ventas: <span id="totalVentas">$0.00</span></p>
-            <p>Total Efectivo: <span id="totalEfectivo">$0.00</span></p>
-            <p>Diferencia: <span id="diferencia">$0.00</span></p>
-        </div>
-    </div>
-
-    <div class="historial-cortes">
-        <h2>Historial de Cortes</h2>
-        <div id="listaCortes">
-            <!-- Cortes se cargarán aquí -->
-        </div>
-    </div>
-</div>
+    </form>
+</main>
 
 <script>
-    let tipoCambio = 20.00;
-    let usuarioId = null; // Debería obtenerse de la sesión
+    // Obtener total teórico al cargar la página
+    window.addEventListener('DOMContentLoaded', async () => {
+        try {
+            const response = await fetch('/api/ventas/total-dia');
+            if (!response.ok) throw new Error('Error al obtener total');
 
-    // Obtener el ID del usuario logueado (simulado)
-    function obtenerUsuarioId() {
-        // En una implementación real, esto vendría de la sesión
-        return 1; // ID de ejemplo
+            const data = await response.json();
+            document.getElementById('eteo-pesos').value = data.total;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cargar total teórico: ' + error.message);
+        }
+    });
+
+    async function compararCortes() {
+        // Obtener valores
+        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
+        const teoricoPesos = parseFloat(document.getElementById('eteo-pesos').value) || 0;
+        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
+
+        // Comparar pesos
+        const resultadoPesos = await compararCorte(fisicoPesos, teoricoPesos);
+        document.getElementById('res-pesos').value = resultadoPesos;
+
+        // Convertir USD a MXN (tasa 1:20)
+        const fisicoUSDEnMXN = fisicoUSD * 20;
+        document.getElementById('eteo-usd').value = fisicoUSDEnMXN;
+
+        // Comparar USD convertido con teórico
+        const resultadoUSD = await compararCorte(fisicoUSDEnMXN, teoricoPesos);
+        document.getElementById('res-usd').value = resultadoUSD;
     }
 
-    function calcularDiferencia() {
-        const pesos = parseFloat(document.getElementById('pesos').value) || 0;
-        const dolares = parseFloat(document.getElementById('dolares').value) || 0;
-
-        fetch('http://localhost:8081/RefresqueriaVicoGestion/api/ventas/total-dia')
-            .then(response => response.json())
-            .then(data => {
-                const totalVentas = parseFloat(data.total);
-                const totalEfectivo = pesos + (dolares * tipoCambio);
-                const diferencia = totalEfectivo - totalVentas;
-
-                document.getElementById('totalVentas').textContent = '$' + totalVentas.toFixed(2);
-                document.getElementById('totalEfectivo').textContent = '$' + totalEfectivo.toFixed(2);
-
-                const diferenciaElement = document.getElementById('diferencia');
-                diferenciaElement.textContent = '$' + Math.abs(diferencia).toFixed(2);
-
-                const resultadoDiv = document.getElementById('resultadoCorte');
-                resultadoDiv.style.display = 'block';
-
-                if (diferencia >= 0) {
-                    resultadoDiv.className = 'resultado-corte diferencia-positiva';
-                    diferenciaElement.textContent += ' (Sobrante)';
-                } else {
-                    resultadoDiv.className = 'resultado-corte diferencia-negativa';
-                    diferenciaElement.textContent += ' (Faltante)';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al calcular la diferencia');
+    async function compararCorte(efectivoFisico, efectivoTeorico) {
+        try {
+            const response = await fetch('/api/cortes-caja', {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `efectivoFisico=${efectivoFisico}&efectivoTeorico=${efectivoTeorico}`
             });
+
+            if (!response.ok) throw new Error('Error en comparación');
+
+            const data = await response.json();
+            return data.resultado;
+        } catch (error) {
+            console.error('Error:', error);
+            return 'ERROR';
+        }
     }
 
-    function guardarCorte() {
-        const pesos = parseFloat(document.getElementById('pesos').value) || 0;
-        const dolares = parseFloat(document.getElementById('dolares').value) || 0;
-        const totalEfectivo = pesos + (dolares * tipoCambio);
-        const usuarioId = obtenerUsuarioId();
+    async function guardarCorte() {
+        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
+        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
+        const usuarioId = 1; // Obtener de sesión
 
-        fetch('http://localhost:8081/RefresqueriaVicoGestion/api/cortes-caja', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `totalEfectivo=${totalEfectivo}&usuarioId=${usuarioId}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                alert('Corte de caja guardado exitosamente');
-                cargarHistorialCortes();
-                // Limpiar formulario
-                document.getElementById('pesos').value = '';
-                document.getElementById('dolares').value = '';
-                document.getElementById('resultadoCorte').style.display = 'none';
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Error al guardar el corte de caja');
-            });
-    }
-
-    function cargarHistorialCortes() {
-        fetch('http://localhost:8081/RefresqueriaVicoGestion/api/cortes-caja')
-            .then(response => response.json())
-            .then(data => {
-                const lista = document.getElementById('listaCortes');
-                lista.innerHTML = '';
-
-                data.forEach(corte => {
-                    const corteDiv = document.createElement('div');
-                    corteDiv.className = 'corte-item';
-
-                    const fecha = new Date(corte.fecha).toLocaleDateString();
-                    const diferencia = corte.totalEfectivo - corte.totalVentas;
-                    const diferenciaTexto = diferencia >= 0
-                        ? `<span style="color: green;">+$${diferencia.toFixed(2)}</span>`
-                        : `<span style="color: red;">-$${Math.abs(diferencia).toFixed(2)}</span>`;
-
-                    corteDiv.innerHTML = `
-                        <h3>Corte del ${fecha}</h3>
-                        <p><strong>Ventas:</strong> $${corte.totalVentas.toFixed(2)}</p>
-                        <p><strong>Efectivo:</strong> $${corte.totalEfectivo.toFixed(2)}</p>
-                        <p><strong>Diferencia:</strong> ${diferenciaTexto}</p>
-                        <p><small>Realizado por: ${corte.usuario.nombre}</small></p>
-                    `;
-
-                    lista.appendChild(corteDiv);
+        try {
+            // Guardar corte en pesos
+            if (fisicoPesos > 0) {
+                await fetch('/api/cortes-caja', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `totalEfectivo=${fisicoPesos}&usuarioId=${usuarioId}&moneda=MXN`
                 });
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                lista.innerHTML = '<p>Error al cargar el historial de cortes</p>';
-            });
+            }
+
+            // Guardar corte en dólares
+            if (fisicoUSD > 0) {
+                await fetch('/api/cortes-caja', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                    body: `totalEfectivo=${fisicoUSD}&usuarioId=${usuarioId}&moneda=USD`
+                });
+            }
+
+            alert('Corte(s) guardado(s) con éxito');
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al guardar: ' + error.message);
+        }
     }
-
-    // Cargar historial al iniciar
-    window.onload = () => {
-        cargarHistorialCortes();
-    };
 </script>
-
 </body>
 </html>
