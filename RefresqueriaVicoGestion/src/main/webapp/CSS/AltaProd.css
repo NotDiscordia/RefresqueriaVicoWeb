@@ -1,105 +1,110 @@
-body {
+/* Fondo de pantalla completo */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #9fc1f3;
-    padding: 20px;
-    position: relative;
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
 }
 
-.volver {
-    text-decoration: none;
-    color: #ff9c19;
-    display: inline-block;
-    margin-bottom: 20px;
-}
-
+/* Contenedor del formulario */
 .form-container {
     max-width: 500px;
-    margin: 0 auto;
-    background-color: white;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-h2 {
-    text-align: center;
-    color: #004d40;
-    margin-bottom: 25px;
-}
-
-label {
-    display: block;
-    margin-bottom: 8px;
-    color: #00796b;
-    font-weight: 500;
-}
-
-input[type="text"],
-input[type="number"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px 30px;
+    border-radius: 15px;
+    margin: 100px auto;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
     box-sizing: border-box;
 }
 
-button {
+/* Título */
+.form-container h2 {
+    text-align: center;
+    color: #0073d8;
+    margin-bottom: 25px;
+}
+
+/* Etiquetas */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #444;
+}
+
+/* Campos de texto y selección */
+input, select {
     width: 100%;
-    padding: 12px;
-    background-color: #00796b;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Botón enviar */
+button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(to right, #00aaff, #0073d8);
     color: white;
+    padding: 10px;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
+    border-radius: 5px;
+    font-weight: bold;
     font-size: 16px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(to right, #008dd0, #005db0);
+}
+
+/* Mensajes */
+.mensaje {
+    text-align: center;
+    padding: 10px;
+    margin-top: 10px;
+    display: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.mensaje.exito {
+    background-color: #c7f5d9;
+    color: #1b6e36;
+}
+
+.mensaje.error {
+    background-color: #ffd2d2;
+    color: #a30000;
+}
+
+/* Botón "Atrás" */
+.volver {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
     transition: background-color 0.3s;
 }
 
-button:hover {
-    background-color: #004d40;
+.volver:hover {
+    background-color: #cee3ff;
 }
 
-.mensaje {
-    margin-top: 20px;
-    padding: 15px;
-    border-radius: 4px;
-    text-align: center;
-    display: none;
-}
-
-.error {
-    background-color: #fdd;
-    color: #900;
-    border: 1px solid #900;
-}
-
-.exito {
-    background-color: #dfd;
-    color: #060;
-    border: 1px solid #060;
-}
-
+/* Logo esquina */
 .encabezado-esquina {
     position: absolute;
-    top: 10px;
-    right: 20px;
-    text-align: right;
-    font-weight: bold;
-    font-family: Arial, sans-serif;
+    top: 15px;
+    right: 25px;
 }
 
-.encabezado-esquina .arriba {
-    font-size: 14px;
-    color: #ff9933;
-    text-shadow: 1px 1px 1px black;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-}
-
-.encabezado-esquina .abajo {
-    font-size: 22px;
-    color: #1a75ff;
-    font-family: 'Georgia', serif;
-    text-shadow: 1px 1px 0px black, -1px -1px 0px black;
+.encabezado-esquina img {
+    height: 40px;
 }
