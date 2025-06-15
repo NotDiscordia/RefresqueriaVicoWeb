@@ -1,7 +1,7 @@
 body {
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #54c0f9, #9bd3f8);
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
     font-family: Arial, sans-serif;
     display: flex;
     justify-content: center;
@@ -24,7 +24,7 @@ body {
 
 .login-container h1 {
     margin-bottom: 30px;
-    color: orange;
+    color: #ff7000;
     font-size: 22px;
     font-weight: bold;
     text-shadow: 1px 1px white;
@@ -80,3 +80,11 @@ button:hover {
 .toast.success { background-color: #28a745; }
 .toast.error { background-color: #dc3545; }
 .toast.warning { background-color: #ffc107; color: #000; }
+
+footer {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    color: #333;
+}

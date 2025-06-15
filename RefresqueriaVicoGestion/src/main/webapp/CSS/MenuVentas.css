@@ -1,11 +1,32 @@
-* {
-    box-sizing: border-box;
-    font-family: sans-serif;
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
 }
 
-body {
-    margin: 0;
-    background: linear-gradient(to bottom, #88cfe4, #b6e1f0);
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #0073d8;
+    padding: 10px 20px;
+    position: relative;
+}
+
+.btn-atras:hover {
+    background-color: #003e7a;
+}
+
+.btn-atras {
+    background-color: #004e9a;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
 }
 
 .menu-central {
@@ -24,16 +45,29 @@ body {
     transition: background-color 0.3s;
 }
 
+.logo-centro {
+    height: 50px;
+}
+
+.container {
+    margin: 20px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.2);
+}
+
 .menu-central a:hover {
     background-color: #003e7a;
 }
 
 header {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    background-color: #005ca9;
+    justify-content: space-between;
+    background-color: #0073d8;
     padding: 10px 20px;
+    position: relative;
 }
 
 .logo-btn {
@@ -186,4 +220,21 @@ main {
 
 .accion-btn {
     background-color: #ddd;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.logo-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.header-section {
+    flex: 1;
 }

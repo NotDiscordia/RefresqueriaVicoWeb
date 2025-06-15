@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(to bottom, #54c0f9, #9bd3f8);
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -22,6 +22,10 @@ body {
     cursor: pointer;
 }
 
+.cerrar-sesion:hover {
+    background-color: #cee3ff;
+}
+
 .menu-container {
     display: flex;
     align-items: center;
@@ -37,9 +41,9 @@ body {
 
 .opcion {
     background-color: #f1f1f1;
-    padding: 20px 40px;
+    padding: 60px 100px;
     border-radius: 20px;
-    font-size: 18px;
+    font-size: 25px;
     font-weight: bold;
     text-align: center;
     cursor: pointer;
@@ -47,12 +51,12 @@ body {
 }
 
 .opcion:hover {
-    background-color: #e0e0e0;
+    background-color: #fdc19b;
     transform: scale(1.05);
 }
 
 .logo {
-    max-width: 250px;
+    max-width: 500px;
 }
 
 footer {
