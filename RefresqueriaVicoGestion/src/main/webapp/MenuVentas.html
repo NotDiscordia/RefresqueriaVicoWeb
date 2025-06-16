@@ -8,32 +8,37 @@
 <body>
 
 <header>
-  <div class="header-section">
-    <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
-  </div>
-
-  <div class="logo-wrapper">
-    <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
-  </div>
-
-  <div class="header-section" style="display: flex; justify-content: flex-end;">
-    <div class="menu-central">
-      <a href="MenuVentas.html">VENTAS</a>
-      <a href="ConsultaProd.html">PRODUCTOS</a>
-      <a href="MenuConsultas.html">EMPLEADOS</a>
+    <div class="header-section">
+        <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
     </div>
-  </div>
+
+    <div class="logo-wrapper">
+        <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
+    </div>
+
+    <div class="header-section" style="display: flex; justify-content: flex-end;">
+        <div class="menu-central">
+            <a href="MenuVentas.html">VENTAS</a>
+            <a href="ConsultaProd.html">PRODUCTOS</a>
+            <a href="MenuConsultas.html">EMPLEADOS</a>
+        </div>
+    </div>
 </header>
 
 <main>
     <div class="left-panel">
         <div class="top-search">
-            <input type="text" placeholder="Buscar..." />
-            <button>Categoría</button>
+            <input type="text" id="buscarNombre" placeholder="Buscar producto..." oninput="filtrarProductos()" />
+            <select id="filtroCategoria" onchange="filtrarProductos()">
+                <option value="">Todas las Categorías</option>
+                <option value="Raspados">Raspados</option>
+                <option value="Preparados">Preparados</option>
+                <option value="Especiales">Especiales</option>
+                <option value="Nieves">Nieves</option>
+                <option value="Bebidas">Bebidas</option>
+            </select>
         </div>
-        <div class="productos" id="lista-productos">
-            <!-- Productos cargados dinámicamente -->
-        </div>
+        <div class="productos" id="lista-productos"></div>
     </div>
 
     <div class="right-panel">
@@ -43,7 +48,8 @@
         </div>
         <hr />
         <div class="venta-total">
-            Total: $<span id="subtotal">0.00</span>
+            Total en pesos: $<span id="subtotal">0.00</span><br />
+            Total en dólares: $<span id="subtotalUSD">0.00</span> USD
         </div>
         <div class="botones-venta">
             <button class="accion-btn" onclick="window.location.href='Corte.html'">Corte de Caja</button>
@@ -55,34 +61,47 @@
 
 <script>
     const venta = [];
+    let productos = [];
+    const DOLAR = 19.50;
 
     function cargarProductos() {
         fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
             .then(response => response.json())
             .then(data => {
-                const lista = document.getElementById("lista-productos");
-                lista.innerHTML = "";
-                data.forEach(producto => {
-                    const div = document.createElement("div");
-                    div.className = "producto";
-                    div.onclick = () => agregarProducto(producto);
-
-                    const img = document.createElement("img");
-                    img.src = producto.imagen || "https://via.placeholder.com/100x60?text=Producto";
-                    img.alt = producto.nombre;
-
-                    const nombre = document.createElement("div");
-                    nombre.textContent = producto.nombre;
-
-                    const precio = document.createElement("div");
-                    precio.textContent = `$${producto.precio.toFixed(2)}`;
-
-                    div.appendChild(img);
-                    div.appendChild(nombre);
-                    div.appendChild(precio);
-                    lista.appendChild(div);
-                });
+                productos = data;
+                mostrarProductos(productos);
             });
+    }
+
+    function mostrarProductos(lista) {
+        const contenedor = document.getElementById("lista-productos");
+        contenedor.innerHTML = "";
+
+        lista.forEach(producto => {
+            const div = document.createElement("div");
+            div.className = "producto";
+            div.onclick = () => agregarProducto(producto);
+
+            const nombre = document.createElement("div");
+            nombre.textContent = producto.nombre;
+
+            const precio = document.createElement("div");
+            precio.textContent = `$${producto.precio.toFixed(2)}`;
+
+            div.appendChild(nombre);
+            div.appendChild(precio);
+            contenedor.appendChild(div);
+        });
+    }
+
+    function filtrarProductos() {
+        const texto = document.getElementById("buscarNombre").value.toLowerCase();
+        const categoria = document.getElementById("filtroCategoria").value;
+        const filtrados = productos.filter(p =>
+            p.nombre.toLowerCase().includes(texto) &&
+            (categoria === "" || p.categoria === categoria)
+        );
+        mostrarProductos(filtrados);
     }
 
     function agregarProducto(producto) {
@@ -98,9 +117,11 @@
     function renderizarVenta() {
         const contenedor = document.getElementById("listaVenta");
         contenedor.innerHTML = "";
+
         if (venta.length === 0) {
             contenedor.innerHTML = "<p>No hay artículos en la cuenta</p>";
             document.getElementById("subtotal").textContent = "0.00";
+            document.getElementById("subtotalUSD").textContent = "0.00";
             return;
         }
 
@@ -133,6 +154,7 @@
         });
 
         document.getElementById("subtotal").textContent = total.toFixed(2);
+        document.getElementById("subtotalUSD").textContent = (total / DOLAR).toFixed(2);
     }
 
     function cancelarVenta() {
@@ -142,23 +164,43 @@
         }
     }
 
-    function eliminarSeleccionados() {
-        // Simula corte de caja
-        alert("Función de corte de caja aún no implementada.");
-    }
-
     function pagar() {
         if (venta.length === 0) {
             alert("No hay productos en la venta.");
             return;
         }
-        alert("Venta realizada exitosamente.");
-        venta.length = 0;
-        renderizarVenta();
+
+        const total = venta.reduce((sum, p) => sum + (p.precio * p.cantidad), 0);
+        const detalleVenta = {
+            productos: venta.map(p => ({ id: p.id, cantidad: p.cantidad })),
+            total: total
+        };
+
+        fetch("http://localhost:8081/RefresqueriaVicoGestion/api/ventas", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(detalleVenta)
+        })
+            .then(res => {
+                if (!res.ok) throw new Error("Error al registrar la venta");
+                return res.json();
+            })
+            .then(data => {
+                alert("Venta registrada exitosamente.");
+                venta.length = 0;
+                renderizarVenta();
+            })
+            .catch(err => {
+                console.error(err);
+                alert("Hubo un error al registrar la venta.");
+            });
     }
 
     window.onload = cargarProductos;
 </script>
+
 
 </body>
 </html>
