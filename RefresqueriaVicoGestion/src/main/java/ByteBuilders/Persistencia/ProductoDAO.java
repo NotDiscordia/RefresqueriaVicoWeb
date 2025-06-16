@@ -9,13 +9,15 @@ import java.util.List;
 public class ProductoDAO {
 
     public void insertar(Producto p) throws SQLException {
-        String sql = "INSERT INTO productos (nombre, precio, stock, vendidos) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO productos (nombre, precio, costo, stock, categoria, vendidos) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, p.getNombre());
             stmt.setBigDecimal(2, p.getPrecio());
-            stmt.setInt(3, p.getStock());
-            stmt.setInt(4, p.getVendidos() != null ? p.getVendidos() : 0);
+            stmt.setBigDecimal(3, p.getCosto());
+            stmt.setInt(4, p.getStock());
+            stmt.setString(5, p.getCategoria());
+            stmt.setInt(6, p.getVendidos() != null ? p.getVendidos() : 0);
             stmt.executeUpdate();
         }
     }
@@ -31,7 +33,9 @@ public class ProductoDAO {
                 p.setId(rs.getInt("id"));
                 p.setNombre(rs.getString("nombre"));
                 p.setPrecio(rs.getBigDecimal("precio"));
+                p.setCosto(rs.getBigDecimal("costo"));
                 p.setStock(rs.getInt("stock"));
+                p.setCategoria(rs.getString("categoria"));
                 p.setVendidos(rs.getInt("vendidos"));
                 return p;
             }
@@ -50,7 +54,9 @@ public class ProductoDAO {
                 p.setId(rs.getInt("id"));
                 p.setNombre(rs.getString("nombre"));
                 p.setPrecio(rs.getBigDecimal("precio"));
+                p.setCosto(rs.getBigDecimal("costo"));
                 p.setStock(rs.getInt("stock"));
+                p.setCategoria(rs.getString("categoria"));
                 p.setVendidos(rs.getInt("vendidos"));
                 lista.add(p);
             }
@@ -68,14 +74,16 @@ public class ProductoDAO {
     }
 
     public void actualizar(Producto p) throws SQLException {
-        String sql = "UPDATE productos SET nombre = ?, precio = ?, stock = ?, vendidos = ? WHERE id = ?";
+        String sql = "UPDATE productos SET nombre = ?, precio = ?, costo = ?, stock = ?, categoria = ?, vendidos = ? WHERE id = ?";
         try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
             stmt.setString(1, p.getNombre());
             stmt.setBigDecimal(2, p.getPrecio());
-            stmt.setInt(3, p.getStock());
-            stmt.setInt(4, p.getVendidos());
-            stmt.setInt(5, p.getId());
+            stmt.setBigDecimal(3, p.getCosto());
+            stmt.setInt(4, p.getStock());
+            stmt.setString(5, p.getCategoria());
+            stmt.setInt(6, p.getVendidos());
+            stmt.setInt(7, p.getId());
             stmt.executeUpdate();
         }
     }
