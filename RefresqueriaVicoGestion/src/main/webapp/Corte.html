@@ -67,7 +67,7 @@
     // Obtener total teórico al cargar la página
     window.addEventListener('DOMContentLoaded', async () => {
         try {
-            const response = await fetch('/api/ventas/total-dia');
+            const response = await fetch('http://localhost:8081/api/cortes-caja/ventas/total-dia');
             if (!response.ok) throw new Error('Error al obtener total');
 
             const data = await response.json();
@@ -113,6 +113,9 @@
             console.error('Error:', error);
             return 'ERROR';
         }
+
+        const resultadoUSD = await compararCorte(fisicoUSDEnMXN, teoricoPesos);
+        document.getElementById('res-usd').value = resultadoUSD;
     }
 
     async function guardarCorte() {
@@ -145,6 +148,21 @@
             alert('Error al guardar: ' + error.message);
         }
     }
+
+    // Para obtener el total del día
+    async function cargarTotalTeorico() {
+        try {
+            const response = await fetch('http://localhost:8081/api/cortes-caja/ventas/total-dia');
+
+            if (!response.ok) throw new Error(await response.text());
+            const data = await response.json();
+            document.getElementById('eteo-pesos').value = data.total;
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al cargar total teórico: ' + error.message);
+        }
+    }
+
 </script>
 </body>
 </html>
