@@ -8,13 +8,21 @@
 <body>
 <!-- Barra superior -->
 <header class="topbar">
-    <button class="btn-back" onclick="window.history.back()">ATRÁS</button>
-    <nav class="tabs">
-        <button class="tab">VENTAS</button>
-        <button class="tab">PRODUCTOS</button>
-        <button class="tab">EMPLEADOS</button>
-    </nav>
-    <div class="logo">REFRISERÍA VICO</div>
+    <div class="header-section">
+        <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
+    </div>
+
+    <div class="logo-wrapper">
+        <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
+    </div>
+
+    <div class="header-section" style="display: flex; justify-content: flex-end;">
+        <div class="menu-central">
+            <a href="MenuVentas.html">VENTAS</a>
+            <a href="ConsultaProd.html">PRODUCTOS</a>
+            <a href="MenuConsultas.html">EMPLEADOS</a>
+        </div>
+    </div>
 </header>
 
 <!-- Contenedor principal -->
