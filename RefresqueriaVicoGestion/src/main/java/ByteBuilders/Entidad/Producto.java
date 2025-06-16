@@ -1,9 +1,10 @@
 package ByteBuilders.Entidad;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import java.math.BigDecimal;
 
-@Data // Genera automáticamente getters, setters, toString, etc.
+@Data
 @Entity
 @Table(name = "productos")
 public class Producto {
@@ -18,9 +19,15 @@ public class Producto {
     @Column(name = "precio", nullable = false, precision = 10, scale = 2)
     private BigDecimal precio;
 
+    @Column(name = "costo", nullable = false, precision = 10, scale = 2)
+    private BigDecimal costo;
+
     @Column(name = "stock", nullable = false)
     private Integer stock;
 
+    @Column(name = "categoria", length = 50)
+    private String categoria;
+
     @Column(name = "vendidos", nullable = false)
-    private Integer vendidos;
+    private Integer vendidos = 0; // Inicializado en 0 para nuevos productos
 }
