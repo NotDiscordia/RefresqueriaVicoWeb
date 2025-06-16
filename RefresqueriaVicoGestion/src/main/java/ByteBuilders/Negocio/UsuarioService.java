@@ -52,4 +52,6 @@ public class UsuarioService {
     public Usuario buscarPorNombre(String nombre) throws SQLException {
         return dao.buscarPorNombre(nombre);
     }
+
+
 }

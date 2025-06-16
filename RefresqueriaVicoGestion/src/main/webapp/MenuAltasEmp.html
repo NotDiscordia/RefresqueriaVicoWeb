@@ -3,38 +3,37 @@
 <head>
   <meta charset="UTF-8" />
   <title>Alta de Empleado</title>
-  <link rel="stylesheet" href="CSS/MenuAltasEmp.css">
+  <link rel="stylesheet" href="CSS/MenuAltasEmp.css" />
 </head>
 <body>
 
-<!-- Encabezado en la esquina superior derecha -->
+<!-- Imagen logo en la esquina superior derecha -->
 <div class="encabezado-esquina">
-  <div class="arriba">REFRESQUERIA</div>
-  <div class="abajo">VICO</div>
+  <img src="Images/VicoLogo.svg" alt="Refresquería Vico">
 </div>
 
-<a class="volver" href="MenuUsuarios.html">&larr; Volver</a>
+<a class="volver" href="MenuConsultas.html">← ATRÁS</a>
 
 <div class="form-container">
   <h2>Alta de Empleado</h2>
 
   <form id="formEmpleado">
-    <label for="nombre">Nombre:</label>
+    <label for="nombre">Nombre</label>
     <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
 
-    <label for="apellidos">Apellidos:</label>
+    <label for="apellidos">Apellidos</label>
     <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
 
-    <label for="celular">Celular:</label>
+    <label for="celular">Celular</label>
     <input type="tel" id="celular" name="celular" required pattern="^\d{10}$" placeholder="10 dígitos" />
 
-    <label for="email">Correo electrónico (opcional):</label>
+    <label for="email">Correo electrónico (opcional)</label>
     <input type="email" id="email" name="email" placeholder="Opcional">
 
-    <label for="contrasena">Contraseña:</label>
+    <label for="contrasena">Contraseña</label>
     <input type="password" id="contrasena" name="contrasena" required minlength="4" maxlength="20" pattern="^[a-zA-Z0-9]+$" />
 
-    <label for="rol">Rol:</label>
+    <label for="rol">Rol</label>
     <select id="rol" name="rol" required>
       <option value="" disabled selected>Selecciona rol</option>
       <option value="empleado">Empleado</option>

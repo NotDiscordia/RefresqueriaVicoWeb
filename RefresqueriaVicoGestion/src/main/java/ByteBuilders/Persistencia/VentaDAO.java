@@ -1,9 +1,12 @@
 package ByteBuilders.Persistencia;
 
+import ByteBuilders.Entidad.CortesCaja;
 import ByteBuilders.Entidad.Venta;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+
+import java.time.LocalDate;
 import java.util.List;
 
 public class VentaDAO {
@@ -62,6 +65,40 @@ public class VentaDAO {
             em.getTransaction().begin();
             em.merge(venta);
             em.getTransaction().commit();
+        } finally {
+            em.close();
+        }
+    }
+
+    public CortesCaja guardarCorteCaja(CortesCaja corte) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.persist(corte);
+            em.getTransaction().commit();
+            return corte;
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<Venta> obtenerVentasDelDia(LocalDate fecha) {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT v FROM Venta v WHERE DATE(v.fechaHora) = :fecha", Venta.class)
+                    .setParameter("fecha", fecha)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<CortesCaja> obtenerTodosCortesCaja() {
+        EntityManager em = emf.createEntityManager();
+        try {
+            return em.createQuery("SELECT c FROM CortesCaja c ORDER BY c.fecha DESC", CortesCaja.class)
+                    .getResultList();
         } finally {
             em.close();
         }

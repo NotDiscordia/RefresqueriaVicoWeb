@@ -2,33 +2,44 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Alta de Producto</title>
-    <link rel="stylesheet" href="CSS/AltaProd.css">
+    <title>Registro de Productos</title>
+    <link rel="stylesheet" href="CSS/AltaProd.css" />
 </head>
 <body>
 
-<!-- Encabezado en la esquina superior derecha -->
+<!-- Imagen logo en la esquina superior derecha -->
 <div class="encabezado-esquina">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
+    <img src="Images/VicoLogo.svg" alt="Refresquería Vico">
 </div>
 
-<a class="volver" href="MenInv2.html">&larr; Volver</a>
+<a class="volver" href="ConsultaProd.html">← ATRÁS</a>
 
 <div class="form-container">
-    <h2>Alta de Producto</h2>
+    <h2>Registro de Productos</h2>
 
     <form id="form-alta-producto">
-        <label for="nombre">Nombre:</label>
+        <label for="nombre">Nombre</label>
         <input type="text" id="nombre" name="nombre" required placeholder="Ej. Refresco">
 
-        <label for="precio">Precio:</label>
+        <label for="precio">Precio</label>
         <input type="number" id="precio" name="precio" required step="0.01" min="0" placeholder="Ej. 15.50">
 
-        <label for="stock">Stock:</label>
+        <label for="costo">Costo</label>
+        <input type="number" id="costo" name="costo" required step="0.01" min="0" placeholder="Ej. 10.00">
+
+        <label for="stock">Stock</label>
         <input type="number" id="stock" name="stock" required min="0" placeholder="Ej. 10">
 
-        <button type="submit">Guardar Producto</button>
+        <label for="categoria">Categoría</label>
+        <select id="categoria" name="categoria" required>
+            <option value="">Selecciona una categoría</option>
+            <option value="Raspados">Raspados</option>
+            <option value="Especiales">Especiales</option>
+            <option value="Preparados">Preparados</option>
+            <option value="Bebidas">Bebidas</option>
+        </select>
+
+        <button type="submit">Registrar</button>
     </form>
 
     <div id="mensaje" class="mensaje"></div>
@@ -43,7 +54,9 @@
 
         const nombre = form.nombre.value.trim();
         const precio = parseFloat(form.precio.value);
+        const costo = parseFloat(form.costo.value);
         const stock = parseInt(form.stock.value, 10);
+        const categoria = form.categoria.value;
 
         const regexNombre = /^[a-zA-Z0-9 ]+$/;
         if (!regexNombre.test(nombre)) {
@@ -55,12 +68,23 @@
             mostrarMensaje('❌ Precio inválido.', true);
             return;
         }
+
+        if (isNaN(costo) || costo < 0) {
+            mostrarMensaje('❌ Costo inválido.', true);
+            return;
+        }
+
         if (isNaN(stock) || stock < 0) {
             mostrarMensaje('❌ Stock inválido.', true);
             return;
         }
 
-        const producto = { nombre, precio, stock };
+        if (!categoria) {
+            mostrarMensaje('❌ Debes seleccionar una categoría.', true);
+            return;
+        }
+
+        const producto = { nombre, precio, costo, stock, categoria };
 
         try {
             const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos', {
@@ -103,3 +127,4 @@
 
 </body>
 </html>
+
