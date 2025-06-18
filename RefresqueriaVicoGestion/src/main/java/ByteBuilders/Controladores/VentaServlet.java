@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
 import javax.servlet.*;
 import java.io.*;
+import java.time.LocalDateTime;
 
 @WebServlet("/api/ventas")
 public class VentaServlet extends HttpServlet {
@@ -16,26 +17,26 @@ public class VentaServlet extends HttpServlet {
     private final Gson gson = new Gson();
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        // Configurar CORS
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setContentType("application/json");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // Leer JSON de la petición y convertir a objeto Venta
+        BufferedReader reader = request.getReader();
+        Gson gson = new Gson(); // Aquí o usa el builder si tienes más configuraciones
+        Venta venta = gson.fromJson(reader, Venta.class);
 
+        // Asignar la fecha/hora actual aquí
+        venta.setFechaHora(LocalDateTime.now());
+
+        // Luego continúas con el guardado
         try {
-            BufferedReader reader = req.getReader();
-            Venta venta = gson.fromJson(reader, Venta.class); // <- Asegúrate de que tu clase `Venta` tenga setters
-
-            ventaService.registrarVenta(venta); // <- Guarda en base de datos
-            resp.setStatus(HttpServletResponse.SC_OK);
-
-            JsonObject json = new JsonObject();
-            json.addProperty("mensaje", "Venta registrada correctamente");
-            resp.getWriter().write(gson.toJson(json));
+            ventaService.registrarVenta(venta);
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("Venta registrada correctamente");
         } catch (Exception e) {
-            resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            resp.getWriter().write("{\"error\":\"" + e.getMessage() + "\"}");
+            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            response.getWriter().write("Error al registrar la venta: " + e.getMessage());
         }
     }
+
 
     // Soporte para preflight (opcional)
     @Override

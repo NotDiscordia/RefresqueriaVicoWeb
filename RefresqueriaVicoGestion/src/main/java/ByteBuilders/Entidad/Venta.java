@@ -8,15 +8,25 @@ import java.util.List;
 
 @Entity
 @Data
+@Table(name = "ventas")
 public class Venta {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;  // ✔️ Usamos Long para el ID
+    private Long id;
 
     @Column(name = "fecha_hora")
     private LocalDateTime fechaHora;
 
+    @Column(nullable = false)
     private BigDecimal total;
+
+    @Column(name = "metodo_pago", nullable = false)
+    private String metodoPago;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "moneda", nullable = false)
+    private Moneda moneda;
 
     @ManyToOne
     @JoinColumn(name = "usuario_id")
