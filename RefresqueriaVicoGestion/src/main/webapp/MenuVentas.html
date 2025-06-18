@@ -29,7 +29,7 @@
     <div class="left-panel">
         <div class="top-search">
             <input type="text" id="busqueda" placeholder="Buscar por nombre..." oninput="filtrarProductos()" />
-            <select id="categoria" onchange="filtrarProductos()">
+            <select id="categoria" onchange="filtrarProductos()" class="select-categoria">
                 <option value="">Todas las categorías</option>
                 <option value="Raspados">Raspados</option>
                 <option value="Preparados">Preparados</option>
@@ -50,7 +50,8 @@
         </div>
         <hr />
         <div class="venta-total">
-            Total: $<span id="subtotal">0.00</span>
+            Total en pesos: $<span id="subtotal">0.00</span><br>
+            Total en dólares: $<span id="subtotalUSD">0.00</span>
         </div>
         <div class="botones-venta">
             <button class="accion-btn" onclick="window.location.href='Corte.html'">Corte de Caja</button>
@@ -60,7 +61,39 @@
     </div>
 </main>
 
+<!-- Modal para realizar pago -->
+<div id="modalPago" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Confirmar Venta</h3>
+
+        <label>Moneda:</label><br>
+        <select id="monedaVenta" class="input-modal" onchange="actualizarModalTotal()">
+            <option value="MXN">Pesos (MXN)</option>
+            <option value="USD">Dólares (USD)</option>
+        </select><br><br>
+
+        <label>Total: $<span id="modalTotal"></span></label><br><br>
+
+        <label>Monto entregado:</label><br>
+        <input type="number" id="montoEntregado" oninput="calcularCambio()" class="input-modal" /><br><br>
+
+        <label>Método de pago:</label><br>
+        <select id="metodoPago" class="input-modal">
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta</option>
+        </select><br><br>
+
+        <label>Cambio: $<span id="cambio">0.00</span></label><br><br>
+
+        <div class="modal-buttons">
+            <button class="pagar-btn" onclick="confirmarVenta()">Confirmar venta</button>
+            <button class="cancelar-btn" onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
+    const TIPO_CAMBIO = 19.5;
     const venta = [];
     let productosCargados = [];
 
@@ -107,7 +140,6 @@
         });
     }
 
-
     function agregarProducto(producto) {
         const existente = venta.find(p => p.id === producto.id);
         if (existente) {
@@ -124,6 +156,7 @@
         if (venta.length === 0) {
             contenedor.innerHTML = "<p>No hay artículos en la cuenta</p>";
             document.getElementById("subtotal").textContent = "0.00";
+            document.getElementById("subtotalUSD").textContent = "0.00";
             return;
         }
 
@@ -156,6 +189,7 @@
         });
 
         document.getElementById("subtotal").textContent = total.toFixed(2);
+        document.getElementById("subtotalUSD").textContent = (total / TIPO_CAMBIO).toFixed(2);
     }
 
     function cancelarVenta() {
@@ -170,10 +204,90 @@
             alert("No hay productos en la venta.");
             return;
         }
-        alert("Venta realizada exitosamente.");
-        venta.length = 0;
-        renderizarVenta();
+        document.getElementById("modalPago").style.display = "flex";
+        actualizarModalTotal();
     }
+
+    function cerrarModal() {
+        document.getElementById("modalPago").style.display = "none";
+    }
+
+    function calcularTotal() {
+        return venta.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+    }
+
+    function actualizarModalTotal() {
+        const moneda = document.getElementById("monedaVenta").value;
+        const total = calcularTotal();
+        const totalEnMoneda = moneda === "USD" ? (total / TIPO_CAMBIO) : total;
+        document.getElementById("modalTotal").textContent = totalEnMoneda.toFixed(2);
+        calcularCambio();
+    }
+
+    function calcularCambio() {
+        const moneda = document.getElementById("monedaVenta").value;
+        const monto = parseFloat(document.getElementById("montoEntregado").value) || 0;
+        const total = calcularTotal();
+        const totalEnMoneda = moneda === "USD" ? (total / TIPO_CAMBIO) : total;
+        const cambio = monto - totalEnMoneda;
+        document.getElementById("cambio").textContent = cambio >= 0 ? cambio.toFixed(2) : "0.00";
+    }
+
+    async function confirmarVenta() {
+        const monto = parseFloat(document.getElementById("montoEntregado").value);
+        const metodo = document.getElementById("metodoPago").value;
+        const moneda = document.getElementById("monedaVenta").value;
+        const totalBase = calcularTotal();
+        const total = moneda === "USD" ? totalBase / TIPO_CAMBIO : totalBase;
+
+        if (isNaN(monto) || monto < total) {
+            alert("El monto entregado no es suficiente.");
+            return;
+        }
+
+        // Armar objeto venta para enviar al backend
+        const ventaEnviar = {
+            productos: venta.map(item => ({
+                id: item.id,
+                nombre: item.nombre,
+                cantidad: item.cantidad,
+                precio: item.precio
+            })),
+            total: total.toFixed(2),
+            metodoPago: metodo,
+            moneda: moneda,
+            montoEntregado: monto.toFixed(2),
+            cambio: (monto - total).toFixed(2),
+            // Opcional: agregar usuario, fecha, etc. si tu backend lo requiere
+        };
+
+        try {
+            const response = await fetch("http://localhost:8081/RefresqueriaVicoGestion/api/ventas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(ventaEnviar)
+            });
+
+            if (!response.ok) {
+                const errorResp = await response.json();
+                alert("Error al registrar la venta: " + (errorResp.error || "Error desconocido"));
+                return;
+            }
+
+            const data = await response.json();
+            alert(data.mensaje || "Venta registrada correctamente");
+
+            // Limpia la venta y UI
+            venta.length = 0;
+            renderizarVenta();
+            cerrarModal();
+        } catch (error) {
+            alert("Error de conexión: " + error.message);
+        }
+    }
+
 
     window.onload = cargarProductos;
 </script>
