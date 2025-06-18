@@ -110,6 +110,11 @@
       <version>${junit.jupiter.version}</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.glassfish.jersey.containers</groupId>
+      <artifactId>jersey-container-servlet</artifactId>
+      <version>3.0.2</version> <!-- O la versión que uses -->
+    </dependency>
   </dependencies>
 
   <build>
