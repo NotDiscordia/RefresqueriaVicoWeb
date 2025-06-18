@@ -1,27 +1,57 @@
-/* Reset básico */
-* { box-sizing: border-box; margin: 0; padding: 0; }
 
-/* Body y fuente */
-body {
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
     font-family: 'Segoe UI', sans-serif;
-    background-color: #bbe1fa;
-    color: #1c1c1c;
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
 }
 
-/* Topbar */
-.topbar {
+header {
     display: flex;
     align-items: center;
-    background: #1a75ff;
+    justify-content: space-between;
+    background-color: #0073d8;
     padding: 10px 20px;
+    position: relative;
 }
-.btn-back {
-    background: #4da6ff;
-    border: none;
+
+.btn-atras {
+    background-color: #004e9a;
     color: white;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.btn-atras:hover {
+    background-color: #003e7a;
+}
+
+.menu-central {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.menu-central a {
+    background-color: #004e9a;
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.menu-central a:hover {
+    background-color: #003e7a;
+}
+
+.logo-centro {
+    height: 50px;
 }
 .tabs {
     display: flex;
@@ -35,12 +65,6 @@ body {
     padding: 8px 16px;
     border-radius: 4px;
     cursor: pointer;
-}
-.logo {
-    margin-left: auto;
-    color: #fff;
-    font-weight: bold;
-    font-size: 1.1rem;
 }
 
 /* Contenedor principal */
@@ -110,4 +134,19 @@ body {
 .btn-action.save:hover {
     background: #fff3e6;
 }
->>>>>>> main
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+
+.logo-wrapper {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+}
+
+.header-section {
+    flex: 1;
+}

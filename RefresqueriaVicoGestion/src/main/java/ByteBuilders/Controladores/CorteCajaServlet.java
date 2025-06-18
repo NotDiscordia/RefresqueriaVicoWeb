@@ -1,8 +1,8 @@
 package ByteBuilders.Controladores;
 
 import ByteBuilders.Entidad.CortesCaja;
-import ByteBuilders.Negocio.VentaService;
 import ByteBuilders.Entidad.Moneda;
+import ByteBuilders.Negocio.VentaService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -31,6 +31,13 @@ public class CorteCajaServlet extends HttpServlet {
             } else if (pathInfo.equals("/historial")) {
                 List<CortesCaja> cortes = ventaService.obtenerCortesHistoricos();
                 enviarJSON(response, gson.toJson(cortes));
+            } else if (pathInfo.equals("/ventas/total-dia")) {
+                BigDecimal total = ventaService.calcularTotalVentasDelDia(); // Asegúrate que este método esté implementado
+                JsonObject json = new JsonObject();
+                json.addProperty("total", total);
+                enviarJSON(response, gson.toJson(json));
+            } else {
+                manejarError(response, HttpServletResponse.SC_NOT_FOUND, "Ruta no encontrada");
             }
         } catch (Exception e) {
             manejarError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -40,30 +47,39 @@ public class CorteCajaServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        configurarCORS(response);
+        response.setContentType("application/json");
+
         try {
             BigDecimal totalEfectivo = new BigDecimal(request.getParameter("totalEfectivo"));
             int usuarioId = Integer.parseInt(request.getParameter("usuarioId"));
-            Moneda moneda = Moneda.valueOf(request.getParameter("moneda").toUpperCase());
+            String moneda = request.getParameter("moneda");
 
-            var corte = ventaService.realizarCorteCaja(totalEfectivo, usuarioId, moneda);
-            enviarJSON(response, gson.toJson(corte));
+            CortesCaja corte = ventaService.realizarCorteCaja(
+                    totalEfectivo,
+                    usuarioId,
+                    Moneda.valueOf(moneda)
+            );
+
+            response.getWriter().write(gson.toJson(corte));
         } catch (Exception e) {
-            manejarError(response, 500, "Error al realizar corte: " + e.getMessage());
+            response.sendError(400, "Datos inválidos");
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        configurarCORS(response);
         try {
-            BigDecimal efectivoFisico = new BigDecimal(request.getParameter("efectivoFisico"));
-            BigDecimal efectivoTeorico = new BigDecimal(request.getParameter("efectivoTeorico"));
+            configurarCORS(response);
+            BigDecimal fisico = new BigDecimal(request.getParameter("efectivoFisico"));
+            BigDecimal teorico = new BigDecimal(request.getParameter("efectivoTeorico"));
 
-            String resultado = ventaService.compararCorte(efectivoFisico, efectivoTeorico);
-            enviarJSON(response, "{\"resultado\": \"" + resultado + "\"}");
+            String resultado = ventaService.compararCorte(fisico, teorico);
+
+            JsonObject json = new JsonObject();
+            json.addProperty("resultado", resultado);
+            response.getWriter().write(gson.toJson(json));
         } catch (Exception e) {
-            manejarError(response, 500, "Error al comparar corte: " + e.getMessage());
+            response.sendError(400, "Error en comparación");
         }
     }
 
