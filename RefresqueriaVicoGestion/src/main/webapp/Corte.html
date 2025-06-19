@@ -68,7 +68,7 @@
     // Función para obtener total del día
     async function cargarTotalTeorico() {
         try {
-            const response = await fetch('http://localhost:8081/api/cortes_caja/total_ventas');
+            const response = await fetch("http://localhost:8081/RefresqueriaVicoGestion/api/cortes_caja/");
             if (!response.ok) throw new Error(await response.text());
 
             const data = await response.json();
@@ -79,11 +79,47 @@
         }
     }
 
-    // Al cargar la página
-    window.addEventListener('DOMContentLoaded', cargarTotalTeorico);
+    async function guardarCorte() {
+        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
+        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
+        const usuarioId = 1; // Obtener de sesión o dinámico
+
+        try {
+            if (fisicoPesos > 0) {
+                await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/cortes_caja', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        totalEfectivo: fisicoPesos,
+                        usuarioId: usuarioId,
+                        moneda: 'MXN'
+                    })
+                });
+            }
+
+            if (fisicoUSD > 0) {
+                await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/cortes_caja', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        totalEfectivo: fisicoUSD,
+                        usuarioId: usuarioId,
+                        moneda: 'USD'
+                    })
+                });
+            }
+
+            alert('Corte(s) guardado(s) con éxito');
+            cargarTotalTeorico();
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al guardar: ' + error.message);
+        }
+    }
+
 
     // Función para comparar cortes
-    async function compararCortes() {
+    function compararCortes() {
         const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
         const teoricoPesos = parseFloat(document.getElementById('eteo-pesos').value) || 0;
         const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
@@ -94,7 +130,7 @@
 
         // Convertir USD a MXN (tasa 1:20)
         const fisicoUSDEnMXN = fisicoUSD * 20;
-        document.getElementById('eteo-usd').value = fisicoUSDEnMXN;
+        document.getElementById('eteo-usd').value = fisicoUSDEnMXN.toFixed(2);
 
         // Comparar USD convertido
         const diffUSD = fisicoUSDEnMXN - teoricoPesos;
@@ -107,46 +143,8 @@
         return diferencia < 0 ? 'FALTANTE' : 'SOBRANTE';
     }
 
-    // Función para guardar corte
-    async function guardarCorte() {
-        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
-        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
-        const usuarioId = 1; // Obtener de sesión
-
-        try {
-            // Guardar corte en pesos si hay monto
-            if (fisicoPesos > 0) {
-                await fetch('/api/cortes-caja', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        totalEfectivo: fisicoPesos,
-                        usuarioId: usuarioId,
-                        moneda: 'MXN'
-                    })
-                });
-            }
-
-            // Guardar corte en dólares si hay monto
-            if (fisicoUSD > 0) {
-                await fetch('/api/cortes-caja', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({
-                        totalEfectivo: fisicoUSD,
-                        usuarioId: usuarioId,
-                        moneda: 'USD'
-                    })
-                });
-            }
-
-            alert('Corte(s) guardado(s) con éxito');
-            cargarTotalTeorico(); // Recargar datos
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al guardar: ' + error.message);
-        }
-    }
+    window.addEventListener('DOMContentLoaded', cargarTotalTeorico);
 </script>
+
 </body>
 </html>

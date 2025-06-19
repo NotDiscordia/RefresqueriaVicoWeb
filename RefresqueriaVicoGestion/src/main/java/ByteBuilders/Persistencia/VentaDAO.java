@@ -2,6 +2,7 @@ package ByteBuilders.Persistencia;
 
 import ByteBuilders.Entidad.*;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -223,4 +224,21 @@ public class VentaDAO {
         }
         return null;
     }
+
+    // Devuelve la suma total de ventas del día actual
+    public BigDecimal obtenerTotalVentasDelDia() throws SQLException {
+        String sql = "SELECT COALESCE(SUM(total), 0) AS total_dia FROM ventas WHERE DATE(fecha_Hora) = CURRENT_DATE";
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                return rs.getBigDecimal("total_dia");
+            } else {
+                return BigDecimal.ZERO;
+            }
+        }
+    }
+
 }

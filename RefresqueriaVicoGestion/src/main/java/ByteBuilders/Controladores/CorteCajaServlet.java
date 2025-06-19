@@ -6,13 +6,11 @@ import ByteBuilders.Negocio.VentaService;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-import javax.servlet.*;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.*;
-import javax.servlet.annotation.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.math.BigDecimal;
-import java.util.List;
 
 @WebServlet("/api/cortes_caja/*")
 public class CorteCajaServlet extends HttpServlet {
@@ -26,67 +24,86 @@ public class CorteCajaServlet extends HttpServlet {
 
         try {
             if (pathInfo == null || pathInfo.equals("/")) {
-                var cortes = ventaService.obtenerCortesCaja();
-                enviarJSON(response, gson.toJson(cortes));
-            } else if (pathInfo.equals("/historial")) {
-                List<CortesCaja> cortes = ventaService.obtenerCortesHistoricos();
-                enviarJSON(response, gson.toJson(cortes));
-            } else if (pathInfo.equals("/ventas/total-dia")) {
-                BigDecimal total = ventaService.calcularTotalVentasDelDia(); // Asegúrate que este método esté implementado
+                // Solo devolver el total de ventas del día
+                BigDecimal total = ventaService.calcularTotalVentasDelDia();
                 JsonObject json = new JsonObject();
                 json.addProperty("total", total);
+                json.addProperty("mensaje", "Corte guardado correctamente");
                 enviarJSON(response, gson.toJson(json));
             } else {
-                manejarError(response, HttpServletResponse.SC_NOT_FOUND, "Ruta no encontrada");
+                manejarError(response, HttpServletResponse.SC_NOT_FOUND, "Ruta no encontrada: " + pathInfo);
             }
         } catch (Exception e) {
             manejarError(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error al obtener cortes de caja: " + e.getMessage());
+                    "Error al procesar GET: " + e.getMessage());
         }
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setContentType("application/json");
+        configurarCORS(resp);
 
         try {
-            BigDecimal totalEfectivo = new BigDecimal(req.getParameter("totalEfectivo"));
-            int usuarioId = Integer.parseInt(req.getParameter("usuarioId"));
-            Moneda moneda = Moneda.valueOf(req.getParameter("moneda").toUpperCase());
+            // Leer el cuerpo JSON
+            StringBuilder sb = new StringBuilder();
+            String line;
+            try (var reader = req.getReader()) {
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line);
+                }
+            }
 
+            // Parsear JSON
+            JsonObject jsonObject = gson.fromJson(sb.toString(), JsonObject.class);
+
+            BigDecimal totalEfectivo = jsonObject.get("totalEfectivo").getAsBigDecimal();
+            int usuarioId = jsonObject.get("usuarioId").getAsInt();
+            Moneda moneda = Moneda.valueOf(jsonObject.get("moneda").getAsString().toUpperCase());
+
+            // Ejecutar lógica de corte
             CortesCaja corte = ventaService.realizarCorteCaja(totalEfectivo, usuarioId, moneda);
 
-            resp.getWriter().write(gson.toJson(corte));
+            // Evitar serialización de LocalDate directamente
+            JsonObject respuesta = new JsonObject();
+            respuesta.addProperty("mensaje", "Corte guardado correctamente");
+            respuesta.addProperty("totalEfectivo", corte.getTotalEfectivo().toString());
+            respuesta.addProperty("estado", corte.getEstado().toString());
+            respuesta.addProperty("moneda", corte.getMoneda().toString());
+
+            // Puedes agregar la fecha como string si la necesitas
+            respuesta.addProperty("fecha", corte.getFecha().toString());
+
+            enviarJSON(resp, gson.toJson(respuesta));
         } catch (Exception e) {
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+            manejarError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Error al guardar corte: " + e.getMessage());
         }
     }
 
     @Override
     protected void doPut(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        configurarCORS(response);
+
         try {
-            configurarCORS(response);
             BigDecimal fisico = new BigDecimal(request.getParameter("efectivoFisico"));
             BigDecimal teorico = new BigDecimal(request.getParameter("efectivoTeorico"));
 
-            // Corregido: obtener el nombre del enum como String
             String resultado = ventaService.compararCorte(fisico, teorico).name();
 
             JsonObject json = new JsonObject();
             json.addProperty("resultado", resultado);
-            response.getWriter().write(gson.toJson(json));
+            enviarJSON(response, gson.toJson(json));
+
         } catch (Exception e) {
-            response.sendError(400, "Error en comparación");
+            manejarError(response, HttpServletResponse.SC_BAD_REQUEST,
+                    "Error al comparar corte: " + e.getMessage());
         }
     }
-
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         configurarCORS(resp);
-        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+        resp.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
         resp.setHeader("Access-Control-Allow-Headers", "Content-Type");
         resp.setStatus(HttpServletResponse.SC_OK);
     }

@@ -87,4 +87,18 @@ public class ProductoDAO {
             stmt.executeUpdate();
         }
     }
+
+    public void actualizarProductoStockYVendidos(int productoId, int nuevoStock, int nuevosVendidos) throws SQLException {
+        String sql = "UPDATE productos SET stock = ?, vendidos = ? WHERE id = ?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, nuevoStock);
+            stmt.setInt(2, nuevosVendidos);
+            stmt.setInt(3, productoId);
+            stmt.executeUpdate();
+        }
+    }
+
+
+
 }

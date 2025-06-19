@@ -41,4 +41,5 @@ public class CortesCaja implements Serializable {
     @Column(name = "total_dolares", precision = 10, scale = 2)
     private BigDecimal totalDolares;
 
+
 }
