@@ -35,5 +35,13 @@
     <PostResources base="C:/Users/valez/.m2/repository/com/mysql/mysql-connector-j/8.3.0/mysql-connector-j-8.3.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/mysql-connector-j-8.3.0.jar"/>
     <PostResources base="C:/Users/valez/.m2/repository/com/google/protobuf/protobuf-java/3.25.1/protobuf-java-3.25.1.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/protobuf-java-3.25.1.jar"/>
     <PostResources base="C:/Users/valez/.m2/repository/com/google/code/gson/gson/2.10/gson-2.10.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/gson-2.10.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/org/glassfish/jersey/containers/jersey-container-servlet/3.0.2/jersey-container-servlet-3.0.2.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jersey-container-servlet-3.0.2.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/org/glassfish/jersey/containers/jersey-container-servlet-core/3.0.2/jersey-container-servlet-core-3.0.2.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jersey-container-servlet-core-3.0.2.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/org/glassfish/jersey/core/jersey-common/3.0.2/jersey-common-3.0.2.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jersey-common-3.0.2.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/jakarta/annotation/jakarta.annotation-api/2.0.0/jakarta.annotation-api-2.0.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jakarta.annotation-api-2.0.0.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/org/glassfish/hk2/osgi-resource-locator/1.0.3/osgi-resource-locator-1.0.3.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/osgi-resource-locator-1.0.3.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/org/glassfish/jersey/core/jersey-server/3.0.2/jersey-server-3.0.2.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jersey-server-3.0.2.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/org/glassfish/jersey/core/jersey-client/3.0.2/jersey-client-3.0.2.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jersey-client-3.0.2.jar"/>
+    <PostResources base="C:/Users/valez/.m2/repository/jakarta/ws/rs/jakarta.ws.rs-api/3.0.0/jakarta.ws.rs-api-3.0.0.jar" className="org.apache.catalina.webresources.FileResourceSet" webAppMount="/WEB-INF/lib/jakarta.ws.rs-api-3.0.0.jar"/>
   </Resources>
 </Context>

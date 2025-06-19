@@ -1,8 +1,6 @@
 package ByteBuilders.Persistencia;
 
-import ByteBuilders.Entidad.CortesCaja;
-import ByteBuilders.Entidad.Producto;
-import ByteBuilders.Entidad.Venta;
+import ByteBuilders.Entidad.*;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -116,8 +114,10 @@ public class VentaDAO {
     }
 
     // Guardar corte de caja
+    // Método para guardar corte de caja
     public CortesCaja guardarCorteCaja(CortesCaja corte) throws SQLException {
-        String sql = "INSERT INTO cortes_caja (fecha, totalVentas, totalEfectivo) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO cortes_caja (fecha, total_ventas, total_efectivo, usuario_id, moneda, estado) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -125,6 +125,9 @@ public class VentaDAO {
             stmt.setDate(1, Date.valueOf(corte.getFecha()));
             stmt.setBigDecimal(2, corte.getTotalVentas());
             stmt.setBigDecimal(3, corte.getTotalEfectivo());
+            stmt.setInt(4, corte.getUsuario().getId());
+            stmt.setString(5, corte.getMoneda().name());
+            stmt.setString(6, corte.getEstado().name());
 
             stmt.executeUpdate();
 
@@ -137,29 +140,31 @@ public class VentaDAO {
         }
     }
 
+    // Método auxiliar para mapear ventas
+    private Venta mapearVenta(ResultSet rs) throws SQLException {
+        Venta venta = new Venta();
+        venta.setId(rs.getLong("id"));
+        venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
+        venta.setTotal(rs.getBigDecimal("total"));
+        venta.setMetodoPago(rs.getString("metodo_pago"));
+        venta.setCambio(rs.getBigDecimal("cambio"));
+        venta.setMontoEntregado(rs.getBigDecimal("monto_entregado"));
+        return venta;
+    }
+
     // Obtener ventas de un día específico
     public List<Venta> obtenerVentasDelDia(LocalDate fecha) throws SQLException {
         List<Venta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM ventas WHERE fecha_Hora >= ? AND fecha_Hora < ?";
-
-        LocalDateTime inicio = fecha.atStartOfDay();
-        LocalDateTime fin = fecha.plusDays(1).atStartOfDay();
+        String sql = "SELECT * FROM ventas WHERE DATE(fecha_Hora) = ?";
 
         try (Connection con = ConexionBD.obtenerConexion();
              PreparedStatement stmt = con.prepareStatement(sql)) {
 
-            stmt.setTimestamp(1, Timestamp.valueOf(inicio));
-            stmt.setTimestamp(2, Timestamp.valueOf(fin));
+            stmt.setDate(1, Date.valueOf(fecha));
 
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
-                    Venta venta = new Venta();
-                    venta.setId(rs.getLong("id"));
-                    venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
-                    venta.setTotal(rs.getBigDecimal("total"));
-                    venta.setMetodoPago(rs.getString("metodo_pago")); // Cambiado a metodo_pago
-                    venta.setCambio(rs.getBigDecimal("cambio"));
-                    venta.setMontoEntregado(rs.getBigDecimal("monto_entregado")); // Agregado monto_entregado
+                    Venta venta = mapearVenta(rs);
                     lista.add(venta);
                 }
             }
@@ -180,8 +185,18 @@ public class VentaDAO {
                 CortesCaja corte = new CortesCaja();
                 corte.setId(rs.getInt("id"));
                 corte.setFecha(rs.getDate("fecha").toLocalDate());
-                corte.setTotalVentas(rs.getBigDecimal("totalVentas"));
-                corte.setTotalEfectivo(rs.getBigDecimal("totalEfectivo"));
+                corte.setTotalVentas(rs.getBigDecimal("total_ventas"));
+                corte.setTotalEfectivo(rs.getBigDecimal("total_efectivo"));
+
+                // Nuevos campos
+                corte.setMoneda(Moneda.valueOf(rs.getString("moneda")));
+                corte.setEstado(EstadoCorte.valueOf(rs.getString("estado")));
+
+                // Cargar usuario
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("usuario_id"));
+                corte.setUsuario(usuario);
+
                 lista.add(corte);
             }
         }

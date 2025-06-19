@@ -8,7 +8,7 @@ public class ConexionBD {
     private static final String URL = "jdbc:mysql://localhost:3306/vicodb?useSSL=false&serverTimezone=UTC";
     private static final String USUARIO = "root";
 
-    private static final String CONTRASENA = "1234";
+    private static final String CONTRASENA = "root";
 
 
     public static Connection obtenerConexion() {

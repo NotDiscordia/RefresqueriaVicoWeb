@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-@WebServlet("/api/ventas/total-dia")
+@WebServlet("/api/cortes_caja")
 public class TotalDiaServlet extends HttpServlet {
     private final VentaService ventaService = new VentaService();
     private final Gson gson = new Gson();

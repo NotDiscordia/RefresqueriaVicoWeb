@@ -14,7 +14,7 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.util.List;
 
-@WebServlet("/api/cortes-caja/*")
+@WebServlet("/api/cortes_caja/*")
 public class CorteCajaServlet extends HttpServlet {
     private final VentaService ventaService = new VentaService();
     private final Gson gson = new Gson();
@@ -46,23 +46,21 @@ public class CorteCajaServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        response.setContentType("application/json");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+        resp.setHeader("Access-Control-Allow-Origin", "*");
+        resp.setContentType("application/json");
 
         try {
-            BigDecimal totalEfectivo = new BigDecimal(request.getParameter("totalEfectivo"));
-            int usuarioId = Integer.parseInt(request.getParameter("usuarioId"));
-            String moneda = request.getParameter("moneda");
+            BigDecimal totalEfectivo = new BigDecimal(req.getParameter("totalEfectivo"));
+            int usuarioId = Integer.parseInt(req.getParameter("usuarioId"));
+            Moneda moneda = Moneda.valueOf(req.getParameter("moneda").toUpperCase());
 
-            CortesCaja corte = ventaService.realizarCorteCaja(
-                    totalEfectivo,
-                    usuarioId,
-                    Moneda.valueOf(moneda)
-            );
+            CortesCaja corte = ventaService.realizarCorteCaja(totalEfectivo, usuarioId, moneda);
 
-            response.getWriter().write(gson.toJson(corte));
+            resp.getWriter().write(gson.toJson(corte));
         } catch (Exception e) {
-            response.sendError(400, "Datos inválidos");
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                    "Error al guardar corte: " + e.getMessage());
         }
     }
 
@@ -73,7 +71,8 @@ public class CorteCajaServlet extends HttpServlet {
             BigDecimal fisico = new BigDecimal(request.getParameter("efectivoFisico"));
             BigDecimal teorico = new BigDecimal(request.getParameter("efectivoTeorico"));
 
-            String resultado = ventaService.compararCorte(fisico, teorico);
+            // Corregido: obtener el nombre del enum como String
+            String resultado = ventaService.compararCorte(fisico, teorico).name();
 
             JsonObject json = new JsonObject();
             json.addProperty("resultado", resultado);
@@ -82,6 +81,7 @@ public class CorteCajaServlet extends HttpServlet {
             response.sendError(400, "Error en comparación");
         }
     }
+
 
     @Override
     protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
