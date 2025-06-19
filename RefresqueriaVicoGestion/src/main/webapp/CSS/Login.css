@@ -1,161 +1,90 @@
-* {
+body {
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
-}
-
-.titulo {
-    position: absolute;
-    top: 30px;
-    left: 30px;
-    font-weight: bold;
-    text-align: left;
-}
-
-.titulo .arriba {
-    font-size: 14px;
-    color: #ff9933;
-    text-shadow: 1px 1px 1px black;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
     font-family: Arial, sans-serif;
-}
-
-.titulo .abajo {
-    font-size: 24px;
-    color: #1a75ff;
-    font-family: 'Georgia', serif;
-    text-shadow: 1px 1px 0px black, -1px -1px 0px black;
-}
-
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #9fc1f3;
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    min-height: 100vh;
-    padding-top: 120px;
+    height: 100vh;
 }
 
-h1 {
-    color: #333;
-    margin-bottom: 40px;
-    font-size: 26px;
+.logo {
+    max-width: 250px;
 }
 
-.login-box {
-    background-color: white;
-    padding: 50px 40px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 340px;
-    display: flex;
-    flex-direction: column;
-    gap: 25px;
-    position: relative;
+.login-container {
+    background: linear-gradient(to bottom, #a3c7db, #c7e5f4);
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 350px;
 }
 
-.input-container {
-    position: relative;
-    width: 100%;
+.login-container h1 {
+    margin-bottom: 30px;
+    color: #ff7000;
+    font-size: 22px;
+    font-weight: bold;
+    text-shadow: 1px 1px white;
 }
 
-.login-box input {
-    width: 100%;
-    padding: 14px 40px 14px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
+input[type="text"],
+input[type="password"] {
+    width: 90%;
+    padding: 12px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    text-align: center;
+    outline: none;
 }
 
-.toggle-password {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #666;
-}
-
-.login-box button {
-    width: 100%;
-    padding: 14px;
-    background-color: #0077c2;
-    color: white;
+button {
+    width: 60%;
+    padding: 12px;
+    margin-top: 20px;
     border: none;
     border-radius: 8px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-top: 10px;
-}
-
-.login-box button:hover {
-    background-color: #005fa3;
-}
-
-footer {
-    position: absolute;
-    bottom: 30px;
-    font-size: 14px;
-    color: #666;
-}
-
-.notification {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    padding: 15px 25px;
-    border-radius: 8px;
-    background-color: #ff4444;
+    background: #1da1f2;
     color: white;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
-    animation: slideIn 0.3s ease-out;
-    display: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-@keyframes slideIn {
-    from { transform: translateX(100%); }
-    to { transform: translateX(0); }
-}
-
-.notification.show {
-    display: block;
-    animation: slideIn 0.3s ease-out;
+button:hover {
+    background: #0d8ddb;
 }
 
 .toast {
-    visibility: hidden;
-    min-width: 250px;
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
     background-color: #333;
     color: #fff;
-    text-align: center;
-    border-radius: 8px;
-    padding: 16px;
-    position: fixed;
-    z-index: 1;
-    left: 50%;
-    bottom: 30px;
-    transform: translateX(-50%);
-    font-size: 16px;
+    padding: 12px 20px;
+    border-radius: 6px;
     opacity: 0;
-    transition: opacity 0.5s, visibility 0.5s;
+    transition: opacity 0.5s ease;
+    z-index: 1000;
 }
 
 .toast.show {
-    visibility: visible;
     opacity: 1;
 }
 
-.toast.error {
-    background-color: #e74c3c;
-}
+.toast.success { background-color: #28a745; }
+.toast.error { background-color: #dc3545; }
+.toast.warning { background-color: #ffc107; color: #000; }
 
-.toast.warning {
-    background-color: #f39c12;
-}
-
-.toast.success {
-    background-color: #2ecc71;
+footer {
+    position: absolute;
+    bottom: 15px;
+    width: 100%;
+    text-align: center;
+    color: #333;
 }

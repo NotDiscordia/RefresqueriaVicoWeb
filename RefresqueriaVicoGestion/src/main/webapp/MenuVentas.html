@@ -1,164 +1,296 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Menú de Ventas</title>
-  <link rel="stylesheet" href="CSS/MenuVentas.css">
+    <meta charset="UTF-8" />
+    <title>Ventas - Refresquería Vico</title>
+    <link rel="stylesheet" href="CSS/MenuVentas.css" />
 </head>
 <body>
 
-<a class="volver" href="MainMenu.html">&larr; Volver al menú</a>
-
 <header>
-  <div class="titulo">
-    <div class="arriba">REFRESQUERIA</div>
-    <div class="abajo">VICO</div>
-  </div>
+    <div class="header-section">
+        <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
+    </div>
+
+    <div class="logo-wrapper">
+        <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
+    </div>
+
+    <div class="header-section" style="display: flex; justify-content: flex-end;">
+        <div class="menu-central">
+            <a href="MenuVentas.html">VENTAS</a>
+            <a href="ConsultaProd.html">PRODUCTOS</a>
+            <a href="MenuConsultas.html">EMPLEADOS</a>
+        </div>
+    </div>
 </header>
 
 <main>
-  <div class="left-panel">
-    <div class="categorias">
-      <div class="categoria rojo" onclick="alert('Hielitos')">Hielitos</div>
-      <div class="categoria verde" onclick="alert('Papas Locas')">Papas Locas</div>
-      <div class="categoria azul" onclick="alert('Raspados')">Raspados</div>
+    <div class="left-panel">
+        <div class="top-search">
+            <input type="text" id="busqueda" placeholder="Buscar por nombre..." oninput="filtrarProductos()" />
+            <select id="categoria" onchange="filtrarProductos()" class="select-categoria">
+                <option value="">Todas las categorías</option>
+                <option value="Raspados">Raspados</option>
+                <option value="Preparados">Preparados</option>
+                <option value="Especiales">Especiales</option>
+                <option value="Helados">Helados</option>
+                <option value="Bebidas">Bebidas</option>
+            </select>
+        </div>
+        <div class="productos" id="lista-productos">
+            <!-- Productos cargados dinámicamente -->
+        </div>
     </div>
 
-    <div class="productos" id="lista-productos">
-      <!-- Los productos se cargarán aquí dinámicamente -->
+    <div class="right-panel">
+        <h2>Venta nueva</h2>
+        <div id="listaVenta">
+            <p>No hay artículos en la cuenta</p>
+        </div>
+        <hr />
+        <div class="venta-total">
+            Total en pesos: $<span id="subtotal">0.00</span><br>
+            Total en dólares: $<span id="subtotalUSD">0.00</span>
+        </div>
+        <div class="botones-venta">
+            <button class="accion-btn" onclick="window.location.href='Corte.html'">Corte de Caja</button>
+            <button class="accion-btn" onclick="cancelarVenta()">Cancelar</button>
+            <button class="pagar-btn" onclick="pagar()">Realizar Venta</button>
+        </div>
     </div>
-  </div>
-
-  <div class="right-panel">
-    <div class="venta">
-      <h2>Venta nueva</h2>
-      <p>No hay artículos en la cuenta</p>
-      <hr>
-      <p><strong>Subtotal:</strong> $0.00</p>
-      <p><strong>Total:</strong> $0.00</p>
-
-      <div class="botones-venta">
-        <button class="pagar-btn" onclick="alert('Pagar')">Pagar</button>
-        <button class="accion-btn" onclick="alert('Eliminar artículo')">Eliminar</button>
-        <button class="accion-btn cancelar-btn" onclick="alert('Cancelar venta')">Cancelar</button>
-      </div>
-    </div>
-  </div>
 </main>
 
+<!-- Modal para realizar pago -->
+<div id="modalPago" class="modal-overlay">
+    <div class="modal-content">
+        <h3>Confirmar Venta</h3>
+
+        <label>Moneda:</label><br>
+        <select id="monedaVenta" class="input-modal" onchange="actualizarModalTotal()">
+            <option value="MXN">Pesos (MXN)</option>
+            <option value="USD">Dólares (USD)</option>
+        </select><br><br>
+
+        <label>Total: $<span id="modalTotal"></span></label><br><br>
+
+        <label>Monto entregado:</label><br>
+        <input type="number" id="montoEntregado" oninput="calcularCambio()" class="input-modal" /><br><br>
+
+        <label>Método de pago:</label><br>
+        <select id="metodoPago" class="input-modal">
+            <option value="Efectivo">Efectivo</option>
+            <option value="Tarjeta">Tarjeta</option>
+        </select><br><br>
+
+        <label>Cambio: $<span id="cambio">0.00</span></label><br><br>
+
+        <div class="modal-buttons">
+            <button class="pagar-btn" onclick="confirmarVenta()">Confirmar venta</button>
+            <button class="cancelar-btn" onclick="cerrarModal()">Cancelar</button>
+        </div>
+    </div>
+</div>
+
 <script>
-  // Código JavaScript sin cambios
-  const venta = [];
-  const listaVenta = document.createElement("ul");
-  listaVenta.style.listStyle = "none";
-  listaVenta.style.padding = 0;
+    const TIPO_CAMBIO = 19.5;
+    const venta = [];
+    let productosCargados = [];
 
-  function cargarProductos() {
-    fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
-            .then(response => {
-              if (!response.ok) throw new Error("Error al obtener productos");
-              return response.json();
-            })
+    function cargarProductos() {
+        fetch("http://localhost:8081/RefresqueriaVicoGestion/api/productos")
+            .then(response => response.json())
             .then(data => {
-              const lista = document.getElementById("lista-productos");
-              lista.innerHTML = "";
-              data.forEach(producto => {
-                const div = document.createElement("div");
-                div.className = "producto";
-                div.onclick = () => agregarProducto(producto);
-
-                const img = document.createElement("img");
-                img.src = producto.imagen || "https://via.placeholder.com/150x100?text=Producto";
-                img.alt = producto.nombre;
-
-                const nombre = document.createElement("h4");
-                nombre.textContent = producto.nombre;
-
-                const precio = document.createElement("p");
-                precio.textContent = `$${producto.precio.toFixed(2)}`;
-
-                div.appendChild(img);
-                div.appendChild(nombre);
-                div.appendChild(precio);
-                lista.appendChild(div);
-              });
-            })
-            .catch(error => console.error("Error:", error));
-  }
-
-  function agregarProducto(producto) {
-    venta.push(producto);
-    renderizarVenta();
-  }
-
-  function renderizarVenta() {
-    const panel = document.querySelector(".venta");
-    listaVenta.innerHTML = "";
-    let subtotal = 0;
-
-    venta.forEach((p, index) => {
-      subtotal += p.precio;
-      const li = document.createElement("li");
-
-      const checkbox = document.createElement("input");
-      checkbox.type = "checkbox";
-      checkbox.dataset.index = index;
-      checkbox.style.marginRight = "10px";
-
-      li.appendChild(checkbox);
-      li.appendChild(document.createTextNode(`${p.nombre} - $${p.precio.toFixed(2)}`));
-      listaVenta.appendChild(li);
-    });
-
-    panel.innerHTML = `
-      <h2>Venta nueva</h2>
-      ${venta.length === 0 ? "<p>No hay artículos en la cuenta</p>" : ""}
-    `;
-    panel.appendChild(listaVenta);
-    panel.innerHTML += `
-      <hr>
-      <p><strong>Subtotal:</strong> $${subtotal.toFixed(2)}</p>
-      <p><strong>Total:</strong> $${subtotal.toFixed(2)}</p>
-      <div class="botones-venta">
-        <button class="pagar-btn" onclick="pagar()">Pagar</button>
-        <button class="accion-btn" onclick="eliminarSeleccionados()">Eliminar</button>
-        <button class="accion-btn cancelar-btn" onclick="cancelarVenta()">Cancelar</button>
-      </div>
-    `;
-  }
-
-  function eliminarSeleccionados() {
-    const seleccionados = Array.from(listaVenta.querySelectorAll("input[type='checkbox']:checked"));
-    if (seleccionados.length === 0) {
-      alert("Selecciona al menos un producto para eliminar.");
-      return;
+                productosCargados = data;
+                filtrarProductos();
+            });
     }
-    const indices = seleccionados.map(cb => parseInt(cb.dataset.index));
-    for (let i = indices.length - 1; i >= 0; i--) {
-      venta.splice(indices[i], 1);
-    }
-    renderizarVenta();
-  }
 
-  function cancelarVenta() {
-    if (confirm("¿Estás seguro de cancelar la venta?")) {
-      venta.length = 0;
-      renderizarVenta();
-    }
-  }
+    function filtrarProductos() {
+        const texto = document.getElementById("busqueda").value.toLowerCase();
+        const categoria = document.getElementById("categoria").value;
 
-  function pagar() {
-    if (venta.length === 0) {
-      alert("No hay productos para pagar.");
-      return;
-    }
-    const total = venta.reduce((acc, p) => acc + p.precio, 0);
-    alert(`Pago simulado exitoso. Total pagado: $${total.toFixed(2)}`);
-    venta.length = 0;
-    renderizarVenta();
-  }
+        const filtrados = productosCargados.filter(p => {
+            const coincideNombre = p.nombre.toLowerCase().includes(texto);
+            const coincideCategoria = !categoria || p.categoria === categoria;
+            return coincideNombre && coincideCategoria;
+        });
 
-  window.onload = cargarProductos;
+        mostrarProductos(filtrados);
+    }
+
+    function mostrarProductos(listaProductos) {
+        const lista = document.getElementById("lista-productos");
+        lista.innerHTML = "";
+
+        listaProductos.forEach(producto => {
+            const div = document.createElement("div");
+            div.className = "producto";
+            div.onclick = () => agregarProducto(producto);
+
+            const nombre = document.createElement("div");
+            nombre.textContent = producto.nombre;
+
+            const precio = document.createElement("div");
+            precio.textContent = `$${producto.precio.toFixed(2)}`;
+
+            div.appendChild(nombre);
+            div.appendChild(precio);
+            lista.appendChild(div);
+        });
+    }
+
+    function agregarProducto(producto) {
+        const existente = venta.find(p => p.id === producto.id);
+        if (existente) {
+            existente.cantidad += 1;
+        } else {
+            venta.push({ ...producto, cantidad: 1 });
+        }
+        renderizarVenta();
+    }
+
+    function renderizarVenta() {
+        const contenedor = document.getElementById("listaVenta");
+        contenedor.innerHTML = "";
+        if (venta.length === 0) {
+            contenedor.innerHTML = "<p>No hay artículos en la cuenta</p>";
+            document.getElementById("subtotal").textContent = "0.00";
+            document.getElementById("subtotalUSD").textContent = "0.00";
+            return;
+        }
+
+        let total = 0;
+        venta.forEach((item, index) => {
+            total += item.precio * item.cantidad;
+
+            const div = document.createElement("div");
+            div.className = "venta-item";
+
+            const cantidad = document.createElement("div");
+            cantidad.className = "contador";
+            cantidad.textContent = item.cantidad;
+
+            const nombre = document.createElement("div");
+            nombre.className = "venta-nombre";
+            nombre.textContent = `${item.nombre} $${item.precio.toFixed(2)}`;
+
+            const eliminar = document.createElement("button");
+            eliminar.textContent = "X";
+            eliminar.onclick = () => {
+                venta.splice(index, 1);
+                renderizarVenta();
+            };
+
+            div.appendChild(cantidad);
+            div.appendChild(nombre);
+            div.appendChild(eliminar);
+            contenedor.appendChild(div);
+        });
+
+        document.getElementById("subtotal").textContent = total.toFixed(2);
+        document.getElementById("subtotalUSD").textContent = (total / TIPO_CAMBIO).toFixed(2);
+    }
+
+    function cancelarVenta() {
+        if (confirm("¿Cancelar la venta?")) {
+            venta.length = 0;
+            renderizarVenta();
+        }
+    }
+
+    function pagar() {
+        if (venta.length === 0) {
+            alert("No hay productos en la venta.");
+            return;
+        }
+        document.getElementById("modalPago").style.display = "flex";
+        actualizarModalTotal();
+    }
+
+    function cerrarModal() {
+        document.getElementById("modalPago").style.display = "none";
+    }
+
+    function calcularTotal() {
+        return venta.reduce((sum, item) => sum + item.precio * item.cantidad, 0);
+    }
+
+    function actualizarModalTotal() {
+        const moneda = document.getElementById("monedaVenta").value;
+        const total = calcularTotal();
+        const totalEnMoneda = moneda === "USD" ? (total / TIPO_CAMBIO) : total;
+        document.getElementById("modalTotal").textContent = totalEnMoneda.toFixed(2);
+        calcularCambio();
+    }
+
+    function calcularCambio() {
+        const moneda = document.getElementById("monedaVenta").value;
+        const monto = parseFloat(document.getElementById("montoEntregado").value) || 0;
+        const total = calcularTotal();
+        const totalEnMoneda = moneda === "USD" ? (total / TIPO_CAMBIO) : total;
+        const cambio = monto - totalEnMoneda;
+        document.getElementById("cambio").textContent = cambio >= 0 ? cambio.toFixed(2) : "0.00";
+    }
+
+    async function confirmarVenta() {
+        const monto = parseFloat(document.getElementById("montoEntregado").value);
+        const metodo = document.getElementById("metodoPago").value;
+        const moneda = document.getElementById("monedaVenta").value;
+        const totalBase = calcularTotal();
+        const total = moneda === "USD" ? totalBase / TIPO_CAMBIO : totalBase;
+
+        if (isNaN(monto) || monto < total) {
+            alert("El monto entregado no es suficiente.");
+            return;
+        }
+
+        // Construir el objeto venta para enviar
+        const ventaEnviar = {
+            total: Number(total.toFixed(2)),
+            metodoPago: metodo,
+            moneda: moneda,
+            montoEntregado: Number(monto.toFixed(2)),
+            cambio: Number((monto - total).toFixed(2)),
+            detalleVentas: venta.map(item => ({
+                producto: { id: item.id },  // referencia sólo al id del producto
+                cantidad: item.cantidad,
+                precio: Number(item.precio.toFixed(2))
+            }))
+        };
+
+        console.log("JSON a enviar:", JSON.stringify(ventaEnviar)); // para debug
+
+        try {
+            const response = await fetch("http://localhost:8081/RefresqueriaVicoGestion/api/ventas", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(ventaEnviar)
+            });
+
+            if (!response.ok) {
+                const errorResp = await response.json();
+                alert("Error al registrar la venta: " + (errorResp.error || "Error desconocido"));
+                return;
+            }
+
+            const data = await response.json();
+            alert(data.mensaje || "Venta registrada correctamente");
+
+            // Limpiar UI y venta
+            venta.length = 0;
+            renderizarVenta();
+            cerrarModal();
+        } catch (error) {
+            alert("Error de conexión: " + error.message);
+        }
+    }
+
+
+
+    window.onload = cargarProductos;
 </script>
 
 </body>

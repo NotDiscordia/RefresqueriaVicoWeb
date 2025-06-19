@@ -6,152 +6,189 @@
   <link rel="stylesheet" href="CSS/ConsultaProductos.css" />
 </head>
 <body>
+<header>
+  <div class="header-section">
+    <a class="btn-atras" href="MainMenu.html">← ATRÁS</a>
+  </div>
 
-<div class="encabezado-esquina">
-  <div class="arriba">REFRESQUERIA</div>
-  <div class="abajo">VICO</div>
+  <div class="logo-wrapper">
+    <img src="Images/VicoLogo.svg" alt="Refresquería Vico" class="logo-centro" />
+  </div>
+
+  <div class="header-section" style="display: flex; justify-content: flex-end;">
+    <div class="menu-central">
+      <a href="MenuVentas.html">VENTAS</a>
+      <a href="ConsultaProd.html">PRODUCTOS</a>
+      <a href="MenuConsultas.html">EMPLEADOS</a>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <h2>Consulta de Productos</h2>
+
+  <div class="top-controls">
+    <div>
+      <label for="buscar">Buscar: </label>
+      <input type="text" id="buscar" placeholder="Nombre o ID..." />
+    </div>
+    <div>
+      <label for="ordenar">Ordenar por: </label>
+      <select id="ordenar">
+        <option value="id">Recientes</option>
+        <option value="nombre">Nombre</option>
+        <option value="precio">Precio</option>
+      </select>
+      <button class="registrar" onclick="window.location.href='AltasProd.html'">Registrar Nuevo Producto</button>
+    </div>
+  </div>
+
+  <table id="tablaProductos">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Precio</th>
+      <th>Costo</th>
+      <th>Stock</th>
+      <th>Categoría</th>
+      <th>Vendidos</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </div>
 
-<a class="volver" href="MenuInv.html">&larr; Volver</a>
-<h1>Consulta de Productos</h1>
-
-<div class="botones">
-  <button onclick="ordenarPor('id')">Ordenar por ID</button>
-  <button onclick="ordenarPor('nombre')">Ordenar por Nombre</button>
-  <button onclick="ordenarPor('precio')">Ordenar por Precio</button>
-  <button onclick="eliminarSeleccionados()">Eliminar seleccionados</button>
+<!-- FORMULARIO OPCIONAL -->
+<div class="container" style="margin-top: 20px;">
+  <h3>Formulario de Producto</h3>
+  <form id="formProducto">
+    <input type="hidden" id="id" />
+    <input type="text" id="nombre" placeholder="Nombre" required />
+    <input type="number" id="precio" placeholder="Precio" required />
+    <input type="number" id="costo" placeholder="Costo" />
+    <input type="number" id="stock" placeholder="Stock" required />
+    <input type="text" id="categoria" placeholder="Categoría" />
+    <input type="number" id="vendidos" placeholder="Vendidos" required />
+    <br><br>
+    <button type="submit" class="registrar">Guardar</button>
+    <button type="button" onclick="limpiarFormulario()" class="registrar" style="background-color: gray;">Cancelar</button>
+  </form>
 </div>
-
-<table id="tablaProductos">
-  <thead>
-  <tr>
-    <th><input type="checkbox" id="seleccionarTodo" title="Seleccionar todo" /></th>
-    <th>ID</th>
-    <th>Nombre</th>
-    <th>Precio</th>
-  </tr>
-  </thead>
-  <tbody>
-  <!-- filas generadas por JS -->
-  </tbody>
-</table>
 
 <script>
-  let productos = [];
+  const API_URL = "http://localhost:8081/RefresqueriaVicoGestion/api/productos";
+  let productosGlobal = [];
 
-  // Guarda los ids de productos seleccionados
-  let seleccionados = new Set();
-
-  async function cargarProductos() {
-    try {
-      const resp = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/productos');
-      if (!resp.ok) throw new Error('Error al cargar productos');
-      productos = await resp.json();
-      seleccionados.clear();
-      document.getElementById('seleccionarTodo').checked = false;
-      mostrarProductos(productos);
-    } catch (error) {
-      alert('No se pudieron cargar los productos: ' + error.message);
-    }
-  }
-
-  function mostrarProductos(lista) {
-    const tbody = document.querySelector("#tablaProductos tbody");
-    tbody.innerHTML = "";
-
-    lista.forEach(prod => {
-      const fila = document.createElement("tr");
-
-      fila.innerHTML = `
-        <td><input type="checkbox" class="chkProducto" data-id="${prod.id}" /></td>
-        <td>${prod.id}</td>
-        <td>${prod.nombre}</td>
-        <td>$${parseFloat(prod.precio).toFixed(2)}</td>
-      `;
-
-      tbody.appendChild(fila);
-    });
-
-    // Agregar listeners a los checkboxes para actualizar el Set
-    document.querySelectorAll(".chkProducto").forEach(chk => {
-      chk.addEventListener("change", function() {
-        const id = parseInt(this.dataset.id);
-        if (this.checked) {
-          seleccionados.add(id);
-        } else {
-          seleccionados.delete(id);
-        }
-        actualizarSeleccionarTodo();
-      });
-    });
-  }
-
-  // Control "Seleccionar todo"
-  document.getElementById('seleccionarTodo').addEventListener('change', function() {
-    const checkboxes = document.querySelectorAll('.chkProducto');
-    seleccionados.clear();
-    if (this.checked) {
-      checkboxes.forEach(chk => {
-        chk.checked = true;
-        seleccionados.add(parseInt(chk.dataset.id));
-      });
-    } else {
-      checkboxes.forEach(chk => {
-        chk.checked = false;
-      });
-    }
+  document.addEventListener("DOMContentLoaded", () => {
+    cargarProductos();
+    document.getElementById("formProducto").addEventListener("submit", guardarProducto);
+    document.getElementById("ordenar").addEventListener("change", e => ordenarPor(e.target.value));
+    document.getElementById("buscar").addEventListener("input", filtrar);
   });
 
-  // Actualiza el checkbox "Seleccionar todo" según selección individual
-  function actualizarSeleccionarTodo() {
-    const total = productos.length;
-    const selCount = seleccionados.size;
-    const chkTodo = document.getElementById('seleccionarTodo');
-    chkTodo.checked = selCount > 0 && selCount === total;
-    chkTodo.indeterminate = selCount > 0 && selCount < total;
+  async function cargarProductos() {
+    const res = await fetch(API_URL);
+    productosGlobal = await res.json();
+    renderizarTabla(productosGlobal);
   }
 
-  // Ordenar y mostrar
-  function ordenarPor(campo) {
-    productos.sort((a, b) => {
-      if (campo === "id" || campo === "precio") {
-        return a[campo] - b[campo];
-      }
-      return a[campo].localeCompare(b[campo]);
-    });
-    mostrarProductos(productos);
-  }
-
-  // Eliminar todos los productos seleccionados
-  async function eliminarSeleccionados() {
-    if (seleccionados.size === 0) {
-      alert("Selecciona al menos un producto para eliminar.");
+  function renderizarTabla(productos) {
+    const tbody = document.querySelector("#tablaProductos tbody");
+    tbody.innerHTML = "";
+    if (productos.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="8" style="color: gray;">No hay productos disponibles.</td></tr>`;
       return;
     }
+    productos.forEach(p => {
+      tbody.innerHTML += `
+        <tr>
+          <td>${p.id}</td>
+          <td>${p.nombre}</td>
+          <td>$${p.precio}</td>
+          <td>${p.costo ? "$" + p.costo : "-"}</td>
+          <td>${p.stock}</td>
+          <td>${p.categoria || "-"}</td>
+          <td>${p.vendidos}</td>
+          <td>
+            <button class="icon icon-editar" title="Modificar" onclick='editar(${JSON.stringify(p)})'></button>
+            <button class="icon icon-eliminar" title="Eliminar" onclick='eliminar(${p.id})'></button>
+          </td>
+        </tr>`;
+    });
+  }
 
-    if (!confirm(`¿Estás seguro de eliminar ${seleccionados.size} producto(s)?`)) return;
+  async function guardarProducto(e) {
+    e.preventDefault();
+    const producto = {
+      id: document.getElementById("id").value || null,
+      nombre: document.getElementById("nombre").value,
+      precio: parseFloat(document.getElementById("precio").value),
+      costo: parseFloat(document.getElementById("costo").value) || 0,
+      stock: parseInt(document.getElementById("stock").value),
+      categoria: document.getElementById("categoria").value,
+      vendidos: parseInt(document.getElementById("vendidos").value)
+    };
 
-    try {
-      for (const id of seleccionados) {
-        const resp = await fetch(`http://localhost:8081/RefresqueriaVicoGestion/api/productos?id=${id}`, {
-          method: 'DELETE'
-        });
-        if (!resp.ok) throw new Error(`Error eliminando producto ID ${id}`);
-        const resultado = await resp.json();
-        if (!resultado.exito) throw new Error(`No se pudo eliminar producto ID ${id}`);
-      }
-      alert('Productos eliminados correctamente.');
-      seleccionados.clear();
-      document.getElementById('seleccionarTodo').checked = false;
-      await cargarProductos();
-    } catch (error) {
-      alert('Error al eliminar productos: ' + error.message);
+    const metodo = producto.id ? "PUT" : "POST";
+    const res = await fetch(API_URL, {
+      method: metodo,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(producto)
+    });
+
+    if (res.ok) {
+      limpiarFormulario();
+      cargarProductos();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
     }
   }
 
-  window.onload = () => {
-    cargarProductos();
-  };
+  function editar(p) {
+    document.getElementById("id").value = p.id;
+    document.getElementById("nombre").value = p.nombre;
+    document.getElementById("precio").value = p.precio;
+    document.getElementById("costo").value = p.costo || 0;
+    document.getElementById("stock").value = p.stock;
+    document.getElementById("categoria").value = p.categoria || "";
+    document.getElementById("vendidos").value = p.vendidos;
+  }
+
+  async function eliminar(id) {
+    if (!confirm("¿Seguro que deseas eliminar este producto?")) return;
+    const res = await fetch(`${API_URL}?id=${id}`, { method: "DELETE" });
+    if (res.ok) {
+      cargarProductos();
+    } else {
+      const err = await res.text();
+      alert("Error: " + err);
+    }
+  }
+
+  function limpiarFormulario() {
+    document.getElementById("formProducto").reset();
+    document.getElementById("id").value = "";
+  }
+
+  function ordenarPor(campo) {
+    const ordenados = [...productosGlobal].sort((a, b) => {
+      if (campo === "precio") return a.precio - b.precio;
+      if (campo === "id") return b.id - a.id;
+      return a[campo].localeCompare(b[campo]);
+    });
+    renderizarTabla(ordenados);
+  }
+
+  function filtrar() {
+    const valor = document.getElementById("buscar").value.toLowerCase();
+    const filtrados = productosGlobal.filter(p =>
+            p.nombre.toLowerCase().includes(valor) || p.id.toString().includes(valor)
+    );
+    renderizarTabla(filtrados);
+  }
 </script>
 
 </body>
