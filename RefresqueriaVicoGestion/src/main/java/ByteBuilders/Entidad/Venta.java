@@ -28,6 +28,12 @@ public class Venta {
     @Column(name = "moneda", nullable = false)
     private Moneda moneda;
 
+    @Column(name = "monto_entregado")
+    private BigDecimal montoEntregado;
+
+    @Column(name = "cambio")
+    private BigDecimal cambio;
+
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;

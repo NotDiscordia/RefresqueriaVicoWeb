@@ -34,6 +34,10 @@ public class LoginServlet extends HttpServlet {
             Usuario usuarioBD = usuarioService.obtenerUsuarioPorCelular(celular);
 
             if (usuarioBD != null && usuarioBD.getContrasena().equals(contrasenaIngresada)) {
+                // Guardar usuario en sesión
+                HttpSession session = request.getSession();
+                session.setAttribute("usuario", usuarioBD);
+
                 String json = gson.toJson(usuarioBD);
                 enviarJSON(response, json);
             } else {

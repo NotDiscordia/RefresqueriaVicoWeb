@@ -27,7 +27,7 @@ public class VentaService {
         return dao.guardarCorteCaja(corte);
     }
 
-    public BigDecimal calcularTotalVentasDelDia() {
+    public BigDecimal calcularTotalVentasDelDia() throws SQLException {
         LocalDate hoy = LocalDate.now();
         return dao.obtenerVentasDelDia(hoy).stream()
                 .map(Venta::getTotal)
@@ -51,34 +51,31 @@ public class VentaService {
         return dolares.multiply(new BigDecimal("20"));
     }
 
-    public List<CortesCaja> obtenerCortesHistoricos() {
+    public List<CortesCaja> obtenerCortesHistoricos() throws SQLException {
         return dao.obtenerTodosCortesCaja();
     }
 
-    public List<CortesCaja> obtenerCortesCaja() {
+    public List<CortesCaja> obtenerCortesCaja() throws SQLException {
         return dao.obtenerTodosCortesCaja();
     }
 
-    public void registrarVenta(Venta venta) {
-        dao.guardarVenta(venta); // Usar método correcto
+    public void registrarVenta(Venta venta) throws SQLException {
+        dao.guardarVenta(venta);
     }
 
-    public List<Venta> obtenerTodasVentas() {
-        return dao.listarTodas(); // Nombre de método corregido
+    public List<Venta> obtenerTodasVentas() throws SQLException {
+        return dao.listarTodas();
     }
 
-    public Venta buscarVentaPorId(Long id) { // ✅ Usar Long
+    public Venta buscarVentaPorId(Long id) throws SQLException {
         return dao.buscarPorId(id);
     }
 
-    public void eliminarVenta(Long id) { // ✅ Usar Long
+    public void eliminarVenta(Long id) throws SQLException {
         dao.eliminar(id);
     }
 
-    public void actualizarVenta(Venta venta) {
+    public void actualizarVenta(Venta venta) throws SQLException {
         dao.actualizar(venta);
     }
-
 }
-
-

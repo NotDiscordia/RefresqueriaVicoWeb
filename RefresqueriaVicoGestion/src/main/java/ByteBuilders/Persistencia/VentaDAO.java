@@ -3,130 +3,209 @@ package ByteBuilders.Persistencia;
 import ByteBuilders.Entidad.CortesCaja;
 import ByteBuilders.Entidad.Producto;
 import ByteBuilders.Entidad.Venta;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VentaDAO {
-    private static EntityManagerFactory emf;
 
-    private EntityManager getEntityManager() {
-        if (emf == null) {
-            try {
-                emf = Persistence.createEntityManagerFactory("RefresqueriaVicoPU");
-            } catch (Exception e) {
-                throw new RuntimeException("Error al inicializar EntityManagerFactory: " + e.getMessage(), e);
+    // Guardar una venta (INSERT)
+    public void guardarVenta(Venta venta) throws SQLException {
+        String sql = "INSERT INTO ventas (fecha_hora, total, metodo_pago, cambio, monto_entregado, usuario_id) VALUES (?, ?, ?, ?, ?, ?)";
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            stmt.setTimestamp(1, Timestamp.valueOf(venta.getFechaHora()));
+            stmt.setBigDecimal(2, venta.getTotal());
+            stmt.setString(3, venta.getMetodoPago());
+            stmt.setBigDecimal(4, venta.getCambio());
+            stmt.setBigDecimal(5, venta.getMontoEntregado());
+
+            if (venta.getUsuario() != null && venta.getUsuario().getId() != null) {
+                stmt.setLong(6, venta.getUsuario().getId());
+            } else {
+                stmt.setNull(6, java.sql.Types.BIGINT);
+            }
+
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    venta.setId(rs.getLong(1));
+                }
             }
         }
-        return emf.createEntityManager();
     }
 
-    public void guardarVenta(Venta venta) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(venta);
-            em.getTransaction().commit();
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            e.printStackTrace(); // Esto muestra el error real en consola
-            throw e; // opcional: vuelve a lanzar para que el contenedor también lo vea
-        } finally {
-            em.close();
+
+    // Listar todas las ventas
+    public List<Venta> listarTodas() throws SQLException {
+        List<Venta> lista = new ArrayList<>();
+        String sql = "SELECT * FROM ventas";
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Venta venta = new Venta();
+                venta.setId(rs.getLong("id"));
+                venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
+                venta.setTotal(rs.getBigDecimal("total"));
+                venta.setMetodoPago(rs.getString("metodo_pago")); // Cambiado a metodo_pago
+                venta.setCambio(rs.getBigDecimal("cambio"));
+                venta.setMontoEntregado(rs.getBigDecimal("monto_entregado")); // Agregado monto_entregado
+                lista.add(venta);
+            }
+        }
+        return lista;
+    }
+
+    // Buscar venta por ID
+    public Venta buscarPorId(Long id) throws SQLException {
+        String sql = "SELECT * FROM ventas WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Venta venta = new Venta();
+                    venta.setId(rs.getLong("id"));
+                    venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
+                    venta.setTotal(rs.getBigDecimal("total"));
+                    venta.setMetodoPago(rs.getString("metodo_pago")); // Cambiado a metodo_pago
+                    venta.setCambio(rs.getBigDecimal("cambio"));
+                    venta.setMontoEntregado(rs.getBigDecimal("monto_entregado")); // Agregado monto_entregado
+                    return venta;
+                }
+            }
+        }
+        return null;
+    }
+
+    // Eliminar venta por ID
+    public void eliminar(Long id) throws SQLException {
+        String sql = "DELETE FROM ventas WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
         }
     }
 
+    // Actualizar venta
+    public void actualizar(Venta venta) throws SQLException {
+        String sql = "UPDATE ventas SET fecha_Hora = ?, total = ?, metodo_pago = ?, cambio = ?, monto_entregado = ? WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
-    public List<Venta> listarTodas() {
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT v FROM Venta v", Venta.class).getResultList();
-        } finally {
-            em.close();
+            stmt.setTimestamp(1, Timestamp.valueOf(venta.getFechaHora()));
+            stmt.setBigDecimal(2, venta.getTotal());
+            stmt.setString(3, venta.getMetodoPago());
+            stmt.setBigDecimal(4, venta.getCambio());
+            stmt.setBigDecimal(5, venta.getMontoEntregado()); // Agregado monto_entregado
+            stmt.setLong(6, venta.getId());
+
+            stmt.executeUpdate();
         }
     }
 
-    public Venta buscarPorId(Long id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Venta.class, id);
-        } finally {
-            em.close();
-        }
-    }
+    // Guardar corte de caja
+    public CortesCaja guardarCorteCaja(CortesCaja corte) throws SQLException {
+        String sql = "INSERT INTO cortes_caja (fecha, totalVentas, totalEfectivo) VALUES (?, ?, ?)";
 
-    public void eliminar(Long id) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            Venta venta = em.find(Venta.class, id);
-            if (venta != null) em.remove(venta);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
-    public void actualizar(Venta venta) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.merge(venta);
-            em.getTransaction().commit();
-        } finally {
-            em.close();
-        }
-    }
+            stmt.setDate(1, Date.valueOf(corte.getFecha()));
+            stmt.setBigDecimal(2, corte.getTotalVentas());
+            stmt.setBigDecimal(3, corte.getTotalEfectivo());
 
-    public CortesCaja guardarCorteCaja(CortesCaja corte) {
-        EntityManager em = getEntityManager();
-        try {
-            em.getTransaction().begin();
-            em.persist(corte);
-            em.getTransaction().commit();
+            stmt.executeUpdate();
+
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
+                if (rs.next()) {
+                    corte.setId(rs.getInt(1));
+                }
+            }
             return corte;
-        } finally {
-            em.close();
         }
     }
 
-    public List<Venta> obtenerVentasDelDia(LocalDate fecha) {
-        EntityManager em = getEntityManager();
-        try {
-            LocalDateTime inicio = fecha.atStartOfDay();
-            LocalDateTime fin = fecha.plusDays(1).atStartOfDay();
+    // Obtener ventas de un día específico
+    public List<Venta> obtenerVentasDelDia(LocalDate fecha) throws SQLException {
+        List<Venta> lista = new ArrayList<>();
+        String sql = "SELECT * FROM ventas WHERE fecha_Hora >= ? AND fecha_Hora < ?";
 
-            return em.createQuery(
-                            "SELECT v FROM Venta v WHERE v.fechaHora >= :inicio AND v.fechaHora < :fin", Venta.class)
-                    .setParameter("inicio", inicio)
-                    .setParameter("fin", fin)
-                    .getResultList();
-        } finally {
-            em.close();
+        LocalDateTime inicio = fecha.atStartOfDay();
+        LocalDateTime fin = fecha.plusDays(1).atStartOfDay();
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
+
+            stmt.setTimestamp(1, Timestamp.valueOf(inicio));
+            stmt.setTimestamp(2, Timestamp.valueOf(fin));
+
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Venta venta = new Venta();
+                    venta.setId(rs.getLong("id"));
+                    venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
+                    venta.setTotal(rs.getBigDecimal("total"));
+                    venta.setMetodoPago(rs.getString("metodo_pago")); // Cambiado a metodo_pago
+                    venta.setCambio(rs.getBigDecimal("cambio"));
+                    venta.setMontoEntregado(rs.getBigDecimal("monto_entregado")); // Agregado monto_entregado
+                    lista.add(venta);
+                }
+            }
         }
+        return lista;
     }
 
-    public List<CortesCaja> obtenerTodosCortesCaja() {
-        EntityManager em = getEntityManager();
-        try {
-            return em.createQuery("SELECT c FROM CortesCaja c ORDER BY c.fecha DESC", CortesCaja.class)
-                    .getResultList();
-        } finally {
-            em.close();
+    // Obtener todos los cortes de caja ordenados por fecha descendente
+    public List<CortesCaja> obtenerTodosCortesCaja() throws SQLException {
+        List<CortesCaja> lista = new ArrayList<>();
+        String sql = "SELECT * FROM cortes_caja ORDER BY fecha DESC";
+
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                CortesCaja corte = new CortesCaja();
+                corte.setId(rs.getInt("id"));
+                corte.setFecha(rs.getDate("fecha").toLocalDate());
+                corte.setTotalVentas(rs.getBigDecimal("totalVentas"));
+                corte.setTotalEfectivo(rs.getBigDecimal("totalEfectivo"));
+                lista.add(corte);
+            }
         }
+        return lista;
     }
 
-    public Producto obtenerProductoPorId(Long id) {
-        EntityManager em = getEntityManager();
-        try {
-            return em.find(Producto.class, id);
-        } finally {
-            em.close();
-        }
-    }
+    // Obtener producto por id
+    public Producto obtenerProductoPorId(Long id) throws SQLException {
+        String sql = "SELECT * FROM productos WHERE id = ?";
+        try (Connection con = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = con.prepareStatement(sql)) {
 
+            stmt.setLong(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Producto producto = new Producto();
+                    producto.setId(rs.getInt("id"));
+                    producto.setNombre(rs.getString("nombre"));
+                    producto.setPrecio(rs.getBigDecimal("precio"));
+                    // asigna otros campos según tu entidad Producto
+                    return producto;
+                }
+            }
+        }
+        return null;
+    }
 }
