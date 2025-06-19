@@ -245,21 +245,21 @@
             return;
         }
 
-        // Armar objeto venta para enviar al backend
+        // Construir el objeto venta para enviar
         const ventaEnviar = {
-            productos: venta.map(item => ({
-                id: item.id,
-                nombre: item.nombre,
-                cantidad: item.cantidad,
-                precio: item.precio
-            })),
-            total: total.toFixed(2),
+            total: Number(total.toFixed(2)),
             metodoPago: metodo,
             moneda: moneda,
-            montoEntregado: monto.toFixed(2),
-            cambio: (monto - total).toFixed(2),
-            // Opcional: agregar usuario, fecha, etc. si tu backend lo requiere
+            montoEntregado: Number(monto.toFixed(2)),
+            cambio: Number((monto - total).toFixed(2)),
+            detalleVentas: venta.map(item => ({
+                producto: { id: item.id },  // referencia sólo al id del producto
+                cantidad: item.cantidad,
+                precio: Number(item.precio.toFixed(2))
+            }))
         };
+
+        console.log("JSON a enviar:", JSON.stringify(ventaEnviar)); // para debug
 
         try {
             const response = await fetch("http://localhost:8081/RefresqueriaVicoGestion/api/ventas", {
@@ -279,7 +279,7 @@
             const data = await response.json();
             alert(data.mensaje || "Venta registrada correctamente");
 
-            // Limpia la venta y UI
+            // Limpiar UI y venta
             venta.length = 0;
             renderizarVenta();
             cerrarModal();
@@ -287,6 +287,7 @@
             alert("Error de conexión: " + error.message);
         }
     }
+
 
 
     window.onload = cargarProductos;

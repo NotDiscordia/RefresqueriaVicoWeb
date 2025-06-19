@@ -12,6 +12,8 @@
         <class>ByteBuilders.Entidad.DetalleVenta</class>
         <class>ByteBuilders.Entidad.Producto</class>
         <class>ByteBuilders.Entidad.MovimientosInventario</class>
+        <class>ByteBuilders.Entidad.EstadoCorte</class>
+        <class>ByteBuilders.Entidad.Moneda</class>
 
 
         <properties>

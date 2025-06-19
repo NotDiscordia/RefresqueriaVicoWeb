@@ -65,11 +65,11 @@
 </main>
 
 <script>
-    // Obtener total teórico al cargar la página
-    window.addEventListener('DOMContentLoaded', async () => {
+    // Función para obtener total del día
+    async function cargarTotalTeorico() {
         try {
-            const response = await fetch('http://localhost:8081/api/cortes-caja/ventas/total-dia');
-            if (!response.ok) throw new Error('Error al obtener total');
+            const response = await fetch("http://localhost:8081/RefresqueriaVicoGestion/api/cortes_caja/");
+            if (!response.ok) throw new Error(await response.text());
 
             const data = await response.json();
             document.getElementById('eteo-pesos').value = data.total;
@@ -77,93 +77,74 @@
             console.error('Error:', error);
             alert('Error al cargar total teórico: ' + error.message);
         }
-    });
-
-    async function compararCortes() {
-        // Obtener valores
-        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
-        const teoricoPesos = parseFloat(document.getElementById('eteo-pesos').value) || 0;
-        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
-
-        // Comparar pesos
-        const resultadoPesos = await compararCorte(fisicoPesos, teoricoPesos);
-        document.getElementById('res-pesos').value = resultadoPesos;
-
-        // Convertir USD a MXN (tasa 1:20)
-        const fisicoUSDEnMXN = fisicoUSD * 20;
-        document.getElementById('eteo-usd').value = fisicoUSDEnMXN;
-
-        // Comparar USD convertido con teórico
-        const resultadoUSD = await compararCorte(fisicoUSDEnMXN, teoricoPesos);
-        document.getElementById('res-usd').value = resultadoUSD;
-    }
-
-    async function compararCorte(efectivoFisico, efectivoTeorico) {
-        try {
-            const response = await fetch('/api/cortes-caja', {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `efectivoFisico=${efectivoFisico}&efectivoTeorico=${efectivoTeorico}`
-            });
-
-            if (!response.ok) throw new Error('Error en comparación');
-
-            const data = await response.json();
-            return data.resultado;
-        } catch (error) {
-            console.error('Error:', error);
-            return 'ERROR';
-        }
-
-        const resultadoUSD = await compararCorte(fisicoUSDEnMXN, teoricoPesos);
-        document.getElementById('res-usd').value = resultadoUSD;
     }
 
     async function guardarCorte() {
         const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
         const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
-        const usuarioId = 1; // Obtener de sesión
+        const usuarioId = 1; // Obtener de sesión o dinámico
 
         try {
-            // Guardar corte en pesos
             if (fisicoPesos > 0) {
-                await fetch('/api/cortes-caja', {
+                await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/cortes_caja', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `totalEfectivo=${fisicoPesos}&usuarioId=${usuarioId}&moneda=MXN`
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        totalEfectivo: fisicoPesos,
+                        usuarioId: usuarioId,
+                        moneda: 'MXN'
+                    })
                 });
             }
 
-            // Guardar corte en dólares
             if (fisicoUSD > 0) {
-                await fetch('/api/cortes-caja', {
+                await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/cortes_caja', {
                     method: 'POST',
-                    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                    body: `totalEfectivo=${fisicoUSD}&usuarioId=${usuarioId}&moneda=USD`
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        totalEfectivo: fisicoUSD,
+                        usuarioId: usuarioId,
+                        moneda: 'USD'
+                    })
                 });
             }
 
             alert('Corte(s) guardado(s) con éxito');
+            cargarTotalTeorico();
         } catch (error) {
             console.error('Error:', error);
             alert('Error al guardar: ' + error.message);
         }
     }
 
-    // Para obtener el total del día
-    async function cargarTotalTeorico() {
-        try {
-            const response = await fetch('http://localhost:8081/api/cortes-caja/ventas/total-dia');
 
-            if (!response.ok) throw new Error(await response.text());
-            const data = await response.json();
-            document.getElementById('eteo-pesos').value = data.total;
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Error al cargar total teórico: ' + error.message);
-        }
+    // Función para comparar cortes
+    function compararCortes() {
+        const fisicoPesos = parseFloat(document.getElementById('efis-pesos').value) || 0;
+        const teoricoPesos = parseFloat(document.getElementById('eteo-pesos').value) || 0;
+        const fisicoUSD = parseFloat(document.getElementById('efis-usd').value) || 0;
+
+        // Comparar pesos
+        const diffPesos = fisicoPesos - teoricoPesos;
+        document.getElementById('res-pesos').value = obtenerEstado(diffPesos);
+
+        // Convertir USD a MXN (tasa 1:20)
+        const fisicoUSDEnMXN = fisicoUSD * 20;
+        document.getElementById('eteo-usd').value = fisicoUSDEnMXN.toFixed(2);
+
+        // Comparar USD convertido
+        const diffUSD = fisicoUSDEnMXN - teoricoPesos;
+        document.getElementById('res-usd').value = obtenerEstado(diffUSD);
     }
 
+    // Función auxiliar para determinar estado
+    function obtenerEstado(diferencia) {
+        if (diferencia === 0) return 'OK';
+        return diferencia < 0 ? 'FALTANTE' : 'SOBRANTE';
+    }
+
+    window.addEventListener('DOMContentLoaded', cargarTotalTeorico);
 </script>
+
 </body>
 </html>
