@@ -1,30 +1,64 @@
 package ByteBuilders.Entidad;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import java.math.BigDecimal;
-
-@Data
-@Entity
-@Table(name = "detalle_ventas")
 public class DetalleVenta {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "venta_id", nullable = false)
+    private int detalleVentaID;
     private Venta venta;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "producto_id", nullable = false)
     private Producto producto;
+    private int cantidad;
+    private double precioVenta;
 
-    @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;
+    public DetalleVenta() {}
 
-    @Column(name = "precio_unitario", nullable = false, precision = 10, scale = 2)
-    private BigDecimal precioUnitario;
+    public DetalleVenta(int detalleVentaID, Venta venta, Producto producto, int cantidad, double precioVenta) {
+        this.detalleVentaID = detalleVentaID;
+        this.venta = venta;
+        this.producto = producto;
+        this.cantidad = cantidad;
+        this.precioVenta = precioVenta;
+    }
+
+    public int getDetalleVentaID() {
+        return detalleVentaID;
+    }
+
+    public void setDetalleVentaID(int detalleVentaID) {
+        this.detalleVentaID = detalleVentaID;
+    }
+
+    public Venta getVenta() {
+        return venta;
+    }
+
+    public void setVenta(Venta venta) {
+        this.venta = venta;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        this.cantidad = cantidad;
+    }
+
+    public double getPrecioVenta() {
+        return precioVenta;
+    }
+
+    public void setPrecioVenta(double precioVenta) {
+        this.precioVenta = precioVenta;
+    }
+
+    @Override
+    public String toString() {
+        return producto.getNombre() + " x" + cantidad + " ($" + precioVenta + ")";
+    }
 }

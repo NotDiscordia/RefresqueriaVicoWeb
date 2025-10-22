@@ -1,104 +1,127 @@
 package ByteBuilders.Persistencia;
 
-import ByteBuilders.Entidad.Producto;
-
+import ByteBuilders.Entidad.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class ProductoDAO {
 
-    public void insertar(Producto p) throws SQLException {
-        String sql = "INSERT INTO productos (nombre, precio, costo, stock, categoria, vendidos) VALUES (?, ?, ?, ?, ?, ?)";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, p.getNombre());
-            stmt.setBigDecimal(2, p.getPrecio());
-            stmt.setBigDecimal(3, p.getCosto());
-            stmt.setInt(4, p.getStock());
-            stmt.setString(5, p.getCategoria());
-            stmt.setInt(6, p.getVendidos() != null ? p.getVendidos() : 0);
-            stmt.executeUpdate();
+    public List<Producto> obtenerTodos() {
+        List<Producto> productos = new ArrayList<>();
+        String sql = "SELECT * FROM Productos";
+
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                Producto p = new Producto();
+                p.setProductoID(rs.getInt("ProductoID"));
+                p.setNombre(rs.getString("Nombre"));
+                p.setDescripcion(rs.getString("Descripcion"));
+                p.setPrecio(rs.getDouble("Precio"));
+                p.setInventario(rs.getInt("Inventario"));
+                p.setUrlImagen(rs.getString("URLImagen"));
+                p.setEstaActivo(rs.getBoolean("EstaActivo"));
+
+                // Relación con Categoría (puede ser null)
+                int categoriaID = rs.getInt("CategoriaID");
+                if (categoriaID > 0) {
+                    Categoria c = new CategoriaDAO().obtenerPorID(categoriaID);
+                    p.setCategoria(c);
+                }
+
+                productos.add(p);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+        return productos;
     }
 
-    public Producto buscarPorId(int id) throws SQLException {
-        String sql = "SELECT * FROM productos WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+    public Producto obtenerPorID(int id) {
+        String sql = "SELECT * FROM Productos WHERE ProductoID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
                 Producto p = new Producto();
-                p.setId(rs.getInt("id"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getBigDecimal("precio"));
-                p.setCosto(rs.getBigDecimal("costo"));
-                p.setStock(rs.getInt("stock"));
-                p.setCategoria(rs.getString("categoria"));
-                p.setVendidos(rs.getInt("vendidos"));
+                p.setProductoID(rs.getInt("ProductoID"));
+                p.setNombre(rs.getString("Nombre"));
+                p.setDescripcion(rs.getString("Descripcion"));
+                p.setPrecio(rs.getDouble("Precio"));
+                p.setInventario(rs.getInt("Inventario"));
+                p.setUrlImagen(rs.getString("URLImagen"));
+                p.setEstaActivo(rs.getBoolean("EstaActivo"));
+                int categoriaID = rs.getInt("CategoriaID");
+                if (categoriaID > 0)
+                    p.setCategoria(new CategoriaDAO().obtenerPorID(categoriaID));
                 return p;
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public List<Producto> listar() throws SQLException {
-        List<Producto> lista = new ArrayList<>();
-        String sql = "SELECT * FROM productos";
-        try (Connection con = ConexionBD.obtenerConexion();
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
-            while (rs.next()) {
-                Producto p = new Producto();
-                p.setId(rs.getInt("id"));
-                p.setNombre(rs.getString("nombre"));
-                p.setPrecio(rs.getBigDecimal("precio"));
-                p.setCosto(rs.getBigDecimal("costo"));
-                p.setStock(rs.getInt("stock"));
-                p.setCategoria(rs.getString("categoria"));
-                p.setVendidos(rs.getInt("vendidos"));
-                lista.add(p);
-            }
-        }
-        return lista;
-    }
-
-    public void eliminar(int id) throws SQLException {
-        String sql = "DELETE FROM productos WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        }
-    }
-
-    public void actualizar(Producto p) throws SQLException {
-        String sql = "UPDATE productos SET nombre = ?, precio = ?, costo = ?, stock = ?, categoria = ?, vendidos = ? WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setString(1, p.getNombre());
-            stmt.setBigDecimal(2, p.getPrecio());
-            stmt.setBigDecimal(3, p.getCosto());
-            stmt.setInt(4, p.getStock());
-            stmt.setString(5, p.getCategoria());
-            stmt.setInt(6, p.getVendidos());
-            stmt.setInt(7, p.getId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public void actualizarProductoStockYVendidos(int productoId, int nuevoStock, int nuevosVendidos) throws SQLException {
-        String sql = "UPDATE productos SET stock = ?, vendidos = ? WHERE id = ?";
+    public boolean insertar(Producto p) {
+        String sql = "INSERT INTO Productos (Nombre, Descripcion, Precio, Inventario, URLImagen, CategoriaID, EstaActivo) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, nuevoStock);
-            stmt.setInt(2, nuevosVendidos);
-            stmt.setInt(3, productoId);
-            stmt.executeUpdate();
+
+            stmt.setString(1, p.getNombre());
+            stmt.setString(2, p.getDescripcion());
+            stmt.setDouble(3, p.getPrecio());
+            stmt.setInt(4, p.getInventario());
+            stmt.setString(5, p.getUrlImagen());
+            stmt.setObject(6, (p.getCategoria() != null) ? p.getCategoria().getCategoriaID() : null);
+            stmt.setBoolean(7, p.isEstaActivo());
+
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
 
+    public boolean actualizar(Producto p) {
+        String sql = "UPDATE Productos SET Nombre=?, Descripcion=?, Precio=?, Inventario=?, URLImagen=?, CategoriaID=?, EstaActivo=? WHERE ProductoID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setString(1, p.getNombre());
+            stmt.setString(2, p.getDescripcion());
+            stmt.setDouble(3, p.getPrecio());
+            stmt.setInt(4, p.getInventario());
+            stmt.setString(5, p.getUrlImagen());
+            stmt.setObject(6, (p.getCategoria() != null) ? p.getCategoria().getCategoriaID() : null);
+            stmt.setBoolean(7, p.isEstaActivo());
+            stmt.setInt(8, p.getProductoID());
 
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean eliminar(int id) {
+        String sql = "DELETE FROM Productos WHERE ProductoID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

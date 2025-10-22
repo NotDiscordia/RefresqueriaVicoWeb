@@ -1,244 +1,157 @@
 package ByteBuilders.Persistencia;
 
 import ByteBuilders.Entidad.*;
-
-import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class VentaDAO {
 
-    // Guardar una venta (INSERT)
-    public void guardarVenta(Venta venta) throws SQLException {
-        String sql = "INSERT INTO ventas (fecha_hora, total, metodo_pago, cambio, monto_entregado, usuario_id) VALUES (?, ?, ?, ?, ?, ?)";
+    public boolean registrarVenta(Venta venta) {
+        String sqlVenta = "INSERT INTO Ventas (IDCliente, IDEmpleado, TipoVenta, Estado, MontoTotal) VALUES (?, ?, ?, ?, ?)";
+        String sqlDetalle = "INSERT INTO DetallesVenta (VentaID, ProductoID, Cantidad, PrecioVenta) VALUES (?, ?, ?, ?)";
+        String sqlActualizarStock = "UPDATE Productos SET Inventario = Inventario - ? WHERE ProductoID = ? AND Inventario >= ?";
 
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        Connection conn = null;
+        PreparedStatement stmtVenta = null;
+        PreparedStatement stmtDetalle = null;
+        PreparedStatement stmtStock = null;
 
-            stmt.setTimestamp(1, Timestamp.valueOf(venta.getFechaHora()));
-            stmt.setBigDecimal(2, venta.getTotal());
-            stmt.setString(3, venta.getMetodoPago());
-            stmt.setBigDecimal(4, venta.getCambio());
-            stmt.setBigDecimal(5, venta.getMontoEntregado());
+        try {
+            conn = ConexionBD.obtenerConexion();
+            conn.setAutoCommit(false); // inicia transacción
 
-            if (venta.getUsuario() != null && venta.getUsuario().getId() != null) {
-                stmt.setLong(6, venta.getUsuario().getId());
-            } else {
-                stmt.setNull(6, java.sql.Types.BIGINT);
+            // 1️⃣ Insertar cabecera de venta
+            stmtVenta = conn.prepareStatement(sqlVenta, Statement.RETURN_GENERATED_KEYS);
+            stmtVenta.setObject(1, venta.getCliente() != null ? venta.getCliente().getUsuarioID() : null);
+            stmtVenta.setObject(2, venta.getEmpleado() != null ? venta.getEmpleado().getUsuarioID() : null);
+            stmtVenta.setString(3, venta.getTipoVenta());
+            stmtVenta.setString(4, venta.getEstado());
+            stmtVenta.setDouble(5, venta.getMontoTotal());
+            stmtVenta.executeUpdate();
+
+            // Obtener ID generado
+            ResultSet generatedKeys = stmtVenta.getGeneratedKeys();
+            int ventaID = 0;
+            if (generatedKeys.next()) {
+                ventaID = generatedKeys.getInt(1);
+                venta.setVentaID(ventaID);
             }
 
-            stmt.executeUpdate();
+            // 2️⃣ Insertar detalles de la venta
+            stmtDetalle = conn.prepareStatement(sqlDetalle);
+            stmtStock = conn.prepareStatement(sqlActualizarStock);
 
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    venta.setId(rs.getLong(1));
+            for (DetalleVenta d : venta.getDetalles()) {
+                // Insertar detalle
+                stmtDetalle.setInt(1, ventaID);
+                stmtDetalle.setInt(2, d.getProducto().getProductoID());
+                stmtDetalle.setInt(3, d.getCantidad());
+                stmtDetalle.setDouble(4, d.getPrecioVenta());
+                stmtDetalle.executeUpdate();
+
+                // Actualizar stock del producto
+                stmtStock.setInt(1, d.getCantidad());
+                stmtStock.setInt(2, d.getProducto().getProductoID());
+                stmtStock.setInt(3, d.getCantidad());
+
+                int filas = stmtStock.executeUpdate();
+                if (filas == 0) {
+                    conn.rollback();
+                    System.out.println("❌ No hay suficiente inventario para el producto ID: " + d.getProducto().getProductoID());
+                    return false;
                 }
+            }
+
+            conn.commit();
+            System.out.println("✅ Venta registrada exitosamente (ID: " + ventaID + ")");
+            return true;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            if (conn != null) {
+                try { conn.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+            }
+            return false;
+        } finally {
+            try {
+                if (conn != null) conn.setAutoCommit(true);
+                if (stmtVenta != null) stmtVenta.close();
+                if (stmtDetalle != null) stmtDetalle.close();
+                if (stmtStock != null) stmtStock.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
             }
         }
     }
 
-
-    // Listar todas las ventas
-    public List<Venta> listarTodas() throws SQLException {
+    public List<Venta> obtenerTodas() {
         List<Venta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM ventas";
+        String sql = "SELECT * FROM Ventas ORDER BY FechaCreacion DESC";
 
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql);
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
+
+            UsuarioDAO usuarioDAO = new UsuarioDAO();
+            DetalleVentaDAO detalleDAO = new DetalleVentaDAO();
 
             while (rs.next()) {
-                Venta venta = new Venta();
-                venta.setId(rs.getLong("id"));
-                venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
-                venta.setTotal(rs.getBigDecimal("total"));
-                venta.setMetodoPago(rs.getString("metodo_pago")); // Cambiado a metodo_pago
-                venta.setCambio(rs.getBigDecimal("cambio"));
-                venta.setMontoEntregado(rs.getBigDecimal("monto_entregado")); // Agregado monto_entregado
-                lista.add(venta);
+                Usuario cliente = usuarioDAO.obtenerPorID(rs.getInt("IDCliente"));
+                Usuario empleado = usuarioDAO.obtenerPorID(rs.getInt("IDEmpleado"));
+
+                Venta v = new Venta(
+                        rs.getInt("VentaID"),
+                        cliente,
+                        empleado,
+                        rs.getString("TipoVenta"),
+                        rs.getString("Estado"),
+                        rs.getDouble("MontoTotal"),
+                        rs.getTimestamp("FechaCreacion")
+                );
+
+                // Agregar detalles
+                v.setDetalles(detalleDAO.obtenerPorVenta(v.getVentaID()));
+                lista.add(v);
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
         return lista;
     }
 
-    // Buscar venta por ID
-    public Venta buscarPorId(Long id) throws SQLException {
-        String sql = "SELECT * FROM ventas WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+    public Venta obtenerPorID(int id) {
+        String sql = "SELECT * FROM Ventas WHERE VentaID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setLong(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Venta venta = new Venta();
-                    venta.setId(rs.getLong("id"));
-                    venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
-                    venta.setTotal(rs.getBigDecimal("total"));
-                    venta.setMetodoPago(rs.getString("metodo_pago")); // Cambiado a metodo_pago
-                    venta.setCambio(rs.getBigDecimal("cambio"));
-                    venta.setMontoEntregado(rs.getBigDecimal("monto_entregado")); // Agregado monto_entregado
-                    return venta;
-                }
-            }
-        }
-        return null;
-    }
-
-    // Eliminar venta por ID
-    public void eliminar(Long id) throws SQLException {
-        String sql = "DELETE FROM ventas WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-            stmt.setLong(1, id);
-            stmt.executeUpdate();
-        }
-    }
-
-    // Actualizar venta
-    public void actualizar(Venta venta) throws SQLException {
-        String sql = "UPDATE ventas SET fecha_Hora = ?, total = ?, metodo_pago = ?, cambio = ?, monto_entregado = ? WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setTimestamp(1, Timestamp.valueOf(venta.getFechaHora()));
-            stmt.setBigDecimal(2, venta.getTotal());
-            stmt.setString(3, venta.getMetodoPago());
-            stmt.setBigDecimal(4, venta.getCambio());
-            stmt.setBigDecimal(5, venta.getMontoEntregado()); // Agregado monto_entregado
-            stmt.setLong(6, venta.getId());
-
-            stmt.executeUpdate();
-        }
-    }
-
-    // Guardar corte de caja
-    // Método para guardar corte de caja
-    public CortesCaja guardarCorteCaja(CortesCaja corte) throws SQLException {
-        String sql = "INSERT INTO cortes_caja (fecha, total_ventas, total_efectivo, usuario_id, moneda, estado) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
-
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            stmt.setDate(1, Date.valueOf(corte.getFecha()));
-            stmt.setBigDecimal(2, corte.getTotalVentas());
-            stmt.setBigDecimal(3, corte.getTotalEfectivo());
-            stmt.setInt(4, corte.getUsuario().getId());
-            stmt.setString(5, corte.getMoneda().name());
-            stmt.setString(6, corte.getEstado().name());
-
-            stmt.executeUpdate();
-
-            try (ResultSet rs = stmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    corte.setId(rs.getInt(1));
-                }
-            }
-            return corte;
-        }
-    }
-
-    // Método auxiliar para mapear ventas
-    private Venta mapearVenta(ResultSet rs) throws SQLException {
-        Venta venta = new Venta();
-        venta.setId(rs.getLong("id"));
-        venta.setFechaHora(rs.getTimestamp("fecha_Hora").toLocalDateTime());
-        venta.setTotal(rs.getBigDecimal("total"));
-        venta.setMetodoPago(rs.getString("metodo_pago"));
-        venta.setCambio(rs.getBigDecimal("cambio"));
-        venta.setMontoEntregado(rs.getBigDecimal("monto_entregado"));
-        return venta;
-    }
-
-    // Obtener ventas de un día específico
-    public List<Venta> obtenerVentasDelDia(LocalDate fecha) throws SQLException {
-        List<Venta> lista = new ArrayList<>();
-        String sql = "SELECT * FROM ventas WHERE DATE(fecha_Hora) = ?";
-
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setDate(1, Date.valueOf(fecha));
-
-            try (ResultSet rs = stmt.executeQuery()) {
-                while (rs.next()) {
-                    Venta venta = mapearVenta(rs);
-                    lista.add(venta);
-                }
-            }
-        }
-        return lista;
-    }
-
-    // Obtener todos los cortes de caja ordenados por fecha descendente
-    public List<CortesCaja> obtenerTodosCortesCaja() throws SQLException {
-        List<CortesCaja> lista = new ArrayList<>();
-        String sql = "SELECT * FROM cortes_caja ORDER BY fecha DESC";
-
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                CortesCaja corte = new CortesCaja();
-                corte.setId(rs.getInt("id"));
-                corte.setFecha(rs.getDate("fecha").toLocalDate());
-                corte.setTotalVentas(rs.getBigDecimal("total_ventas"));
-                corte.setTotalEfectivo(rs.getBigDecimal("total_efectivo"));
-
-                // Nuevos campos
-                corte.setMoneda(Moneda.valueOf(rs.getString("moneda")));
-                corte.setEstado(EstadoCorte.valueOf(rs.getString("estado")));
-
-                // Cargar usuario
-                Usuario usuario = new Usuario();
-                usuario.setId(rs.getInt("usuario_id"));
-                corte.setUsuario(usuario);
-
-                lista.add(corte);
-            }
-        }
-        return lista;
-    }
-
-    // Obtener producto por id
-    public Producto obtenerProductoPorId(Long id) throws SQLException {
-        String sql = "SELECT * FROM productos WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setLong(1, id);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Producto producto = new Producto();
-                    producto.setId(rs.getInt("id"));
-                    producto.setNombre(rs.getString("nombre"));
-                    producto.setPrecio(rs.getBigDecimal("precio"));
-                    // asigna otros campos según tu entidad Producto
-                    return producto;
-                }
-            }
-        }
-        return null;
-    }
-
-    // Devuelve la suma total de ventas del día actual
-    public BigDecimal obtenerTotalVentasDelDia() throws SQLException {
-        String sql = "SELECT COALESCE(SUM(total), 0) AS total_dia FROM ventas WHERE DATE(fecha_Hora) = CURRENT_DATE";
-
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                return rs.getBigDecimal("total_dia");
-            } else {
-                return BigDecimal.ZERO;
-            }
-        }
-    }
+                UsuarioDAO usuarioDAO = new UsuarioDAO();
+                Usuario cliente = usuarioDAO.obtenerPorID(rs.getInt("IDCliente"));
+                Usuario empleado = usuarioDAO.obtenerPorID(rs.getInt("IDEmpleado"));
 
+                Venta v = new Venta(
+                        rs.getInt("VentaID"),
+                        cliente,
+                        empleado,
+                        rs.getString("TipoVenta"),
+                        rs.getString("Estado"),
+                        rs.getDouble("MontoTotal"),
+                        rs.getTimestamp("FechaCreacion")
+                );
+
+                v.setDetalles(new DetalleVentaDAO().obtenerPorVenta(id));
+                return v;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }

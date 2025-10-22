@@ -1,114 +1,87 @@
 package ByteBuilders.Negocio;
 
 import ByteBuilders.Entidad.*;
-import ByteBuilders.Persistencia.ProductoDAO;
-import ByteBuilders.Persistencia.VentaDAO;
+import ByteBuilders.Persistencia.*;
 
 import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.List;
+import java.util.*;
 
 public class VentaService {
-    private final VentaDAO dao = new VentaDAO();
-    private final ProductoDAO productoDAO = new ProductoDAO();  // DAO para productos
-    private final UsuarioService usuarioService = new UsuarioService();
 
-    public CortesCaja realizarCorteCaja(BigDecimal totalEfectivo, int usuarioId, Moneda moneda) throws SQLException {
-        BigDecimal totalVentas = calcularTotalVentasDelDia();
-        BigDecimal totalEfectivoTeorico = totalVentas;
+    private final VentaDAO ventaDAO = new VentaDAO();
+    private final ProductoDAO productoDAO = new ProductoDAO();
 
-        CortesCaja corte = new CortesCaja();
-        corte.setFecha(LocalDate.now());
-        corte.setTotalVentas(totalVentas);
-        corte.setUsuario(usuarioService.obtenerUsuarioPorId(usuarioId));
-        corte.setMoneda(moneda);
-
-        if (moneda == Moneda.USD) {
-            corte.setTotalDolares(totalEfectivo); // Guarda los dólares originales
-            totalEfectivo = convertirAPesos(totalEfectivo); // Convierte a pesos
+    /**
+     * Registra una venta si todos los productos tienen stock suficiente.
+     */
+    public boolean registrarVenta(Venta venta) {
+        if (venta == null || venta.getDetalles() == null || venta.getDetalles().isEmpty()) {
+            System.out.println("❌ No se puede registrar una venta vacía.");
+            return false;
         }
 
-        corte.setTotalEfectivo(totalEfectivo);
-        corte.setEstado(compararCorte(totalEfectivo, totalEfectivoTeorico));
+        double total = 0;
 
-        return dao.guardarCorteCaja(corte);
-    }
+        for (DetalleVenta detalle : venta.getDetalles()) {
+            Producto producto = productoDAO.obtenerPorID(detalle.getProducto().getProductoID());
 
-
-    private BigDecimal convertirAPesos(BigDecimal dolares) {
-        // Tasa de cambio: 1 USD = 20 MXN (ajustable)
-        return dolares.multiply(new BigDecimal("20"));
-    }
-
-    public BigDecimal calcularTotalVentasDelDia() throws SQLException {
-        LocalDate hoy = LocalDate.now();
-        return dao.obtenerVentasDelDia(hoy).stream()
-                .map(Venta::getTotal)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    public EstadoCorte compararCorte(BigDecimal efectivoFisico, BigDecimal efectivoTeorico) {
-        int comparacion = efectivoFisico.compareTo(efectivoTeorico);
-
-        if (comparacion == 0) {
-            return EstadoCorte.OK;
-        } else if (comparacion < 0) {
-            return EstadoCorte.FALTANTE;
-        } else {
-            return EstadoCorte.SOBRANTE;
-        }
-    }
-
-
-
-
-    public List<CortesCaja> obtenerCortesHistoricos() throws SQLException {
-        return dao.obtenerTodosCortesCaja();
-    }
-
-    public List<CortesCaja> obtenerCortesCaja() throws SQLException {
-        return dao.obtenerTodosCortesCaja();
-    }
-
-    /*public void registrarVenta(Venta venta) throws SQLException {
-        // Primero guardamos la venta y sus detalles (detalles guardados en cascada)
-        dao.guardarVenta(venta);
-
-        // Luego actualizamos stock y vendidos de cada producto
-        for (DetalleVenta detalle : venta.getDetalleVentas()) {
-            Producto productoOriginal = productoDAO.buscarPorId(detalle.getProducto().getId());
-            int nuevoStock = productoOriginal.getStock() - detalle.getCantidad();
-            int nuevosVendidos = productoOriginal.getVendidos() + detalle.getCantidad();
-
-            if (nuevoStock < 0) {
-                throw new SQLException("No hay suficiente stock para el producto: " + productoOriginal.getNombre());
+            if (producto == null) {
+                System.out.println("❌ Producto no encontrado: " + detalle.getProducto().getProductoID());
+                return false;
             }
 
-            productoDAO.actualizarProductoStockYVendidos(productoOriginal.getId(), nuevoStock, nuevosVendidos);
+            if (producto.getInventario() < detalle.getCantidad()) {
+                System.out.println("⚠️ No hay stock suficiente para: " + producto.getNombre());
+                return false;
+            }
+
+            // Calcular total y restar stock
+            detalle.setPrecioVenta(producto.getPrecioVenta());
+            total += detalle.getPrecioVenta() * detalle.getCantidad();
+
+            producto.setInventario(producto.getInventario() - detalle.getCantidad());
+            productoDAO.actualizar(producto);
         }
-    }*/
-    public void registrarVenta(Venta venta) throws SQLException {
-        // Solo guarda la venta, no actualiza productos ni stock
-        dao.guardarVenta(venta);
+
+        venta.setMontoTotal(total);
+        venta.setEstado("Completada");
+        venta.setTipoVenta("PuntoDeVenta");
+
+        return ventaDAO.registrarVenta(venta);
     }
 
-
-
-    public List<Venta> obtenerTodasVentas() throws SQLException {
-        return dao.listarTodas();
+    /**
+     * Obtiene una venta con sus detalles.
+     */
+    public Venta obtenerVentaPorID(int id) {
+        return ventaDAO.obtenerPorID(id);
     }
 
-    public Venta buscarVentaPorId(Long id) throws SQLException {
-        return dao.buscarPorId(id);
+    /**
+     * Devuelve todas las ventas registradas.
+     */
+    public List<Venta> listarVentas() {
+        return ventaDAO.obtenerTodas();
     }
 
-    public void eliminarVenta(Long id) throws SQLException {
-        dao.eliminar(id);
+    /**
+     * Calcula el total de ventas registradas.
+     */
+    public double calcularTotalVentas() {
+        List<Venta> ventas = ventaDAO.obtenerTodas();
+        return ventas.stream().mapToDouble(Venta::getMontoTotal).sum();
     }
 
-    public void actualizarVenta(Venta venta) throws SQLException {
-        dao.actualizar(venta);
+    public List<Venta> obtenerTodas() {
+        return List.of();
     }
 
+    public BigDecimal calcularTotalVentasDelDia() {
+        return null;
+    }
+
+    public boolean realizarVenta(Venta venta) {
+        return false;
+    }
 }
+

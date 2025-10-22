@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Alta de Empleado</title>
+  <link rel="stylesheet" href="CSS/MenuAltasEmp.css" />
+</head>
+<body>
+
+<!-- Imagen logo en la esquina superior derecha -->
+<div class="encabezado-esquina">
+  <img src="Images/VicoLogo.svg" alt="Refresquería Vico">
+</div>
+
+<a class="volver" href="MenuConsultas.html">← ATRÁS</a>
+
+<div class="form-container">
+  <h2>Alta de Empleado</h2>
+
+  <form id="formEmpleado">
+    <label for="nombre">Nombre</label>
+    <input type="text" id="nombre" name="nombre" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
+
+    <label for="apellidos">Apellidos</label>
+    <input type="text" id="apellidos" name="apellidos" required pattern="^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$" />
+
+    <label for="celular">Celular</label>
+    <input type="tel" id="celular" name="celular" required pattern="^\d{10}$" placeholder="10 dígitos" />
+
+    <label for="email">Correo electrónico (opcional)</label>
+    <input type="email" id="email" name="email" placeholder="Opcional">
+
+    <label for="contrasena">Contraseña</label>
+    <input type="password" id="contrasena" name="contrasena" required minlength="4" maxlength="20" pattern="^[a-zA-Z0-9]+$" />
+
+    <label for="rol">Rol</label>
+    <select id="rol" name="rol" required>
+      <option value="" disabled selected>Selecciona rol</option>
+      <option value="empleado">Empleado</option>
+      <option value="administrador">Administrador</option>
+    </select>
+
+    <button type="submit">Registrar empleado</button>
+
+    <div id="errorMensaje" class="mensaje error"></div>
+    <div id="successMensaje" class="mensaje exito"></div>
+  </form>
+</div>
+
+<script>
+  const form = document.getElementById('formEmpleado');
+  const errorMensaje = document.getElementById('errorMensaje');
+  const successMensaje = document.getElementById('successMensaje');
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    mostrarMensaje('', '');
+
+    const nombre = document.getElementById('nombre').value.trim();
+    const apellidos = document.getElementById('apellidos').value.trim();
+    const celular = document.getElementById('celular').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const contrasena = document.getElementById('contrasena').value.trim();
+    const rol = document.getElementById('rol').value;
+
+    const soloLetras = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const soloNumeros = /^\d{10}$/;
+    const soloAlfanumerico = /^[a-zA-Z0-9]{4,20}$/;
+
+    if (!soloLetras.test(nombre) || !soloLetras.test(apellidos) ||
+            !soloNumeros.test(celular) || !soloAlfanumerico.test(contrasena) || !rol) {
+      mostrarMensaje('error', 'Por favor revisa los datos ingresados');
+      return;
+    }
+
+    if (!confirm("¿Confirmar el alta del empleado?")) {
+      mostrarMensaje('error', 'Alta cancelada por el usuario');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:8081/RefresqueriaVicoGestion/api/usuarios', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, apellidos, celular, email, contrasena, rol })
+      });
+
+      const textoRespuesta = await response.text();
+
+      try {
+        const resultado = JSON.parse(textoRespuesta);
+        if (resultado.exito) {
+          mostrarMensaje('success', '✅ ¡Empleado registrado con éxito!');
+          form.reset();
+        } else {
+          mostrarMensaje('error', '❌ Error en el registro: ' + (resultado.error || ''));
+        }
+      } catch (e) {
+        mostrarMensaje('error', textoRespuesta);
+      }
+
+    } catch (error) {
+      mostrarMensaje('error', '❌ Error de conexión: ' + error.message);
+    }
+  });
+
+  function mostrarMensaje(tipo, mensaje) {
+    errorMensaje.style.display = 'none';
+    successMensaje.style.display = 'none';
+
+    if (tipo === 'error') {
+      errorMensaje.textContent = mensaje;
+      errorMensaje.style.display = 'block';
+    } else if (tipo === 'success') {
+      successMensaje.textContent = mensaje;
+      successMensaje.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>

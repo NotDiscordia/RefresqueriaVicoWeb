@@ -8,12 +8,12 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>ByteBuilders.Entidad.Usuario</class>
         <class>ByteBuilders.Entidad.Venta</class>
-        <class>ByteBuilders.Entidad.CortesCaja</class>
+        <class>ByteBuilders.Entidad.Rol</class>
         <class>ByteBuilders.Entidad.DetalleVenta</class>
         <class>ByteBuilders.Entidad.Producto</class>
-        <class>ByteBuilders.Entidad.MovimientosInventario</class>
-        <class>ByteBuilders.Entidad.EstadoCorte</class>
-        <class>ByteBuilders.Entidad.Moneda</class>
+        <class>ByteBuilders.Entidad.ConfiguracionTienda/class>
+        <class>ByteBuilders.Entidad.Categoria</class>
+
 
 
         <properties>

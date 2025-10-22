@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Consulta de Empleados</title>
+  <link rel="stylesheet" href="CSS/cssEmpleados.css" />
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://www.cocacolaep.com/assets/legacy-assets/Uploads/resources/Coca-Cola-1210.jpg" alt="Coca Cola">
+    <h1>ABARROTES "ALAN"</h1>
+  </div>
+  <nav>
+    <a href="#">Productos</a>
+    <a href="#">Mi cuenta</a>
+    <a href="#">Mis pedidos</a>
+    <div class="cart">
+      <span>🛒</span> <span>$0.00</span>
+    </div>
+  </nav>
+</header>
+
+<section class="fondo">
+  <div class="contenido">
+    <div class="tarjeta">
+      <h2>Consulta de Empleados</h2>
+
+      <div class="barra-superior">
+        <div>
+          <label for="buscar">Buscar: </label>
+          <input type="text" id="buscar" placeholder="Nombre o ID..." />
+        </div>
+        <div>
+          <label for="ordenar">Ordenar por: </label>
+          <select id="ordenar">
+            <option>ID</option>
+            <option>Nombre</option>
+            <option>Rol</option>
+          </select>
+          <button class="btn-rojo">Registrar Nuevo Empleado</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Rol</th>
+          <th>Celular</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>1</td>
+          <td>Alan</td>
+          <td>García</td>
+          <td>Administrador</td>
+          <td>55 1234 5678</td>
+          <td>
+            <button class="icono">✏️</button>
+            <button class="icono">🗑️</button>
+          </td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td>Lucía</td>
+          <td>Martínez</td>
+          <td>Vendedora</td>
+          <td>55 8765 4321</td>
+          <td>
+            <button class="icono">✏️</button>
+            <button class="icono">🗑️</button>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <div>
+        <h4>📍 DIRECCIÓN</h4>
+        <p>Abarrotes "Alan"</p>
+      </div>
+      <div>
+        <h4>🕓 HORARIO</h4>
+        <p>Lunes a Viernes: 08:00 - 20:00<br>Sábado: 09:00 - 18:00</p>
+      </div>
+      <div>
+        <h4>📞 CONTACTO</h4>
+        <p>Teléfono / WhatsApp: +52 00 0000 0000<br>
+          Correo: contacto@abarrotesalan.mx</p>
+      </div>
+    </footer>
+  </div>
+</section>
+</body>
+</html>

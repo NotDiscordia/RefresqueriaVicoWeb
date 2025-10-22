@@ -2,72 +2,170 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Inicio de Sesión</title>
-    <link rel="stylesheet" href="CSS/Login.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abarrotes "Alan"</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #f7c948;
+            color: #333;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav {
+            background-color: #333;
+            text-align: center;
+        }
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 12px;
+            display: inline-block;
+        }
+        nav a:hover {
+            background-color: #555;
+        }
+        main {
+            padding: 20px;
+        }
+        .welcome {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .welcome .text {
+            max-width: 50%;
+        }
+        .welcome img {
+            max-width: 100%;
+            height: auto;
+        }
+        .products {
+            margin-top: 30px;
+        }
+        .product-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .product {
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            width: 200px;
+        }
+        .product img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+        }
+        .product button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .product button:hover {
+            background-color: #218838;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            flex-wrap: wrap;
+        }
+        footer div {
+            max-width: 250px;
+        }
+    </style>
 </head>
 <body>
 
+<header>
+    <span><strong>ABARROTES "ALAN"</strong></span>
+</header>
 
-<div class="login-container">
-    <img class="logo" src="Images/VicoLogo.svg" alt="Refresqueria Vico Logo">
-    <h1>REFRESQUERIA VICO GESTIÓN</h1>
-    <input type="text" id="celular" placeholder="Número de Teléfono" required>
-    <input type="password" id="contrasena" placeholder="Contraseña" required>
-    <button onclick="login()">INICIAR SESIÓN</button>
-</div>
+<nav>
+    <a href="home.html">Productos</a>
+    <a href="Sesion.html">Mi cuenta</a>
+    <a href="#">Mis Pedidos</a>
+</nav>
 
-<footer>&copy; 2025 Sistema de Gestión Vico</footer>
-<!-- Toast personalizado -->
-<div id="toast" class="toast"></div>
+<main>
+    <section class="welcome">
+        <div class="text">
+            <h1>¡Bienvenido a nuestra tienda en línea!</h1>
+            <img src="https://ayala-amaya-online.myshopify.com/cdn/shop/collections/abarrotes_580x.png?v=1594789203" alt="abarrotes">
+        </div>
+        <div class="image">
+            <img src="C:/Users/ricar/Pictures/Screenshots/tienda.png" alt="Tienda">
+        </div>
+    </section>
 
-<script>
-    function showToast(message, type = "error") {
-        const toast = document.getElementById("toast");
-        toast.innerText = message;
-        toast.className = "toast show " + type;
+    <!-- Sección de productos -->
+    <div class="products">
+        <h2>Productos</h2>
+        <div class="product-list">
 
-        setTimeout(() => {
-            toast.className = toast.className.replace("show", "");
-        }, 3000);
-    }
+            <div class="product">
+                <img src="https://m.media-amazon.com/images/I/511Ox+m7zNL._UF894,1000_QL80_.jpg" alt="Sprite">
+                <p>Soda Lata Limón Sprite 355ml</p>
+                <p>$18.90</p>
+                <button>Agregar</button>
+            </div>
 
-    function login() {
-        const celular = document.getElementById("celular").value.trim();
-        const contrasena = document.getElementById("contrasena").value.trim();
+            <div class="product">
+                <img src="https://www.benavides.com.mx/media/catalog/product/cache/1e14d9bf4283b604380ef95a7c475a07/2/0/20240612_531480.jpg" alt="Coca Cola Regular">
+                <p>Soda Lata Coca Cola Regular 355ml</p>
+                <p>$17.90</p>
+                <button>Agregar</button>
+            </div>
 
-        if (celular === "") {
-            showToast("⚠️ Por favor, ingresa el número de celular.", "warning");
-            return;
-        }
+            <div class="product">
+                <img src="https://convy.mx/cdn/shop/files/cocalightlata.png?v=1700680835" alt="Coca Cola Light">
+                <p>Soda Lata Coca Cola Light 355ml</p>
+                <p>$18.90</p>
+                <button>Agregar</button>
+            </div>
 
-        if (contrasena === "") {
-            showToast("⚠️ Por favor, ingresa la contraseña.", "warning");
-            return;
-        }
+            <div class="product">
+                <img src="https://lagranbodega.vteximg.com.br/arquivos/ids/297653-1000-1000/7501505630035.jpg?v=638430290235070000" alt="Coca Cola Sanguina">
+                <p>Soda Lata Sanguina 355ml</p>
+                <p>$16.90</p>
+                <button>Agregar</button>
+            </div>
 
-        const data = { celular, contrasena };
+        </div>
+    </div>
+</main>
 
-        fetch("http://localhost:8081/RefresqueriaVicoGestion/api/login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(data)
-        })
-            .then(response => {
-                if (!response.ok) throw new Error("Credenciales incorrectas");
-                return response.json();
-            })
-            .then(usuario => {
-                showToast("✅ Bienvenido " + usuario.nombre, "success");
-                setTimeout(() => window.location.href = "MainMenu.html", 1500);
-            })
-            .catch(error => {
-                showToast("❌ Usuario o contraseña incorrectos.", "error");
-            });
-    }
-</script>
-
+<footer>
+    <div>
+        <h3>DIRECCIÓN</h3>
+        <p>Av. Las Grutas 661-661 #661,<br>Fraccionamiento Caminos del Sur,<br>21386 Mexicali, B.C.</p>
+    </div>
+    <div>
+        <h3>HORARIO</h3>
+        <p>Lunes a Domingo<br>De 06:00 am - 01:00 am</p>
+    </div>
+    <div>
+        <h3>TELÉFONO</h3>
+        <p>+52 686-353-7565</p>
+    </div>
+</footer>
 
 </body>
 </html>

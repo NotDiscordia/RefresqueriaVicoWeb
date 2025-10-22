@@ -1,146 +1,127 @@
 package ByteBuilders.Persistencia;
 
-import ByteBuilders.Entidad.Usuario;
+import ByteBuilders.Entidad.*;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class UsuarioDAO {
 
-    public void insertar(Usuario u) throws SQLException {
-        String sql = "INSERT INTO usuarios (nombre, apellidos, celular, contrasena, rol) VALUES (?, ?, ?, ?, ?)";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setString(1, u.getNombre());
-            stmt.setString(2, u.getApellidos());
-            stmt.setString(3, u.getCelular());
-            stmt.setString(4, u.getContrasena());
-            stmt.setString(5, u.getRol());
-            stmt.executeUpdate();
-        }
-    }
-
-    public Usuario buscarPorId(int id) throws SQLException {
-        String sql = "SELECT * FROM usuarios WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
+    public Usuario obtenerPorID(int id) {
+        String sql = "SELECT * FROM Usuarios WHERE UsuarioID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
-
             if (rs.next()) {
-                Usuario usuario = new Usuario();
-                usuario.setId(rs.getInt("id"));
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellidos(rs.getString("apellidos"));
-                usuario.setCelular(rs.getString("celular"));
-                usuario.setContrasena(rs.getString("contrasena"));
-                usuario.setRol(rs.getString("rol"));
-                return usuario;
+                Rol rol = new RolDAO().obtenerPorID(rs.getInt("RolID"));
+                return new Usuario(
+                        rs.getInt("UsuarioID"),
+                        rs.getString("Nombre"),
+                        rs.getString("Correo"),
+                        rs.getString("Telefono"),
+                        rs.getString("ContrasenaHash"),
+                        rol,
+                        rs.getTimestamp("FechaCreacion")
+                );
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return null;
     }
 
-    public List<Usuario> listar() throws SQLException {
+    public List<Usuario> obtenerTodos() {
         List<Usuario> lista = new ArrayList<>();
-        String sql = "SELECT * FROM usuarios";
+        String sql = "SELECT * FROM Usuarios";
 
-        try (Connection con = ConexionBD.obtenerConexion();
-             Statement stmt = con.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
 
+            RolDAO rolDAO = new RolDAO();
             while (rs.next()) {
-                Usuario usuario = new Usuario();
-                usuario.setId(rs.getInt("id"));
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellidos(rs.getString("apellidos"));
-                usuario.setCelular(rs.getString("celular"));
-                usuario.setContrasena(rs.getString("contrasena"));
-                usuario.setRol(rs.getString("rol"));
-                lista.add(usuario);
+                Rol rol = rolDAO.obtenerPorID(rs.getInt("RolID"));
+                lista.add(new Usuario(
+                        rs.getInt("UsuarioID"),
+                        rs.getString("Nombre"),
+                        rs.getString("Correo"),
+                        rs.getString("Telefono"),
+                        rs.getString("ContrasenaHash"),
+                        rol,
+                        rs.getTimestamp("FechaCreacion")
+                ));
             }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return lista;
     }
 
-    public void eliminar(int id) throws SQLException {
-        String sql = "DELETE FROM usuarios WHERE id = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setInt(1, id);
-            stmt.executeUpdate();
-        }
-    }
-
-    public void actualizar(Usuario u) throws SQLException {
-        String sql = """
-            UPDATE usuarios 
-            SET nombre = ?, 
-                apellidos = ?, 
-                celular = ?, 
-                contrasena = ?, 
-                rol = ? 
-            WHERE id = ?
-            """;
-
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setString(1, u.getNombre());
-            stmt.setString(2, u.getApellidos());
-            stmt.setString(3, u.getCelular());
-            stmt.setString(4, u.getContrasena());
-            stmt.setString(5, u.getRol());
-            stmt.setInt(6, u.getId());
-            stmt.executeUpdate();
-        }
-    }
-
-    public Usuario buscarPorNombre(String nombre) throws SQLException {
-        String sql = "SELECT * FROM usuarios WHERE nombre = ?";
-        try (Connection con = ConexionBD.obtenerConexion();
-             PreparedStatement stmt = con.prepareStatement(sql)) {
-
-            stmt.setString(1, nombre);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                Usuario usuario = new Usuario();
-                usuario.setId(rs.getInt("id"));
-                usuario.setNombre(rs.getString("nombre"));
-                usuario.setApellidos(rs.getString("apellidos"));
-                usuario.setCelular(rs.getString("celular"));
-                usuario.setContrasena(rs.getString("contrasena"));
-                usuario.setRol(rs.getString("rol"));
-                return usuario;
-            }
-        }
-        return null;
-    }
-
-    public Usuario buscarPorCelular(String celular) throws SQLException {
-        String sql = "SELECT * FROM usuarios WHERE celular = ?";
+    /**
+     * Inserta un nuevo usuario en la base de datos.
+     */
+    public boolean insertar(Usuario usuario) {
+        String sql = "INSERT INTO Usuarios (Nombre, Correo, Telefono, ContrasenaHash, RolID, FechaCreacion) VALUES (?, ?, ?, ?, ?, NOW())";
         try (Connection conn = ConexionBD.obtenerConexion();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, celular);
-            try (ResultSet rs = stmt.executeQuery()) {
-                if (rs.next()) {
-                    Usuario usuario = new Usuario();
-                    usuario.setId(rs.getInt("id"));
-                    usuario.setNombre(rs.getString("nombre"));
-                    usuario.setApellidos(rs.getString("apellidos"));
-                    usuario.setCelular(rs.getString("celular"));
-                    usuario.setContrasena(rs.getString("contrasena"));
-                    usuario.setRol(rs.getString("rol"));
-                    return usuario;
-                }
-            }
+
+            stmt.setString(1, usuario.getNombre());
+            stmt.setString(2, usuario.getCorreo());
+            stmt.setString(3, usuario.getTelefono());
+            stmt.setString(4, usuario.getContrasenaHash());
+            stmt.setInt(5, usuario.getRol().getRolID());
+
+            int filas = stmt.executeUpdate();
+            return filas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
-        return null;
     }
 
+    /**
+     * Actualiza la información de un usuario existente.
+     */
+    public boolean actualizar(Usuario usuario) {
+        String sql = "UPDATE Usuarios SET Nombre=?, Correo=?, Telefono=?, ContrasenaHash=?, RolID=? WHERE UsuarioID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+            stmt.setString(1, usuario.getNombre());
+            stmt.setString(2, usuario.getCorreo());
+            stmt.setString(3, usuario.getTelefono());
+            stmt.setString(4, usuario.getContrasenaHash());
+            stmt.setInt(5, usuario.getRol().getRolID());
+            stmt.setInt(6, usuario.getIdUsuario());
+
+            int filas = stmt.executeUpdate();
+            return filas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * Elimina un usuario por su ID.
+     */
+    public boolean eliminar(int id) {
+        String sql = "DELETE FROM Usuarios WHERE UsuarioID=?";
+        try (Connection conn = ConexionBD.obtenerConexion();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            int filas = stmt.executeUpdate();
+            return filas > 0;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Consulta de Empleados</title>
+  <link rel="stylesheet" href="CSS/cssEmpleados.css" />
+</head>
+<body>
+<header>
+  <div class="logo">
+    <img src="https://www.cocacolaep.com/assets/legacy-assets/Uploads/resources/Coca-Cola-1210.jpg" alt="Coca Cola">
+    <h1>ABARROTES "ALAN"</h1>
+  </div>
+  <nav>
+    <a href="#">Productos</a>
+    <a href="#">Mi cuenta</a>
+    <a href="#">Mis pedidos</a>
+    <div class="cart">
+      <span>🛒</span> <span>$0.00</span>
+    </div>
+  </nav>
+</header>
+
+<section class="fondo">
+  <div class="contenido">
+    <div class="tarjeta">
+      <h2>Consulta de Empleados</h2>
+
+      <div class="barra-superior">
+        <div>
+          <label for="buscar">Buscar: </label>
+          <input type="text" id="buscar" placeholder="Nombre o ID..." />
+        </div>
+        <div>
+          <label for="ordenar">Ordenar por: </label>
+          <select id="ordenar">
+            <option value="id">ID</option>
+            <option value="nombre">Nombre</option>
+            <option value="rol">Rol</option>
+          </select>
+          <button class="btn-rojo">Registrar Nuevo Empleado</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Correo</th>
+          <th>Rol</th>
+          <th>Teléfono</th>
+          <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody id="tablaEmpleados">
+        <!-- Aquí se cargarán los datos dinámicamente -->
+        </tbody>
+      </table>
+    </div>
+
+    <footer>
+      <div>
+        <h4>📍 DIRECCIÓN</h4>
+        <p>Abarrotes "Alan"</p>
+      </div>
+      <div>
+        <h4>🕓 HORARIO</h4>
+        <p>Lunes a Viernes: 08:00 - 20:00<br>Sábado: 09:00 - 18:00</p>
+      </div>
+      <div>
+        <h4>📞 CONTACTO</h4>
+        <p>Teléfono / WhatsApp: +52 00 0000 0000<br>
+          Correo: contacto@abarrotesalan.mx</p>
+      </div>
+    </footer>
+  </div>
+</section>
+
+<script>
+  const API_URL = "http://localhost:8081/RefresqueriaVicoGestion/api/usuarios";
+  const tabla = document.getElementById("tablaEmpleados");
+  const inputBuscar = document.getElementById("buscar");
+  const selectOrdenar = document.getElementById("ordenar");
+
+  // Cargar empleados al iniciar
+  document.addEventListener("DOMContentLoaded", cargarEmpleados);
+
+  async function cargarEmpleados() {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) throw new Error("Error al obtener empleados");
+      const empleados = await response.json();
+
+      mostrarEmpleados(empleados);
+    } catch (error) {
+      console.error("❌ Error:", error);
+      tabla.innerHTML = `<tr><td colspan="6">Error al cargar los empleados</td></tr>`;
+    }
+  }
+
+  function mostrarEmpleados(lista) {
+    if (!Array.isArray(lista) || lista.length === 0) {
+      tabla.innerHTML = `<tr><td colspan="6">No hay empleados registrados</td></tr>`;
+      return;
+    }
+
+    tabla.innerHTML = "";
+    lista.forEach(emp => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${emp.idUsuario}</td>
+        <td>${emp.nombre}</td>
+        <td>${emp.correo}</td>
+        <td>${emp.rol ? emp.rol.nombreRol : "Sin rol"}</td>
+        <td>${emp.telefono || "-"}</td>
+        <td>
+          <button class="icono" onclick="editarEmpleado(${emp.idUsuario})">✏️</button>
+          <button class="icono" onclick="eliminarEmpleado(${emp.idUsuario})">🗑️</button>
+        </td>
+      `;
+      tabla.appendChild(fila);
+    });
+  }
+
+  // Buscar empleados por nombre o ID
+  inputBuscar.addEventListener("input", async () => {
+    const texto = inputBuscar.value.toLowerCase();
+    try {
+      const response = await fetch(API_URL);
+      const empleados = await response.json();
+      const filtrados = empleados.filter(e =>
+              e.nombre.toLowerCase().includes(texto) ||
+              e.idUsuario.toString().includes(texto)
+      );
+      mostrarEmpleados(filtrados);
+    } catch (e) {
+      console.error(e);
+    }
+  });
+
+  // Eliminar empleado
+  async function eliminarEmpleado(id) {
+    if (!confirm("¿Seguro que deseas eliminar este empleado?")) return;
+
+    try {
+      const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      const data = await response.json();
+      alert(data.mensaje);
+      cargarEmpleados();
+    } catch (error) {
+      console.error("Error al eliminar:", error);
+    }
+  }
+
+  // (Simulación) Editar empleado
+  function editarEmpleado(id) {
+    alert(`Editar empleado con ID: ${id}`);
+  }
+</script>
+</body>
+</html>

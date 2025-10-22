@@ -1,33 +1,99 @@
 package ByteBuilders.Entidad;
 
-import jakarta.persistence.*;
-import lombok.Data;
-import java.math.BigDecimal;
-
-@Data
-@Entity
-@Table(name = "productos")
 public class Producto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Integer id;
-
-    @Column(name = "nombre", nullable = false, length = 100)
+    private int productoID;
     private String nombre;
+    private String descripcion;
+    private double precio;
+    private int inventario;
+    private String urlImagen;
+    private Categoria categoria;
+    private boolean estaActivo;
 
-    @Column(name = "precio", nullable = false, precision = 10, scale = 2)
-    private BigDecimal precio;
+    public Producto() {}
 
-    @Column(name = "costo", nullable = false, precision = 10, scale = 2)
-    private BigDecimal costo;
+    public Producto(int productoID, String nombre, String descripcion, double precio, int inventario,
+                    String urlImagen, Categoria categoria, boolean estaActivo) {
+        this.productoID = productoID;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.precio = precio;
+        this.inventario = inventario;
+        this.urlImagen = urlImagen;
+        this.categoria = categoria;
+        this.estaActivo = estaActivo;
+    }
 
-    @Column(name = "stock", nullable = false)
-    private Integer stock;
+    public int getProductoID() {
+        return productoID;
+    }
 
-    @Column(name = "categoria", length = 50)
-    private String categoria;
+    public void setProductoID(int productoID) {
+        this.productoID = productoID;
+    }
 
-    @Column(name = "vendidos", nullable = false)
-    private Integer vendidos = 0; // Inicializado en 0 para nuevos productos
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
+
+    public double getPrecio() {
+        return precio;
+    }
+
+    public void setPrecio(double precio) {
+        this.precio = precio;
+    }
+
+    public int getInventario() {
+        return inventario;
+    }
+
+    public void setInventario(int inventario) {
+        this.inventario = inventario;
+    }
+
+    public String getUrlImagen() {
+        return urlImagen;
+    }
+
+    public void setUrlImagen(String urlImagen) {
+        this.urlImagen = urlImagen;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
+    }
+
+    public boolean isEstaActivo() {
+        return estaActivo;
+    }
+
+    public void setEstaActivo(boolean estaActivo) {
+        this.estaActivo = estaActivo;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " ($" + precio + ")";
+    }
+
+    public double getPrecioVenta() {
+        return 0;
+    }
 }

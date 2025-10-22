@@ -1,0 +1,110 @@
+/* Fondo de pantalla completo */
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #6bb0f0, #ffffff);
+}
+
+/* Contenedor del formulario */
+.form-container {
+    max-width: 500px;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 40px 30px;
+    border-radius: 15px;
+    margin: 100px auto;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.2);
+    box-sizing: border-box;
+}
+
+/* Título */
+.form-container h2 {
+    text-align: center;
+    color: #0073d8;
+    margin-bottom: 25px;
+}
+
+/* Etiquetas */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #444;
+}
+
+/* Campos de texto y selección */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Botón enviar */
+button[type="submit"] {
+    width: 100%;
+    background: linear-gradient(to right, #00aaff, #0073d8);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background: linear-gradient(to right, #008dd0, #005db0);
+}
+
+/* Mensajes */
+.mensaje {
+    text-align: center;
+    padding: 10px;
+    margin-top: 10px;
+    display: none;
+    border-radius: 5px;
+    font-weight: bold;
+}
+
+.mensaje.exito {
+    background-color: #c7f5d9;
+    color: #1b6e36;
+}
+
+.mensaje.error {
+    background-color: #ffd2d2;
+    color: #a30000;
+}
+
+/* Botón "Atrás" */
+.volver {
+    position: absolute;
+    top: 15px;
+    left: 20px;
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bold;
+    padding: 10px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+}
+
+.volver:hover {
+    background-color: #cee3ff;
+}
+
+/* Logo esquina */
+.encabezado-esquina {
+    position: absolute;
+    top: 15px;
+    right: 25px;
+}
+
+.encabezado-esquina img {
+    height: 40px;
+}
